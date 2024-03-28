@@ -17,6 +17,10 @@ public class GroupChat implements Chat{
         members.add(user);
     }
 
+    public void kickMember(User user) {
+        members.remove(user);
+    }
+
     @Override
     public void sendMessage(String message) {
 
