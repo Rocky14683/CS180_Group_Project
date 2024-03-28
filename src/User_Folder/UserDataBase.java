@@ -14,14 +14,15 @@ public class UserDataBase {
         return newUser;
     }
 
-    public static User searchUser(String name) {
+    public static ArrayList<User> searchUser(String name) {
+        ArrayList<User> result = new ArrayList<>();
         for (User user : users) {
-            if (user.getName().equals(name)) {
-                return user;
+            if (user.getName().contains(name)) {
+                result.add(user);
             }
         }
 
-        return null;
+        return result;
     }
 
     protected static User getUser(String id) { // not suppose to be use by user
