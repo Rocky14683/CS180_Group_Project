@@ -1,4 +1,4 @@
-package Chat_Folder;
+package ChatFolder;
 
 import javax.imageio.ImageIO;
 

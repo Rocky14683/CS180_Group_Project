@@ -1,18 +1,20 @@
 package UserFolder;
 
+import DatabaseFolder.Database;
+
 public class User {
     private String name;
     private final String uniqueID;;
     private String password;
     private UserProfile profile;
-    private DatabaseList friends;
-    private DatabaseList blackList;
+    private UserList friends;
+    private UserList blackList;
 
     public User (String name, String uniqueID) {
         this.name = name;
         this.uniqueID = uniqueID;
-        this.friends = new DatabaseList(this.uniqueID, true);
-        this.blackList = new DatabaseList(this.uniqueID, false);
+        this.friends = new UserList(this.uniqueID, true);
+        this.blackList = new UserList(this.uniqueID, false);
     }
 
     public void setPassword(String password) {
