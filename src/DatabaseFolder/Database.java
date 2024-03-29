@@ -21,7 +21,7 @@ import java.util.Objects;
 
 /**
  * Database class file formation
- * USERNAME, UNIQUE_ID, PASSWORD
+ * USERNAME,UNIQUE_ID,PASSWORD
  * USERPROFILE -> Image name if none then "N/A"
  * USERPROFILE -> bio name if none then "N/A"
  * FRIENDS -> ID1,ID2,ID3,ID4,ID5....(no spaces)
@@ -33,7 +33,6 @@ import java.util.Objects;
 
 public class Database {
     private static final String END = "END";
-    private static final String NEXT_distinguisher = "NEXT";
     private static final String ARROW = " -> ";
     private static final String NA = "N/A";
     private static final String fileName = "database.txt";
