@@ -99,8 +99,10 @@ public class Database {
             PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(fileName)));
             for (User user : users) {
                 pw.println(user.toString());
-                pw.println("USERPROFILE" + ARROW + user.useProfile().getProfilePicFile());
-                pw.println("USERPROFILE" + ARROW + user.useProfile().getBio());
+                String profile = user.useProfile().getProfilePicFile();
+                pw.println("USERPROFILE" + ARROW + (profile.isEmpty() ? NA : profile));
+                String bio = user.useProfile().getBio();
+                pw.println("USERPROFILE" + ARROW + (bio.isEmpty() ? NA : bio));
                 pw.print("FRIENDS" + ARROW);
                 for (String friendId : user.getFriends().getIDs()) {
                     pw.print(friendId + ",");
