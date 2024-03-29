@@ -14,7 +14,7 @@ import java.util.ArrayList;
 //each line in the text file should be a uniqueID
 //arraylist users is a list of every id
 //allow storage of friends list and ban list -> similar to cache
-public class UserList {
+public class UserRelationList {
 
     private String fileName;
     private ArrayList<String> users = new ArrayList<String>();
@@ -22,7 +22,7 @@ public class UserList {
     //each user has either a friends list or ban list, 
     //name of the file containing data is the user id, so this way its unique
     //adds extra 0 if ban list or 1 if friend list, then creates the files in folder
-    public UserList(String uniqueID, boolean friendsList) {
+    public UserRelationList(String uniqueID, boolean friendsList) {
         this.fileName = (uniqueID + 0);
         if (friendsList) {
             this.fileName = (uniqueID + 1);
@@ -40,7 +40,7 @@ public class UserList {
     }
 
     //do this if friend or ban list is already created, and you just want to make an extra object to read it
-    public UserList(String fileName) {
+    public UserRelationList(String fileName) {
         this.fileName = fileName;
     }
 
@@ -139,12 +139,7 @@ public class UserList {
         this.fileName = fileName;
     }
 
-    public ArrayList<String> getUsers() {
+    public ArrayList<String> getIDs() {
         return this.users;
     }
-
-    public void setUsers(ArrayList<String> UserIDs) {
-        this.users = UserIDs;
-    }
-    
 }
