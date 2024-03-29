@@ -1,4 +1,4 @@
-package User_Folder;
+package UserFolder;
 
 import javax.imageio.ImageIO;
 

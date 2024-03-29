@@ -1,18 +1,20 @@
-package User_Folder;
+package UserFolder;
 
-import java.util.ArrayList;
+import DatabaseFolder.Database;
 
 public class User {
     private String name;
-    private final String uniqueID;
+    private final String uniqueID;;
     private String password;
     private UserProfile profile;
-    private ArrayList<User> friends = new ArrayList<>();
-    private ArrayList<User> blackList = new ArrayList<>();
+    private UserList friends;
+    private UserList blackList;
 
     public User (String name, String uniqueID) {
         this.name = name;
         this.uniqueID = uniqueID;
+        this.friends = new UserList(this.uniqueID, true);
+        this.blackList = new UserList(this.uniqueID, false);
     }
 
     public void setPassword(String password) {
@@ -61,6 +63,15 @@ public class User {
 
     public UserProfile useProfile() {
         return profile;
+    }
+
+    public String toString() {
+        return this.name + "," + this.uniqueID + "," + this.password;
+    }
+
+    //writes data to database
+    public void saveData() {
+        Database.saveUser(this.name, this.uniqueID, this.password);
     }
 
 }

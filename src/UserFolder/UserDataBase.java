@@ -1,4 +1,4 @@
-package User_Folder;
+package UserFolder;
 
 import java.util.ArrayList;
 import java.util.UUID;
