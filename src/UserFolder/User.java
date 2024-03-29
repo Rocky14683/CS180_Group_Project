@@ -4,17 +4,17 @@ import DatabaseFolder.Database;
 
 public class User {
     private String name;
-    private final String uniqueID;;
+    private final String uniqueID;
     private String password;
     private UserProfile profile;
-    private UserList friends;
-    private UserList blackList;
+    private UserRelationList friends;
+    private UserRelationList blackList;
 
-    public User (String name, String uniqueID) {
+    public User(String name, String uniqueID) {
         this.name = name;
         this.uniqueID = uniqueID;
-        this.friends = new UserList(this.uniqueID, true);
-        this.blackList = new UserList(this.uniqueID, false);
+        this.friends = new UserRelationList(this.uniqueID, true);
+        this.blackList = new UserRelationList(this.uniqueID, false);
     }
 
     public void setPassword(String password) {
@@ -69,6 +69,12 @@ public class User {
         return this.name + "," + this.uniqueID + "," + this.password;
     }
 
+    public static User toUser(String str) {
+        String[] strs = str.split(",");
+        User ret = new User(strs[0], strs[1]);
+        ret.setPassword(strs[3]);
+        return ret;
+    }
     //writes data to database
     public void saveData() {
         Database.saveUser(this.name, this.uniqueID, this.password);
