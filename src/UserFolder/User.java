@@ -49,6 +49,14 @@ public class User {
         return uniqueID;
     }
 
+    public UserRelationList getFriends() {
+        return friends;
+    }
+
+    public UserRelationList getBlackList() {
+        return blackList;
+    }
+
     public boolean checkPassWord(String password) {
         return this.password.equals(password);
     }
