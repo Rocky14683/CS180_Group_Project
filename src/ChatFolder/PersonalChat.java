@@ -8,6 +8,7 @@ import java.util.ArrayList;
 public class PersonalChat implements Chat {
     private User[] users = new User[2];
     private String chatName;
+
     //two people chat
     public PersonalChat(User user1, User user2) {
         this.users[0] = user1;
