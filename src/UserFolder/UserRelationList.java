@@ -14,6 +14,9 @@ import java.util.ArrayList;
 //each line in the text file should be a uniqueID
 //arraylist users is a list of every id
 //allow storage of friends list and ban list -> similar to cache
+
+//deprecated: we dont need this to save friend or blacklist anymore, cuz we save all of them in the database.txt
+
 public class UserRelationList {
 
     private ArrayList<String> users = new ArrayList<String>();
