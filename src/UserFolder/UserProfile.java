@@ -5,10 +5,15 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
+import org.junit.*;
+import org.junit.runner.RunWith;
+
+
 public class UserProfile {
     private BufferedImage profilePic; //cache
     private String pfpFileName;
     private String bio;
+
 
     public UserProfile(String pfpFileName, String bio) {
         this.pfpFileName = pfpFileName;
@@ -18,7 +23,8 @@ public class UserProfile {
     public void setProfilePic(BufferedImage profilePic) {
         this.profilePic = profilePic;
         try {
-            ImageIO.write(profilePic, "bmp", new File(this.getPfpStorageDir()));
+//            File file = new File(this.getPfpStorageDir() + ".bmp");
+            ImageIO.write(profilePic, "BMP", new File(this.getPfpStorageDir()));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -40,7 +46,7 @@ public class UserProfile {
     }
 
     public String getPfpStorageDir() {
-        return "../Resources/" + pfpFileName;
+        return pfpFileName + ".bmp";
     }
 
     public BufferedImage getProfilePic() {
@@ -51,4 +57,27 @@ public class UserProfile {
         return bio;
     }
 
+    public static void main(String[] args) {
+        UserProfileTest test = new UserProfileTest();
+        test.testUserProfile();
+    }
+
+}
+
+class UserProfileTest {
+    @Test
+    public void testUserProfile() {
+        UserProfile profile = new UserProfile("pfp", "bio");
+        profile.setProfilePic(new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB));
+        profile.loadProfilePic();
+        Assert.assertEquals("pfp", profile.getPFPFileName());
+        Assert.assertEquals("bio", profile.getBio());
+        try {
+            BufferedImage img = ImageIO.read(new File(profile.getPfpStorageDir()));
+            Assert.assertNotNull(img);
+        } catch (Exception e) {
+            Assert.fail("Profile pic is null");
+        }
+        System.out.println("Test passed");
+    }
 }

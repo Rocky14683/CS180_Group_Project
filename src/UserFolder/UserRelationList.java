@@ -16,97 +16,79 @@ import java.util.ArrayList;
 //allow storage of friends list and ban list -> similar to cache
 public class UserRelationList {
 
-    private String fileName;
     private ArrayList<String> users = new ArrayList<String>();
 
     //each user has either a friends list or ban list, 
     //name of the file containing data is the user id, so this way its unique
     //adds extra 0 if ban list or 1 if friend list, then creates the files in folder
-    public UserRelationList(String uniqueID, boolean friendsList) {
-        this.fileName = (uniqueID + 0);
-        if (friendsList) {
-            this.fileName = (uniqueID + 1);
-        }
-
-        try {
-            File newFile = new File(this.fileName + ".txt");
-            if(!newFile.exists()) {
-                newFile.createNewFile();
-            }
-        } catch (Exception e) {
-            //does nothing, file is already created
-        }
-
+    public UserRelationList() {
+        this.users = new ArrayList<String>();
     }
-
     //do this if friend or ban list is already created, and you just want to make an extra object to read it
-    public UserRelationList(String fileName) {
-        this.fileName = fileName;
-    }
 
 
     //reads all the IDs in the database to get an up to date arraylist of the users, resets user list to what is read
     //i dont know if necessary?
-    public void read() {
-        try {
-            BufferedReader bfr = new BufferedReader(new FileReader(this.fileName));
-
-            ArrayList<String> newList = new ArrayList<>();
-
-            String line = bfr.readLine();
-
-            while(line != null) {
-                newList.add(line);
-                line = bfr.readLine();
-            }
-
-            this.users = newList;
-
-            bfr.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
+//    public void read() {
+//        try {
+//            BufferedReader bfr = new BufferedReader(new FileReader(this.fileName));
+//
+//            ArrayList<String> newList = new ArrayList<>();
+//
+//            String line = bfr.readLine();
+//
+//            while(line != null) {
+//                newList.add(line);
+//                line = bfr.readLine();
+//            }
+//
+//            this.users = newList;
+//
+//            bfr.close();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//
+//    }
 
     //writes all of the IDs in users arraylist to the file to be saved
-    public void write() {
-        try {
-            PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(this.fileName)));
-            for (String ID : users) {
-                pw.println(ID);
-            }
-            pw.flush();
-            pw.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+//    public void write() {
+//        try {
+//            PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(this.fileName)));
+//            for (String ID : users) {
+//                pw.println(ID);
+//            }
+//            pw.flush();
+//            pw.close();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
 
-    public boolean add(User user) {
-        read();     //reads to make sure list is up to date
-        String uniqueID = user.getUniqueID();
+    public boolean add(String id) {
+//        read();     //reads to make sure list is up to date
+//        String uniqueID = user.getUniqueID();
 
-        for(String ID : this.users) {
-            if (uniqueID.equals(ID)) {
+        for (String ID : this.users) {
+            if (id.equals(ID)) {
                 return false;           //user is already added to list
             }
         }
 
-        this.users.add(uniqueID);   //user gets added to users list
-        write();                    //data is saved
+        this.users.add(id);   //user gets added to users list
+//        write();                    //data is saved
         return true;                //returns true because user is added
 
     }
 
-    public boolean remove(User user) {
-        read();     //reads to make sure list is up to date
-        String uniqueID = user.getUniqueID();
+    public boolean remove(String id) {
+//        read();     //reads to make sure list is up to date
+//        String uniqueID = user.getUniqueID();
 
-        for(String ID : this.users) {
-            if (uniqueID.equals(ID)) {
+        for (String ID : this.users) {
+            if (id.equals(ID)) {
                 this.users.remove(ID);          //user gets removed from list
-                write();                        //data is saved
+//                write();                        //data is saved
                 return true;                    //returns true because user is removed
             }
         }
@@ -116,12 +98,12 @@ public class UserRelationList {
     }
 
 
-    public boolean contains(User user) {
-        read();
-        String uniqueID = user.getUniqueID();
+    public boolean contains(String id) {
+//        read();
+//        String uniqueID = user.getUniqueID();
 
-        for(String ID : this.users) {
-            if (uniqueID.equals(ID)) {
+        for (String ID : this.users) {
+            if (id.equals(ID)) {
                 return true;
             }
         }
@@ -130,16 +112,24 @@ public class UserRelationList {
     }
 
 
+//    public String getFileName() {
+//        return this.fileName;
+//    }
 
-    public String getFileName() {
-        return this.fileName;
-    }
-
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
+//    public void setFileName(String fileName) {
+//        this.fileName = fileName;
+//    }
 
     public ArrayList<String> getIDs() {
         return this.users;
+    }
+
+
+    public String toString() {
+        String result = "";
+        for (String ID : this.users) {
+            result += ID + ", ";
+        }
+        return result.substring(0, result.length() - 2);
     }
 }

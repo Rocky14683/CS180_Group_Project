@@ -3,6 +3,7 @@ package DatabaseFolder;
 //alex
 
 import UserFolder.User;
+import UserFolder.UserDataBase;
 import UserFolder.UserProfile;
 import UserFolder.UserRelationList;
 
@@ -13,8 +14,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.PrintWriter;
+import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.Objects;
+
+import org.junit.*;
 
 //entire database, each line is the toString() of user class
 //everything should be stored in here
@@ -36,7 +40,7 @@ public class Database {
     private static final String ARROW = " -> ";
     private static final String NA = "N/A";
     private static final String fileName = "database.txt";
-    private static ArrayList<User> users;
+    private static ArrayList<User> users = new ArrayList<>();
 
 
     public Database() {     //creates database file
@@ -73,11 +77,11 @@ public class Database {
                 usr.setProfile(new UserProfile(profilePic, bio));
                 String[] friends = bfr.readLine().split(ARROW)[1].split(",");
                 for (String friend : friends) {
-                    usr.addFriend(getUser(friend));
+                    usr.addFriend(friend);
                 }
                 String[] blackList = bfr.readLine().split(ARROW)[1].split(",");
                 for (String black : blackList) {
-                    usr.block(getUser(black));
+                    usr.block(black);
                 }
                 if (!bfr.readLine().equals(END)) {
                     throw new LoginException("Database format fail");
@@ -159,5 +163,54 @@ public class Database {
             }
         }
         return null;
+    }
+
+    @Test
+    public void testStore() {
+        User newUser = UserDataBase.createUser("test");
+        newUser.setPassword("abcd1234");
+        newUser.setProfile(new UserProfile("test.jpg", "I am a test"));
+        User friend = UserDataBase.createUser("friend");
+        newUser.addFriend(friend.getUniqueID());
+        User blocker = UserDataBase.createUser("friend");
+        newUser.block(blocker.getUniqueID());
+        users.add(newUser);
+        write();
+        read();
+        String correctString = newUser.toString() + "\n" +
+                "USERPROFILE" + ARROW + "test.jpg\n" +
+                "USERPROFILE" + ARROW + "I am a test\n" +
+                "FRIENDS" + ARROW + friend.getUniqueID() + ",\n" +
+                "BLACKLIST" + ARROW + blocker.getUniqueID() + ",\n" +
+                END + "\n";
+
+        String correctUserInfo = newUser.toString() + "\n" +
+                "USERPROFILE" + ARROW + newUser.useProfile().getProfilePic() + "\n" +
+                "USERPROFILE" + ARROW + newUser.useProfile().getBio() + "\n" +
+                "FRIENDS" + ARROW + friend.getUniqueID() + "\n" +
+                "BLACKLIST" + ARROW + blocker.getUniqueID() + "\n" +
+                END + "\n";
+
+
+        String userInfo = newUser.toString() + "\n" +
+                "USERPROFILE" + ARROW + newUser.useProfile().getProfilePic() + "\n" +
+                "USERPROFILE" + ARROW + newUser.useProfile().getBio() + "\n" +
+                "FRIENDS" + ARROW + newUser.getFriends().toString() + "\n" +
+                "BLACKLIST" + ARROW + newUser.getBlackList().toString() + "\n" +
+                END + "\n";
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                sb.append(line).append("\n");
+            }
+            Assert.assertEquals(correctString, sb.toString());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Assert.assertEquals(correctUserInfo, userInfo);
+        System.out.println("Test passed!");
     }
 }

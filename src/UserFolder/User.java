@@ -13,8 +13,8 @@ public class User {
     public User(String name, String uniqueID) {
         this.name = name;
         this.uniqueID = uniqueID;
-        this.friends = new UserRelationList(this.uniqueID, true);
-        this.blackList = new UserRelationList(this.uniqueID, false);
+        this.friends = new UserRelationList();
+        this.blackList = new UserRelationList();
     }
 
     public void setPassword(String password) {
@@ -25,20 +25,20 @@ public class User {
         this.profile = profile;
     }
 
-    public void addFriend(User friend) {
-        friends.add(friend);
+    public void addFriend(String id) {
+        friends.add(id);
     }
 
-    public void removeFriend(User friend) {
-        friends.remove(friend);
+    public void removeFriend(String id) {
+        friends.remove(id);
     }
 
-    public void block(User user) {
-        blackList.add(user);
+    public void block(String id) {
+        blackList.add(id);
     }
 
-    public void unblock(User user) {
-        blackList.remove(user);
+    public void unblock(String id) {
+        blackList.remove(id);
     }
 
     public String getName() {
@@ -61,12 +61,12 @@ public class User {
         return this.password.equals(password);
     }
 
-    public boolean isFriend(User user) {
-        return friends.contains(user);
+    public boolean isFriend(String id) {
+        return friends.contains(id);
     }
 
-    public boolean isBlocked(User user) {
-        return blackList.contains(user);
+    public boolean isBlocked(String id) {
+        return blackList.contains(id);
     }
 
     public UserProfile useProfile() {
@@ -80,7 +80,7 @@ public class User {
     public static User toUser(String str) {
         String[] strs = str.split(",");
         User ret = new User(strs[0], strs[1]);
-        ret.setPassword(strs[3]);
+        ret.setPassword(strs[2]);
         return ret;
     }
     //writes data to database
