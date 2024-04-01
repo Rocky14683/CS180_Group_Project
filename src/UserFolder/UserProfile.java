@@ -77,6 +77,34 @@ public class UserProfile {
 
 class UserProfileTest {
     @Test
+    public void testBioUpdate() {
+        UserProfile profile = new UserProfile("pfp", "initial bio");
+        profile.setBio("updated bio");
+        Assert.assertEquals("updated bio", profile.getBio());
+    }
+
+    @Test
+    public void testProfilePictureNotSet() {
+        UserProfile profile = new UserProfile();
+        BufferedImage loadedPic = profile.loadProfilePic();
+        Assert.assertNull(loadedPic, "Expected null when no profile pic set.");
+    }
+
+    @Test
+    public void testInvalidProfilePicturePath() {
+        UserProfile profile = new UserProfile("invalid_path", "bio");
+        BufferedImage loadedPic = profile.loadProfilePic();
+        Assert.assertNull(loadedPic, "Expected null for invalid profile pic path.");
+    }
+
+    @Test
+    public void testNullInputsOnConstructor() {
+        UserProfile profile = new UserProfile(null, null);
+        Assert.assertNull(profile.getPFPFileName(), "Expected null profile picture file name.");
+        Assert.assertNull(profile.getBio(), "Expected null bio.");
+    }
+
+
     public void testUserProfile() {
         UserProfile profile = new UserProfile("pfp", "bio");
         profile.setProfilePic(new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB));
