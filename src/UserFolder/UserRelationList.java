@@ -17,6 +17,10 @@ import java.util.ArrayList;
 
 //deprecated: we dont need this to save friend or blacklist anymore, cuz we save all of them in the database.txt
 
+/**
+ * @author Rocky Chen, Alex
+ * @version 3/27/2024
+ */
 public class UserRelationList {
 
     private ArrayList<String> users = new ArrayList<String>();

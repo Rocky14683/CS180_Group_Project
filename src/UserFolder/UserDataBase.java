@@ -5,6 +5,10 @@ import org.junit.Assert;
 import java.util.ArrayList;
 import java.util.UUID;
 
+/**
+ * @author Rocky Chen
+ * @version 3/27/2024
+ */
 public class UserDataBase {
     private static ArrayList<User> users = new ArrayList<>();
 

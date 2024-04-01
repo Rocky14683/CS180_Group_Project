@@ -5,6 +5,10 @@ import UserFolder.User;
 import javax.imageio.ImageIO;
 import java.util.ArrayList;
 
+/**
+ * @author rocky chen
+ * @version 3/29/2024
+ */
 public class PersonalChat implements Chat {
     private User[] users = new User[2];
     private String chatName;

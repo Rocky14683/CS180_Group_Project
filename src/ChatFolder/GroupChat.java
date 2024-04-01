@@ -5,6 +5,10 @@ import UserFolder.User;
 import javax.imageio.ImageIO;
 import java.util.ArrayList;
 
+/**
+ * @author rocky chen
+ * @version 3/29/2024
+ */
 public class GroupChat implements Chat {
     private ArrayList<User> members = new ArrayList<>();
     private String groupName;

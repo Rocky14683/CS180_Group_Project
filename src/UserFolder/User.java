@@ -7,6 +7,10 @@ import org.junit.Test;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
+/**
+ * @Author rocky chen
+ * @Version 3/27/2024
+ */
 public class User {
     private String name;
     private final String uniqueID;

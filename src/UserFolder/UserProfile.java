@@ -9,6 +9,10 @@ import org.junit.*;
 import org.junit.runner.RunWith;
 
 
+/**
+ * @Author rocky chen
+ * @Version 3/27/2024
+ */
 public class UserProfile {
     private BufferedImage profilePic; //cache
     private String pfpFileName;

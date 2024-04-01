@@ -34,6 +34,10 @@ import org.junit.*;
  * ... repeat for next user
  */
 
+/**
+ * @author Rocky Chen, Alex
+ * @version 3/29/2024
+ */
 
 public class Database {
     private static final String END = "END";
