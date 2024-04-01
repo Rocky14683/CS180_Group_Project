@@ -28,7 +28,7 @@ XYZ Name - Submitted Vocareum workspace and Presentation
 - UserProfile.java
 - UserRelationList.java
 
-  
+
 - Main.java
 
 
@@ -67,7 +67,7 @@ As part of the chat application, Database interacts closely with the UserFolder 
 
 
 ## User.java
-User.java, which is part of the UserFolder package, models an individual user within the chat application. It stores user-specific information like name, unique ID, password, profile, friends list, and blacklist.
+User.java, a part of the UserFolder, is part of the UserFolder package, models an individual user within the chat application. It stores user-specific information like name, unique ID, password, profile, friends list, and blacklist.
 Methods like setPassword, setProfile, and setProfilePic allow the user to update their password and profile details.
 This class also includes methods like addFriend, removeFriend, block, and unblock for managing social interactions and provides utility methods like getName, getUniqueID, getFriends, getBlackList, and useProfile for accessing user details.
 Methods like checkPassWord to verify user credentials.
@@ -75,16 +75,15 @@ The class also Integrates with Database through saveData for persisting user dat
 
 
 ## UserDataBase.java
+UserDataBase.java, a part of the UserFolder, serves as the core repository for managing user information within the chat application. Its primary function is to facilitate the creation, retrieval, and management of User objects. This class includes createUser, which generates new users with unique identifiers, ensuring every user in the system is distinct. It also provides a search feature through searchUser, allowing for efficient location of users based on their names, and getUser, which retrieves users by their unique IDs. Furthermore, UserDataBase handles user management tasks with banUser and unbanUser methods, giving administrators control over user access within the application. The getUsers method is another key feature that offers access to the complete list of users. The functionality and reliability of UserDataBase have been tested and verified by the TestUserDataBase class, which ensures user creation, searching, banning, and unbanning processes work as intended. In terms of its relationship with other classes, UserDataBase directly interacts with and manages instances of the User class, playing a pivotal role in the overarching data management strategy of the chat application. It works in close conjunction with the Database class to ensure a comprehensive and integrated approach to data handling within the system.
 
 
 ## UserProfile.java
+UserProfile.java, a part of the UserFolder, is a critical component for personalizing user accounts in the chat application, focusing primarily on profile pictures and biographies. It offers features for profile image management, including setProfilePic, which enables users to set their profile images, loadProfilePic for loading images, and getProfilePic to retrieve these images. In terms of biography management, setBio and getBio methods allow users to create and view their biographical information. Additionally, the class includes file handling mechanisms to save profile pictures to files and retrieve them, using methods such as getPFPFileName and getPfpStorageDir. The functionality of UserProfile has been tested through the UserProfileTest class, ensuring that both image and biography handling are reliable and effective. This class is closely associated with the User class, which integrates profile details into user accounts.
 
 
 ## UserRelationList.java
+UserRelationList.java, a part of the UserFolder, manages lists of user IDs for maintaining friends and blocked users within the chat system. It provides efficient list management capabilities through methods like add, remove, and contains, which handle the addition, removal, and verification of user IDs in these lists. The class also offers utility functions such as getIDs, to access all IDs in the list, and toString, for a string representation of the user IDs. 
 
 
 ## Main.java
-
-
-
-
