@@ -2,7 +2,7 @@
 
 
 ## Compiling and Running the Project
-Add text here
+In the initial phase of this project, most classes are accompanied by their own test cases, ensuring the functionality and reliability of individual components. This helps in the early detection of issues and ensures a solid foundation for future development phases. 
 
 
 ## Submission
@@ -38,7 +38,6 @@ It plays a critical role in defining the structure and capabilities of chat-rela
 
 
 
-
 ## GroupChat.java
 The GroupChat class implements the Chat interface and is designed to handle chats with multiple members. It maintains a list of User members and a groupName. Key functionalities include adding or removing members, retrieving the member list, and managing the group's name. The class constructors allow for initializing a group chat with multiple members or just an owner. When a new member is added, the group name is updated to reflect the new member's name. As an implementer of Chat, GroupChat has a direct relationship with the User class, using instances of User to manage chat participants.
 
@@ -46,7 +45,6 @@ The GroupChat class implements the Chat interface and is designed to handle chat
 ## PersonalChat.java
 The PersonalChat class, also under ChatFolder, implements the Chat interface for one-on-one communication. It holds an array of two User objects and a chatName, initialized to reflect both users' names. 
 This class is tightly coupled with the User class for representing chat participants and follows the Chat interface guidelines for chat functionalities. Its focus on one-on-one interactions distinguishes it from GroupChat while maintaining a consistent approach to chat functionalities within the project.
-
 
 
 

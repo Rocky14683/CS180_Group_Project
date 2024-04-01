@@ -1,7 +1,6 @@
 package ChatFolder;
 
 import UserFolder.User;
-
 import javax.imageio.ImageIO;
 import java.util.ArrayList;
 
@@ -47,31 +46,27 @@ public class GroupChat implements Chat {
 
     @Override
     public void sendMessage(String message) {
-
     }
 
     @Override
     public void receiveMessage(String message) {
-
     }
 
     @Override
     public void sendImage(ImageIO image) {
-
     }
 
     @Override
     public void receiveImage(ImageIO image) {
-
     }
 
     @Override
     public void sendFile(String file) {
-
     }
-
+    
     @Override
     public void receiveFile(String file) {
-
     }
 }
+
+
