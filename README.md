@@ -15,10 +15,13 @@ XYZ Name - Submitted Vocareum workspace and Presentation
 - Chat.java
 - GroupChat.java
 - PersonalChat.java
+
 (Core)
 - App_Core.java
+
 (DatabaseFolder)
 - Database.java
+
 (UserFolder)
 - User.java
 - UserDataBase.java
