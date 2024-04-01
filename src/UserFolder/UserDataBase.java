@@ -1,5 +1,7 @@
 package UserFolder;
 
+import org.junit.Assert;
+
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -46,5 +48,21 @@ public class UserDataBase {
         return users;
     }
 
+    public static void main(String[] args) {
+        TestUserDataBase test = new TestUserDataBase();
+        test.test();
+    }
+}
 
+class TestUserDataBase {
+    public void test() {
+        User user = UserDataBase.createUser("Test");
+        Assert.assertEquals("Test", user.getName());
+        Assert.assertTrue(UserDataBase.searchUser("Test").contains(user));
+        UserDataBase.banUser(user);
+        Assert.assertFalse(UserDataBase.getUsers().contains(user));
+        UserDataBase.unbanUser(user);
+        Assert.assertTrue(UserDataBase.getUsers().contains(user));
+        System.out.println("Test passed!");
+    }
 }
