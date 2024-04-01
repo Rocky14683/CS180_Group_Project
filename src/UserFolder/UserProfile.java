@@ -14,6 +14,9 @@ public class UserProfile {
     private String pfpFileName;
     private String bio;
 
+    public UserProfile() {
+    }
+
 
     public UserProfile(String pfpFileName, String bio) {
         this.pfpFileName = pfpFileName;
@@ -28,6 +31,10 @@ public class UserProfile {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void setProfilePicName(String pfpFileName) {
+        this.pfpFileName = pfpFileName;
     }
 
     public BufferedImage loadProfilePic() {
@@ -55,6 +62,10 @@ public class UserProfile {
 
     public String getBio() {
         return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
     }
 
     public static void main(String[] args) {

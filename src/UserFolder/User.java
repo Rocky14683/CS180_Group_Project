@@ -1,12 +1,17 @@
 package UserFolder;
 
 import DatabaseFolder.Database;
+import org.junit.Assert;
+import org.junit.Test;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public class User {
     private String name;
     private final String uniqueID;
     private String password;
-    private UserProfile profile;
+    private UserProfile profile = new UserProfile();
     private UserRelationList friends;
     private UserRelationList blackList;
 
@@ -23,6 +28,11 @@ public class User {
 
     public void setProfile(UserProfile profile) {
         this.profile = profile;
+    }
+
+    public void setProfilePic(String pfpFileName, BufferedImage image) {
+        this.profile.setProfilePicName(pfpFileName);
+        this.profile.setProfilePic(image);
     }
 
     public void addFriend(String id) {
@@ -83,9 +93,31 @@ public class User {
         ret.setPassword(strs[2]);
         return ret;
     }
+
     //writes data to database
     public void saveData() {
         Database.saveUser(this.name, this.uniqueID, this.password);
     }
 
+    public static void main(String[] args) {
+        TestUser test = new TestUser();
+        test.test();
+    }
+
+}
+
+
+class TestUser {
+    @Test
+    public void test() {
+        User user = UserDataBase.createUser("Test");
+        user.setPassword("password");
+        user.setProfilePic("pfp", new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB));
+        user.useProfile().setBio("bio");
+        Assert.assertEquals("Test", user.getName());
+        Assert.assertTrue(user.checkPassWord("password"));
+        Assert.assertEquals("pfp", user.useProfile().getPFPFileName());
+        Assert.assertEquals("bio", user.useProfile().getBio());
+        System.out.println("Test passed!");
+    }
 }
