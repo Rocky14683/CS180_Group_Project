@@ -30,15 +30,6 @@ public class User implements IUserOperations {
         this.password = password;
     }
 
-    public void setProfile(UserProfile profile) {
-        this.profile = profile;
-    }
-
-    public void setProfilePic(String pfpFileName, BufferedImage image) {
-        this.profile.setProfilePicName(pfpFileName);
-        this.profile.setProfilePic(image);
-    }
-
     public User(String username, String password) { //New user
         this.username = username;
         this.password = password;
@@ -110,12 +101,31 @@ public class User implements IUserOperations {
         dw.setInputObject(new Object[]{user, this});
         dw.setJob("AddFriend");
         dw.start();
-
-
     }
 
     public void addFriend(String newUserId) {
         friends.add(newUserId);
+    }
+
+    public void setProfile(UserProfile profile, DataWriter dw) {
+        dw.setInputObject(new Object[]{this, profile});
+        dw.setJob("SetProfile");
+        dw.start();
+        this.profile = profile;
+    }
+
+    public UserProfile getProfile() {
+        return profile;
+    }
+
+    public void setProfile(String dir, String bio) {
+        this.profile.setProfilePicName(dir);
+        this.profile.setBio(bio);
+    }
+
+    public void setProfilePic(String pfpFileName, BufferedImage image) {
+        this.profile.setProfilePicName(pfpFileName);
+        this.profile.setProfilePic(image);
     }
 
     public void removeFriend(User user, DataWriter dw) {

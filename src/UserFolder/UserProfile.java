@@ -29,12 +29,6 @@ public class UserProfile {
 
     public void setProfilePic(BufferedImage profilePic) {
         this.profilePic = profilePic;
-        try {
-//            File file = new File(this.getPfpStorageDir() + ".bmp");
-            ImageIO.write(profilePic, "BMP", new File(this.getPfpStorageDir()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     public void setProfilePicName(String pfpFileName) {
@@ -44,7 +38,7 @@ public class UserProfile {
     public BufferedImage loadProfilePic() {
         if (this.pfpFileName != null) {
             try {
-                profilePic = ImageIO.read(new File(getPfpStorageDir()));
+                profilePic = ImageIO.read(new File(getPfpStorageName()));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -56,7 +50,7 @@ public class UserProfile {
         return pfpFileName;
     }
 
-    public String getPfpStorageDir() {
+    public String getPfpStorageName() {
         return pfpFileName + ".bmp";
     }
 
@@ -88,7 +82,7 @@ class UserProfileTest {
         Assert.assertEquals("pfp", profile.getPFPFileName());
         Assert.assertEquals("bio", profile.getBio());
         try {
-            BufferedImage img = ImageIO.read(new File(profile.getPfpStorageDir()));
+            BufferedImage img = ImageIO.read(new File(profile.getPfpStorageName()));
             Assert.assertNotNull(img);
         } catch (Exception e) {
             Assert.fail("Profile pic is null");

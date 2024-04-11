@@ -2,6 +2,7 @@ package DatabaseFolder;
 
 import UserFolder.User;
 
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.*;
 
@@ -232,8 +233,26 @@ public class DataWriter extends Thread implements Database {
                 }
                 System.out.println("User updated succesfully");
                 break;
+            case ("SetProfile"):
 
+                if (!(inputObject[0] instanceof User)) {
+                    System.out.println("inputObject[0] is not a user");
+                    break;
+                }
 
+                if (!(inputObject[1] instanceof String)) {
+                    System.out.println("inputObject is not a user");
+                    break;
+                }
+
+                user = (User) inputObject[0];
+                String profile = (String) inputObject[1];
+                if (!setProfile(user, profile)) {
+                    break;
+                }
+
+                System.out.println("Profile successfully set");
+                break;
             default:
                 System.out.println("Not a valid job for DataWrtier: (" + requiredJob + ")");
         }
@@ -247,8 +266,9 @@ public class DataWriter extends Thread implements Database {
         File friends = null;   //File for where friend's userIds are stored
         File blocked = null;   //File for where blocked userIds are stroed
         File userPosts = null; //File containing "Post codes", post codes used to find posts from other file
-        File[] files = {userData, friends, blocked, userPosts};  //Array containing a users files
-        String[] fileNames = {"userData", "friends", "blocked", "posts"}; //Names of the users files
+        File profile = null;
+        File[] files = {userData, friends, blocked, userPosts, profile};  //Array containing a users files
+        String[] fileNames = {"userData", "friends", "blocked", "posts", "profile"}; //Names of the users files
         File userDirectory = null; //Directroy with name of the user Id 
         String userDirectoryPath = null; //Path to that directory
 
@@ -404,6 +424,18 @@ public class DataWriter extends Thread implements Database {
                     line = br.readLine();
                 }
                 br.close();
+
+                br = new BufferedReader((new FileReader(new File(directoryPaths[1] + userId + "/profile"))));
+
+                line = br.readLine();
+                String buffer[] = new String[2];
+                for (int i = 0; i < 2 && line != null; i++) {
+                    buffer[i] = line;
+                    line = br.readLine();
+                }
+                br.close();
+                user.setProfile(buffer[0], buffer[1]);
+                user.getProfile().loadProfilePic();
 
                 returnObject = user;
 
@@ -638,6 +670,25 @@ public class DataWriter extends Thread implements Database {
             }
         }
     }
+
+
+    public boolean setProfile(User user, String profile) {
+        try {
+            BufferedWriter bw = new BufferedWriter(new FileWriter(
+                    new File(directoryPaths[1] + user.getUserId() + "/profile"), false));
+
+            bw.write(profile);
+            bw.flush();
+            bw.close();
+            bw = null;
+
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 
 //----------------------------------------------------------------------------------------------------------
 
