@@ -1,5 +1,7 @@
 package Network;
 
+import DatabaseFolder.DataWriter;
+import DatabaseFolder.Database;
 import UserFolder.User;
 
 import java.io.BufferedReader;
@@ -28,8 +30,10 @@ import javax.swing.JOptionPane;
 
 public class Server implements Runnable {
     protected final static int SOCKET_PORT = 1234;
+    private User user = null;
 
     private Socket socket;
+    private DataWriter database = new DataWriter();
 
     public Server(Socket socket) {
         this.socket = socket;
@@ -47,65 +51,124 @@ public class Server implements Runnable {
 
     @Override
     public void run() {
+
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             PrintWriter writer = new PrintWriter(socket.getOutputStream());
 
-            String message = reader.readLine(); //client entry
-
-            if (message.equals("client entry")) {   //ensures that methods work for only one client
-
-                message = reader.readLine();        //message should contain user name and ID
-
-                String name = message.substring(0, message.indexOf(","));
-                String uniqueID = message.substring(message.indexOf(",") + 1, message.length());
-
-                User user = new User(name, uniqueID);        //sets up user object for further use
-
-                while (!message.equals("client exit")) {    //loops until client exits
-
-                    message = reader.readLine();    //message of what client wants to do
-
-                    if (message.contains("public chat")) {
-
-                        message = reader.readLine();    //next line sent should be message
-
-                        publicChat(message);
-
+            if (user == null) {
+                String cmd = reader.readLine();
+                String username = reader.readLine(); //username
+                String password = reader.readLine(); //password
+                switch (cmd) {
+                    case "login": {
+                        if (!database.logIn(username, password)) {
+                            writer.println("Invalid username or password");
+                            writer.flush();
+                            return;
+                        }
+                        //                user = database.getUserId();
+                        writer.println("Login successful");
+                        break;
                     }
-
-                    if (message.contains("direct message")) {
-
-                        message = reader.readLine();    //line should be to who you want to send to, name,ID
-
-                        name = message.substring(0, message.indexOf(","));
-                        uniqueID = message.substring(message.indexOf(",") + 1, message.length());
-
-                        User user1 = new User(name, uniqueID);
-
-                        message = reader.readLine();   //line should be message to send
-
-                        directMessage(message, user1);
+                    case "register": {
+                        user = new User(username, password);
+                        if (!database.createUser(user)) {
+                            writer.println("Invalid username or password");
+                            writer.flush();
+                            return;
+                        }
+                        writer.println("Account created successfully");
+                        break;
                     }
-
-                    if (message.contains("change name")) {
-
-                        message = reader.readLine();    //name to change
-
-                        changeName(message);
-
-                    }
-
-                    if (message.contains("change profile picture")) {
-
-                        message = reader.readLine();    //picture url to change
-
-                        changeProfilePicture(message);
-
+                    default: {
+                        writer.println("Invalid command");
+                        break;
                     }
                 }
-            }
+                writer.flush();
+            } else {
+                String message = reader.readLine();
+                if (message.equals("client entry")) {   //ensures that methods work for only one client & allow access after login
+                    String cmd = reader.readLine();
+                    switch (cmd) {
+                        // all command goes here
 
+                        case "addFriend": {     //adds given username as friend to current logged in user
+                            String username = reader.readLine(); //username of friend
+    
+                            User friend = //get user from username, TO BE IMPLEMENTED
+                            user.addFriend(friend);
+                            writer.println(username + " added as a friend");
+                            writer.flush();
+                            break;
+                        }
+                        case "removeFriend": {
+                            String username = reader.readLine(); //username of friend
+    
+                            User friend = //get user from username, TO BE IMPLEMENTED
+                            user.removeFriend(friend);
+                            writer.println(username + " removed as a friend");
+                            writer.flush();
+                            break;
+                        }
+                        case "blockUser": {
+                            String username = reader.readLine(); //username of user to block
+    
+                            User blocked = //get user from username, TO BE IMPLEMENTED
+                            user.block(blocked);
+                            writer.println(username + " has been blocked");
+                            writer.flush();
+                            break;
+                        }
+                        case "unblockUser": {
+                            String username = reader.readLine(); //username of user to unblock
+    
+                            User blocked = //get user from username, TO BE IMPLEMENTED
+                            user.removeFriend(blocked);
+                            writer.println(username + " removed as a friend");
+                            writer.flush();
+                            break;
+                        }
+                        case "updateUsername": {    //updates current user to given info
+                            String info = reader.readLine(); //new username
+                            //NEEDS TO CHECK WHETHER USERNAME IS ALREADY TAKEN OR NOT TO AVOID DUPLICATION
+                            user.setUsername(info, database);
+                            writer.println("Username updated successfully");
+                            writer.flush();
+                            break;
+                        }
+                        case "updatePassword": {    //updates current user to given info
+                            String info = reader.readLine(); //new password
+                            user.setPassword(info, database);
+                            writer.println("Password updated successfully");
+                            writer.flush();
+                            break;
+                        }
+                        case "updateProfilePic": {    //updates current user to given info
+                            String info = reader.readLine(); //new profile picture filename
+                            user.setProfilePic(info, database);
+                            writer.println("Profile picture updated successfully");
+                            writer.flush();
+                            break;
+                        }
+                        case "updateProfileBio": {    //updates current user to given info
+                            String info = reader.readLine(); //new bio text
+                            user.getProfile.setBio(info);
+                            writer.println("Bio updated successfully");
+                            writer.flush();
+                            break;
+                        }
+                        default: {
+                            writer.println("Invalid command");
+                            writer.flush();
+                            break;
+                        }
+                    }
+                } else if (message.equals("client exit")) {
+                    socket.close();
+                }
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -116,14 +179,6 @@ public class Server implements Runnable {
     }
 
     private static void directMessage(String message, User user) {      //TO BE IMPLEMENTED
-
-    }
-
-    private static void changeName(String message) {    //TO BE IMPLEMENTED
-
-    }
-
-    private static void changeProfilePicture(String photo) {    //TO BE IMPLEMENTED
 
     }
 }
