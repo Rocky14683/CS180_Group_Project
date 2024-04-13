@@ -13,7 +13,7 @@ import UserFolder.User;
 
 public interface Database {
 
-    boolean createUser(User user);
+    boolean createUser(User user) throws AlreadyThereException, ImNotSureWhyException;
 
     boolean redefineUser(String userId);
 

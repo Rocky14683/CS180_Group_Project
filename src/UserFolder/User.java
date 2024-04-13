@@ -1,17 +1,12 @@
 package UserFolder;
 
-import DatabaseFolder.DataWriter;
-import org.junit.Assert;
+import DatabaseFolder.*;
 import org.junit.Test;
-
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
-import DatabaseFolder.DataWriter;
 
-import java.util.*;
-
-public class User implements IUserOperations {
+public class User {
     private String userId;
     private String username;
     private String password; //hashing in future for security
