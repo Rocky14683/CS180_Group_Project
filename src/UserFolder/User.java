@@ -1,37 +1,126 @@
 package UserFolder;
 
-import DatabaseFolder.Database;
+import DatabaseFolder.DataWriter;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
-/**
- * @Author rocky chen
- * @Version 3/27/2024
- */
-public class User {
-    private String name;
-    private final String uniqueID;
-    private String password;
+import DatabaseFolder.DataWriter;
+
+import java.util.*;
+
+public class User implements IUserOperations {
+    private String userId;
+    private String username;
+    private String password; //hashing in future for security
+    //private String posts;
+    private ArrayList<String> friends;
+    private ArrayList<String> blockedUsers;
+
     private UserProfile profile = new UserProfile();
-    private UserRelationList friends;
-    private UserRelationList blackList;
 
-    public User(String name, String uniqueID) {
-        this.name = name;
-        this.uniqueID = uniqueID;
-        this.friends = new UserRelationList();
-        this.blackList = new UserRelationList();
+    public static void main(String[] args) {
+        TestUser test = new TestUser();
+        test.test();
     }
 
     public void setPassword(String password) {
         this.password = password;
     }
 
-    public void setProfile(UserProfile profile) {
+    public User(String username, String password) { //New user
+        this.username = username;
+        this.password = password;
+        this.friends = new ArrayList<String>();
+        this.blockedUsers = new ArrayList<String>();
+
+        this.userId = String.format("%08d", DataWriter.getNumUsers() + 1);
+
+    }
+
+    public User(String userId, String username, String password) { //already existing user
+        this.username = username;
+        this.password = password;
+        this.friends = new ArrayList<>();
+        this.blockedUsers = new ArrayList<>();
+        this.userId = userId;
+    }
+
+    public User() //Invalid user
+    {
+        this.username = "Invalid";
+        this.password = "";
+        this.friends = null;
+        this.blockedUsers = null;
+        this.userId = "";
+    }
+
+    public String toString() {
+        return String.format("<Username: %s, UserId: %s, Password: %s>", username, userId, password);
+    }
+
+    public String getUserId() {
+
+        return userId;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String newUsername, DataWriter dw) {
+        dw.setInputObject(new Object[]{this, newUsername, this.password});
+        dw.setJob("UpdateUser");
+        dw.start();
+
+        this.username = newUsername;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String newPassword, DataWriter dw) {
+        dw.setInputObject(new Object[]{this, this.username, newPassword});
+        dw.setJob("UpdateUser");
+        dw.start();
+        this.password = newPassword;
+    }
+
+    public ArrayList<String> getFriends() {
+        return friends;
+    }
+
+    public ArrayList<String> getBlockedUsers() {
+        return blockedUsers;
+    }
+
+    public void addFriend(User user, DataWriter dw) {
+        dw.setInputObject(new Object[]{user, this});
+        dw.setJob("AddFriend");
+        dw.start();
+    }
+
+    public void addFriend(String newUserId) {
+        friends.add(newUserId);
+    }
+
+    public void setProfile(UserProfile profile, DataWriter dw) {
+        dw.setInputObject(new Object[]{this, profile});
+        dw.setJob("SetProfile");
+        dw.start();
         this.profile = profile;
+    }
+
+    public UserProfile getProfile() {
+        return profile;
+    }
+
+    public void setProfile(String dir, String bio) {
+        this.profile.setProfilePicName(dir);
+        this.profile.setBio(bio);
     }
 
     public void setProfilePic(String pfpFileName, BufferedImage image) {
@@ -39,73 +128,72 @@ public class User {
         this.profile.setProfilePic(image);
     }
 
-    public void addFriend(String id) {
-        friends.add(id);
+    public void removeFriend(User user, DataWriter dw) {
+        dw.setInputObject(new Object[]{user, this});
+        dw.setJob("RemoveFriend");
+        dw.start();
+
     }
 
-    public void removeFriend(String id) {
-        friends.remove(id);
+    public void removeFriend(String newUserId) {
+        friends.remove(newUserId);
     }
 
-    public void block(String id) {
-        blackList.add(id);
+    public void blockUser(User user, DataWriter dw) {
+        dw.setInputObject(new Object[]{user, this});
+        dw.setJob("BlockUser");
+        dw.start();
     }
 
-    public void unblock(String id) {
-        blackList.remove(id);
+    public void blockUser(String newUserId) {
+        blockedUsers.add(newUserId);
     }
 
-    public String getName() {
-        return name;
+    public void unblockUser(User user, DataWriter dw) {
+        dw.setInputObject(new Object[]{user, this});
+        dw.setJob("UnBlockUser");
+        dw.start();
+
     }
 
-    public String getUniqueID() {
-        return uniqueID;
+    public void unblockUser(String newUserId) {
+        blockedUsers.remove(newUserId);
     }
 
-    public UserRelationList getFriends() {
-        return friends;
+    public boolean equals(Object o) {
+        if (!(o instanceof User)) {
+            return false;
+        }
+        User check = (User) o;
+
+        return userId.equals(check.getUserId());
+
     }
 
-    public UserRelationList getBlackList() {
-        return blackList;
+    public boolean writeUser(DataWriter dw) {
+        try {
+            dw.setInputObject(new Object[]{this});
+            dw.setJob("CreateUser");
+            dw.start();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
-    public boolean checkPassWord(String password) {
-        return this.password.equals(password);
-    }
+    public static User redifneUser(String newUserId, DataWriter dw) {
+        try {
+            dw.setInputObject(new Object[]{newUserId});
+            dw.setJob("RedefineUser");
+            dw.start();
 
-    public boolean isFriend(String id) {
-        return friends.contains(id);
-    }
-
-    public boolean isBlocked(String id) {
-        return blackList.contains(id);
-    }
-
-    public UserProfile useProfile() {
-        return profile;
-    }
-
-    public String toString() {
-        return this.name + "," + this.uniqueID + "," + this.password;
-    }
-
-    public static User toUser(String str) {
-        String[] strs = str.split(",");
-        User ret = new User(strs[0], strs[1]);
-        ret.setPassword(strs[2]);
-        return ret;
-    }
-
-    //writes data to database
-    public void saveData() {
-        Database.saveUser(this.name, this.uniqueID, this.password);
-    }
-
-    public static void main(String[] args) {
-        TestUser test = new TestUser();
-        test.test();
+            dw.join();
+            return (User) dw.getReturnObject();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return new User();
+        }
     }
 
 }
@@ -114,14 +202,6 @@ public class User {
 class TestUser {
     @Test
     public void test() {
-        User user = UserDataBase.createUser("Test");
-        user.setPassword("password");
-        user.setProfilePic("pfp", new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB));
-        user.useProfile().setBio("bio");
-        Assert.assertEquals("Test", user.getName());
-        Assert.assertTrue(user.checkPassWord("password"));
-        Assert.assertEquals("pfp", user.useProfile().getPFPFileName());
-        Assert.assertEquals("bio", user.useProfile().getBio());
-        System.out.println("Test passed!");
+
     }
 }
