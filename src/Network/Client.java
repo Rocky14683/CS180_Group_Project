@@ -16,12 +16,13 @@ import javax.swing.JOptionPane;
  * <p>
  * Purdue University -- CS18000 -- Spring 2024 -- Team Project
  *
- * @author Alexander Popa, lab section 012
+ * @author Alexander Popa, Aryan Wadhwa lab section 012
  * @version April 7, 2024
  */
 
 public class Client {
-
+    private static final String SERVER_ADDRESS = "localhost";
+    private static final int PORT = 1234;
     public static void main(String[] args) {
         Socket socket = null;
         try {
@@ -35,46 +36,50 @@ public class Client {
                 writer.flush();
 
 
-                //GUI FOR LOGIN
-                //need database logic here to allow the correct username and password to login
-                //and then grabs uniqueID as well to create a new user object for the server
+                String name = JOptionPane.showInputDialog("Enter your username:");
+                String uniqueID = JOptionPane.showInputDialog("Enter your unique ID:");
+                writer.println(name + "," + uniqueID);
 
-                String name = null;
-                String uniqueID = null;
+                // Main loop for user actions
+                String input = "";
+                while (!"exit".equals(input)) {
+                    input = JOptionPane.showInputDialog("Enter command (public chat, direct message, change name, change profile picture, exit):");
 
-                writer.write(name + "," + uniqueID);
-
-                boolean menu = true;
-
-                while (menu) {   //loops back to menu after each action
-
-                    //GUI FOR MENU
-                    //needs GUI for every individual action afterwards
-
-                    String message = null; //user action (goes to if statements in server)
-
-                    writer.write(message);
-                    writer.println();
-                    writer.flush();
-
-                    //individual user input for said action, i.e. if user wants to change name,
-                    //top write should be "change name", bottom write should be "Alex" the name to change
-                    message = null;
-                    writer.write(message);
-                    writer.println();
-                    writer.flush();
-
-
-                    //GUI if user wants to return back to menu or quit
-
+                    switch (input) {
+                        case "public chat":
+                            writer.println("public chat");
+                            String chatMessage = JOptionPane.showInputDialog("Enter message for public chat:");
+                            writer.println(chatMessage);
+                            break;
+                        case "direct message":
+                            writer.println("direct message");
+                            String recipientName = JOptionPane.showInputDialog("Enter recipient's name:");
+                            String recipientID = JOptionPane.showInputDialog("Enter recipient's unique ID:");
+                            writer.println(recipientName + "," + recipientID);
+                            String dmMessage = JOptionPane.showInputDialog("Enter your message:");
+                            writer.println(dmMessage);
+                            break;
+                        case "change name":
+                            writer.println("change name");
+                            String newName = JOptionPane.showInputDialog("Enter new name:");
+                            writer.println(newName);
+                            break;
+                        case "change profile picture":
+                            writer.println("change profile picture");
+                            String newPictureURL = JOptionPane.showInputDialog("Enter new profile picture URL:");
+                            writer.println(newPictureURL);
+                            break;
+                        case "exit":
+                            writer.println("client exit");
+                            break;
+                        default:
+                            JOptionPane.showMessageDialog(null, "Invalid command");
+                            break;
+                    }
                 }
-
-                writer.write("client exit");
-                writer.println();
-                writer.flush();
-
             } catch (Exception e) {
-                e.printStackTrace(); //shouldn't happen
+                JOptionPane.showMessageDialog(null, "Error: " + e.getMessage());
+                e.printStackTrace();
             }
         } catch (UnknownHostException e) {
             System.out.println("Unknown host: localhost");
