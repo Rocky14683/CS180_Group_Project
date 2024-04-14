@@ -35,15 +35,17 @@ public class UserProfile {
         this.pfpFileName = pfpFileName;
     }
 
-    public BufferedImage loadProfilePic() {
+    public boolean loadProfilePic() {
         if (this.pfpFileName != null) {
             try {
                 profilePic = ImageIO.read(new File(getPfpStorageName()));
+                return true;
             } catch (IOException e) {
                 e.printStackTrace();
+                return false;
             }
         }
-        return profilePic;
+        return false;
     }
 
     public String getPFPFileName() {

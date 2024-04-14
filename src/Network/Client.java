@@ -1,12 +1,7 @@
 package Network;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
 /**
@@ -20,67 +15,112 @@ import javax.swing.JOptionPane;
  * @version April 7, 2024
  */
 
+
 public class Client {
 
-    public static void main(String[] args) {
-        Socket socket = null;
+    private Socket socket;
+    private ObjectOutputStream out;
+    private ObjectInputStream in;
+
+    public Client() {
         try {
-            socket = new Socket("localhost", Server.SOCKET_PORT);  //connects to server
-            try {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                PrintWriter writer = new PrintWriter(socket.getOutputStream());
-
-                writer.write("client entry");   //allows client to be connected to server
-                writer.println();
-                writer.flush();
-
-
-                //GUI FOR LOGIN
-                //need database logic here to allow the correct username and password to login
-                //and then grabs uniqueID as well to create a new user object for the server
-
-                String name = null;
-                String uniqueID = null;
-
-                writer.write(name + "," + uniqueID);
-
-                boolean menu = true;
-
-                while (menu) {   //loops back to menu after each action
-
-                    //GUI FOR MENU
-                    //needs GUI for every individual action afterwards
-
-                    String message = null; //user action (goes to if statements in server)
-
-                    writer.write(message);
-                    writer.println();
-                    writer.flush();
-
-                    //individual user input for said action, i.e. if user wants to change name,
-                    //top write should be "change name", bottom write should be "Alex" the name to change
-                    message = null;
-                    writer.write(message);
-                    writer.println();
-                    writer.flush();
-
-
-                    //GUI if user wants to return back to menu or quit
-
-                }
-
-                writer.write("client exit");
-                writer.println();
-                writer.flush();
-
-            } catch (Exception e) {
-                e.printStackTrace(); //shouldn't happen
-            }
-        } catch (UnknownHostException e) {
-            System.out.println("Unknown host: localhost");
-        } catch (
-                IOException e) {
+            socket = new Socket("localhost", Server.SOCKET_PORT);
+            out = new ObjectOutputStream(socket.getOutputStream());
+            in = new ObjectInputStream(socket.getInputStream());
+            sendRequest("client entry", new Object[]{});
+        } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private Object[] sendRequest(String action, Object[] params) throws Exception {
+        out.writeObject(action);
+        out.writeObject(params);
+        out.flush();
+
+        boolean isSuccess = in.readBoolean();
+        Object[] response = (Object[]) in.readObject();
+
+        if (!isSuccess) {
+            throw (Exception) response[0];
+        }
+        return response;
+    }
+
+    public static void main(String[] args) {
+        Client client = new Client();
+        try {
+            boolean menu = true;
+            while (menu) {      //loops back to menu after each action
+
+                //GUI FOR MENU
+                //needs GUI for every individual action afterwards
+
+                String action = JOptionPane.showInputDialog("Enter action (addFriend, removeFriend, blockUser, unblockUser, updateUser, exit):");
+                switch (action.toLowerCase()) {
+                    case "addfriend":
+                        String userId = JOptionPane.showInputDialog("Your User ID:");
+                        String friendId = JOptionPane.showInputDialog("Friend's User ID:");
+                        client.addUser(userId, friendId);
+                        JOptionPane.showMessageDialog(null, "Friend added successfully!");
+                        break;
+                    case "removefriend":
+                        userId = JOptionPane.showInputDialog("Your User ID:");
+                        friendId = JOptionPane.showInputDialog("Friend's User ID:");
+                        client.removeUser(userId, friendId);
+                        JOptionPane.showMessageDialog(null, "Friend removed successfully!");
+                        break;
+                    case "blockuser":
+                        userId = JOptionPane.showInputDialog("Your User ID:");
+                        String blockId = JOptionPane.showInputDialog("User ID to block:");
+                        client.blockUser(userId, blockId);
+                        JOptionPane.showMessageDialog(null, "User blocked successfully!");
+                        break;
+                    case "unblockuser":
+                        userId = JOptionPane.showInputDialog("Your User ID:");
+                        String unblockId = JOptionPane.showInputDialog("User ID to unblock:");
+                        client.unblockUser(userId, unblockId);
+                        JOptionPane.showMessageDialog(null, "User unblocked successfully!");
+                        break;
+                    case "updateuser":
+                        userId = JOptionPane.showInputDialog("Your User ID:");
+                        String newUsername = JOptionPane.showInputDialog("New Username:");
+                        String newPassword = JOptionPane.showInputDialog("New Password:");
+                        String profilePicturePath = JOptionPane.showInputDialog("Path to new profile picture:");
+                        client.updateUser(userId, newUsername, newPassword, profilePicturePath);
+                        JOptionPane.showMessageDialog(null, "User updated successfully!");
+                        break;
+                    case "exit":
+                        menu = false;
+                        break;
+                    default:
+                        JOptionPane.showMessageDialog(null, "Invalid action");
+                        break;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error: " + e.getMessage());
+        }
+    }
+
+    public void addUser(String userId, String friendId) throws Exception {
+        sendRequest("AddFriend", new Object[]{userId, friendId});
+    }
+
+    public void removeUser(String userId, String friendId) throws Exception {
+        sendRequest("RemoveFriend", new Object[]{userId, friendId});
+    }
+
+    public void blockUser(String userId, String blockId) throws Exception {
+        sendRequest("BlockUser", new Object[]{userId, blockId});
+    }
+
+    public void unblockUser(String userId, String unblockId) throws Exception {
+        sendRequest("UnBlockUser", new Object[]{userId, unblockId});
+    }
+
+    public void updateUser(String userId, String newUsername, String newPassword, String profilePicturePath) throws Exception {
+        sendRequest("UpdateUser", new Object[]{userId, newUsername, newPassword, profilePicturePath});
     }
 }
