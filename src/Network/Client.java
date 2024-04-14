@@ -1,13 +1,12 @@
 package Network;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import UserFolder.User;
+
+import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import javax.swing.JOptionPane;
+
 
 /**
  * Client.java
@@ -21,60 +20,117 @@ import javax.swing.JOptionPane;
  */
 
 public class Client {
+    private boolean loggedIn = false;
+    private Socket socket;
+    private ObjectOutputStream out;
+    private ObjectInputStream in;
 
     public static void main(String[] args) {
         Socket socket = null;
         try {
             socket = new Socket("localhost", Server.SOCKET_PORT);  //connects to server
-            try {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                PrintWriter writer = new PrintWriter(socket.getOutputStream());
+            Client client = new Client(socket);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            PrintWriter writer = new PrintWriter(socket.getOutputStream());
+            while (true) {
+                try {
+                    if (!client.loggedIn) {
+                        String option = "";// this is where the GUI for login/register will be
+                        writer.println(option);
+                        switch (option) {
+                            case "login":
+                                String username = JOptionPane.showInputDialog("Enter username:");
+                                String password = JOptionPane.showInputDialog("Enter password:");
+                                writer.println(username);
+                                writer.println(password);
+                                writer.flush();
+                                break;
+                            case "register":
+                                String newUsername = JOptionPane.showInputDialog("Enter new username:");
+                                String newPassword = JOptionPane.showInputDialog("Enter new password:");
+                                writer.println(newUsername);
+                                writer.println(newPassword);
+                                writer.flush();
+                                break;
+                            default:
+                                JOptionPane.showMessageDialog(null, "Invalid option");
+                                break;
+                        }
+                        if (!reader.readLine().equals("Invalid command")) {
+                            client.loggedIn = true;
+                        } else {
+                            //UI warning
+                            continue;
+                        }
+                    } else {
+                        String cmd = ""; // this is where the GUI for the user actions will be
+                        writer.println(cmd);
+                        switch (cmd) {
+                            // all command goes here
 
-                writer.write("client entry");   //allows client to be connected to server
-                writer.println();
-                writer.flush();
-
-
-                //GUI FOR LOGIN
-                //need database logic here to allow the correct username and password to login
-                //and then grabs uniqueID as well to create a new user object for the server
-
-                String name = null;
-                String uniqueID = null;
-
-                writer.write(name + "," + uniqueID);
-
-                boolean menu = true;
-
-                while (menu) {   //loops back to menu after each action
-
-                    //GUI FOR MENU
-                    //needs GUI for every individual action afterwards
-
-                    String message = null; //user action (goes to if statements in server)
-
-                    writer.write(message);
-                    writer.println();
-                    writer.flush();
-
-                    //individual user input for said action, i.e. if user wants to change name,
-                    //top write should be "change name", bottom write should be "Alex" the name to change
-                    message = null;
-                    writer.write(message);
-                    writer.println();
-                    writer.flush();
-
-
-                    //GUI if user wants to return back to menu or quit
-
+                            case "addFriend": {     //adds given username as friend to current logged in user
+                                String userId = ""; //GUI for new userid
+                                writer.println(userId);
+                                writer.flush();
+                                break;
+                            }
+                            case "removeFriend": {
+                                String userId = ""; //GUI for new userid
+                                writer.println(userId);
+                                writer.flush();
+                                break;
+                            }
+                            case "blockUser": {
+                                String userId = ""; //GUI for new userid
+                                writer.println(userId);
+                                writer.flush();
+                                break;
+                            }
+                            case "unblockUser": {
+                                String userId = ""; //GUI for new userid
+                                writer.println(userId);
+                                writer.flush();
+                                break;
+                            }
+                            case "updateUsername": {    //updates current user to given info
+                                String newName = ""; //GUI for new username
+                                //NEEDS TO CHECK WHETHER USERNAME IS ALREADY TAKEN OR NOT TO AVOID DUPLICATION
+                                writer.println(newName);
+                                writer.flush();
+                                break;
+                            }
+                            case "updatePassword": {    //updates current user to given info
+                                String newPassword = ""; //GUI for new password
+                                writer.println(newPassword);
+                                writer.flush();
+                                break;
+                            }
+                            case "updateProfilePic": {    //updates current user to given info
+                                String dir = ""; //GUI for new profile picture path
+                                writer.println(dir);
+                                writer.flush();
+                                break;
+                            }
+                            case "updateProfileBio": {    //updates current user to given info
+                                String info = reader.readLine(); //new bio text
+                                writer.println(info);
+                                writer.flush();
+                                break;
+                            }
+                            case "exit": {
+                                writer.flush();
+                                break;
+                            }
+                            default: {
+                                writer.println("Invalid command");
+                                writer.flush();
+                                break;
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace(); //shouldn't happen
                 }
-
-                writer.write("client exit");
-                writer.println();
-                writer.flush();
-
-            } catch (Exception e) {
-                e.printStackTrace(); //shouldn't happen
             }
         } catch (UnknownHostException e) {
             System.out.println("Unknown host: localhost");
@@ -82,5 +138,13 @@ public class Client {
                 IOException e) {
             e.printStackTrace();
         }
+
     }
-}
+
+
+    public Client(Socket socket) throws IOException {
+        this.socket = socket;
+        this.out = new ObjectOutputStream(socket.getOutputStream());
+        this.in = new ObjectInputStream(socket.getInputStream());
+    }
+};
