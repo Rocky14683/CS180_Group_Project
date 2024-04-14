@@ -20,7 +20,7 @@ import javax.swing.JOptionPane;
  */
 
 public class Client {
-    private User user = null;
+    private boolean loggedIn = false;
     private Socket socket;
     private ObjectOutputStream out;
     private ObjectInputStream in;
@@ -34,7 +34,7 @@ public class Client {
                 try {
                     BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                     PrintWriter writer = new PrintWriter(socket.getOutputStream());
-                    if (client.user == null) {
+                    if (!client.loggedIn) {
                         String option = "";// this is where the GUI for login/register will be
                         writer.println(option);
                         switch (option) {
@@ -55,6 +55,12 @@ public class Client {
                             default:
                                 JOptionPane.showMessageDialog(null, "Invalid option");
                                 break;
+                        }
+                        if (!reader.readLine().equals("Invalid command")) {
+                            client.loggedIn = true;
+                        } else {
+                            //UI warning
+                            continue;
                         }
                     } else {
                         String cmd = ""; // this is where the GUI for the user actions will be
