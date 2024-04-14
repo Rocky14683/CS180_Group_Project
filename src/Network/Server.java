@@ -44,7 +44,7 @@ public class Server implements Runnable {
         ServerSocket serverSocket = new ServerSocket(SOCKET_PORT);
 
         while (true) {
-            Socket socket = serverSocket.accept();
+            Socket socket = serverSocket.accept(); //wait for socket connection established
             Server server = new Server(socket);
             new Thread(server).start();
         }
@@ -96,66 +96,94 @@ public class Server implements Runnable {
                         // all command goes here
 
                         case "addFriend": {     //adds given username as friend to current logged in user
-                            String username = reader.readLine(); //username of friend
-    
-                            User friend = //get user from username, TO BE IMPLEMENTED
-                            user.addFriend(friend);
-                            writer.println(username + " added as a friend");
+                            String friendId = reader.readLine(); //userid of friend
+                            if (!database.redefineUser(friendId)) {
+                                writer.println("User not found");
+                                writer.flush();
+                                break;
+                            }
+                            User friend = (User) database.getReturnObject();
+                            database.addFriends(friend, user);
+
+                            writer.println(friend.getUsername() + " added as a friend");
                             writer.flush();
                             break;
                         }
                         case "removeFriend": {
-                            String username = reader.readLine(); //username of friend
-    
-                            User friend = //get user from username, TO BE IMPLEMENTED
-                            user.removeFriend(friend);
-                            writer.println(username + " removed as a friend");
+                            String friendId = reader.readLine(); //userid of friend
+                            if (!database.redefineUser(friendId)) {
+                                writer.println("User not found");
+                                writer.flush();
+                                break;
+                            }
+                            User targetFriend = (User) database.getReturnObject();
+                            database.removeFriend(user, targetFriend);
+
+                            writer.println(targetFriend.getUsername() + " removed as a friend");
                             writer.flush();
                             break;
                         }
                         case "blockUser": {
-                            String username = reader.readLine(); //username of user to block
-    
-                            User blocked = //get user from username, TO BE IMPLEMENTED
-                            user.block(blocked);
-                            writer.println(username + " has been blocked");
+                            String userId = reader.readLine(); //userid of friend
+                            if (!database.redefineUser(userId)) {
+                                writer.println("User not found");
+                                writer.flush();
+                                break;
+                            }
+                            User targetUser = (User) database.getReturnObject();
+                            database.removeFriend(user, targetUser); //removes user as friend (if they are friends
+                            database.blockUser(user, targetUser);
+
+                            writer.println(targetUser.getUsername() + " has been blocked");
                             writer.flush();
                             break;
                         }
                         case "unblockUser": {
-                            String username = reader.readLine(); //username of user to unblock
-    
-                            User blocked = //get user from username, TO BE IMPLEMENTED
-                            user.removeFriend(blocked);
-                            writer.println(username + " removed as a friend");
+                            String userId = reader.readLine(); //userid of friend
+                            if (!database.redefineUser(userId)) {
+                                writer.println("User not found");
+                                writer.flush();
+                                break;
+                            }
+                            User targetUser = (User) database.getReturnObject();
+                            database.unblockUser(user, targetUser);
+
+
+                            writer.println(targetUser.getUsername() + " removed as a friend");
                             writer.flush();
                             break;
                         }
                         case "updateUsername": {    //updates current user to given info
-                            String info = reader.readLine(); //new username
+                            String newName = reader.readLine(); //new username
                             //NEEDS TO CHECK WHETHER USERNAME IS ALREADY TAKEN OR NOT TO AVOID DUPLICATION
-                            user.setUsername(info, database);
+                            user.setUsername(newName, this.database);
                             writer.println("Username updated successfully");
                             writer.flush();
                             break;
                         }
                         case "updatePassword": {    //updates current user to given info
-                            String info = reader.readLine(); //new password
-                            user.setPassword(info, database);
+                            String newPassword = reader.readLine(); //new password
+                            user.setPassword(newPassword, this.database);
                             writer.println("Password updated successfully");
                             writer.flush();
                             break;
                         }
                         case "updateProfilePic": {    //updates current user to given info
-                            String info = reader.readLine(); //new profile picture filename
-                            user.setProfilePic(info, database);
+                            String dir = reader.readLine(); //new profile picture filename
+                            user.getProfile().setProfilePicName(dir);
+                            if (!user.getProfile().loadProfilePic()) {
+                                writer.println("Profile directory not found");
+                                writer.flush();
+                                break;
+                            }
+
                             writer.println("Profile picture updated successfully");
                             writer.flush();
                             break;
                         }
                         case "updateProfileBio": {    //updates current user to given info
                             String info = reader.readLine(); //new bio text
-                            user.getProfile.setBio(info);
+                            user.getProfile().setBio(info);
                             writer.println("Bio updated successfully");
                             writer.flush();
                             break;
