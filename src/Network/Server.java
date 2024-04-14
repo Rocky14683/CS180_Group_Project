@@ -1,8 +1,7 @@
 
 package Network;
 
-import DatabaseFolder.DataWriter;
-import DatabaseFolder.Database;
+import DatabaseFolder.*;
 import UserFolder.User;
 
 import java.io.BufferedReader;
@@ -206,8 +205,19 @@ public class Server implements Runnable {
             }
         } catch (IOException e) {
             e.printStackTrace();
-        }
-
+        } catch (AlreadyThereException e) {
+            throw new RuntimeException(e);
+        } catch (ExistingUsernameException e) {
+            throw new RuntimeException(e);
+        } catch (InvalidOperationException e) {
+            throw new RuntimeException(e);
+        } catch (BlockedException e) {
+            throw new RuntimeException(e);
+        } catch (DoesNotExistException e) {
+            throw new RuntimeException(e);
+        } catch (ImNotSureWhyException e) {
+            throw new RuntimeException(e);
+        } //<= to be implemented
     }
 
     private static void publicChat(String message) {    //TO BE IMPLEMENTED
