@@ -84,4 +84,8 @@ UserProfile.java, a part of the UserFolder, is a critical component for personal
 UserRelationList.java, a part of the UserFolder, manages lists of user IDs for maintaining friends and blocked users within the chat system. It provides efficient list management capabilities through methods like add, remove, and contains, which handle the addition, removal, and verification of user IDs in these lists. The class also offers utility functions such as getIDs, to access all IDs in the list, and toString, for a string representation of the user IDs. 
 
 
+## Client.java
+Client.java is a part of a Network folder, core of the client side application for our platform.  It is responsible for establishing and managing the connection to the server, sending requests, and handling responses. The client communicates with the server via serialized objects, using ObjectOutputStream and ObjectInputStream to facilitate the exchange of complex data structures such as user details and operational commands. Key functionalities implemented include user management operations like creating and updating user profiles, adding and removing friends, and blocking or unblocking users.
+
+
 ## Main.java
