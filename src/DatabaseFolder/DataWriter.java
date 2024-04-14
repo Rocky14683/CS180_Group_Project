@@ -253,6 +253,22 @@ public class DataWriter extends Thread implements Database {
 
                 System.out.println("Profile successfully set");
                 break;
+
+            case ("GetId"):
+                
+                if (!(inputObject[0] instanceof String)) {
+                    System.out.println("input object isn't a string");
+                }
+
+                String userName = (String)inputObject[0];
+
+                if (!(getUserID(userName))) {
+                    break;
+                }
+
+                System.out.println("Success!");
+                break;
+                
             default:
                 System.out.println("Not a valid job for DataWrtier: (" + requiredJob + ")");
         }
@@ -792,6 +808,34 @@ public class DataWriter extends Thread implements Database {
             e.printStackTrace();
             return false;
         }
+    }
+
+//----------------------------------------------------------------------------------------------------------
+
+    public Boolean getUserID(String userName) {
+
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(directoryPaths[0] + "userNames"));
+
+            String line = br.readLine();
+
+            while (line != null) {
+                String[] lineArray = line.split(", ");
+                if (lineArray[0].equals(userName)) {
+                    br.close();
+                    br = null;
+                    returnObject = new Object[] {lineArray[1]};
+                }
+            }
+
+            br.close();
+            br = null;
+
+        } catch (IOException e) {
+            System.out.println("Something is broken");
+        }
+
+        return false;
     }
 
 //----------------------------------------------------------------------------------------------------------
