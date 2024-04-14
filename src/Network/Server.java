@@ -34,7 +34,7 @@ public class Server implements Runnable {
     private User user = null;
 
     private Socket socket;
-    private DataWriter database = new DataWriter();
+    private static DataWriter database = new DataWriter();
 
     public Server(Socket socket) {
         this.socket = socket;
