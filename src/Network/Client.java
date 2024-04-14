@@ -30,10 +30,10 @@ public class Client {
         try {
             socket = new Socket("localhost", Server.SOCKET_PORT);  //connects to server
             Client client = new Client(socket);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            PrintWriter writer = new PrintWriter(socket.getOutputStream());
             while (true) {
                 try {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                    PrintWriter writer = new PrintWriter(socket.getOutputStream());
                     if (!client.loggedIn) {
                         String option = "";// this is where the GUI for login/register will be
                         writer.println(option);

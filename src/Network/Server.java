@@ -35,9 +35,18 @@ public class Server implements Runnable {
 
     private Socket socket;
     private static DataWriter database = new DataWriter();
+    BufferedReader reader;
+    PrintWriter writer;
 
     public Server(Socket socket) {
-        this.socket = socket;
+        try {
+            this.socket = socket;
+            reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            writer = new PrintWriter(socket.getOutputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public static void main(String[] args) throws IOException {
@@ -54,9 +63,6 @@ public class Server implements Runnable {
     public void run() {
 
         try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            PrintWriter writer = new PrintWriter(socket.getOutputStream());
-
             if (user == null) {
                 String cmd = reader.readLine();
                 String username = reader.readLine(); //username
@@ -198,8 +204,7 @@ public class Server implements Runnable {
                 }
 
             }
-        } catch (
-                IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
