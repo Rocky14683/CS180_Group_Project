@@ -1,8 +1,6 @@
 package DatabaseFolder;
 
-import UserFolder.User;
-
-import java.awt.image.BufferedImage;
+import UserFolder.*;
 import java.io.*;
 import java.util.*;
 
@@ -15,7 +13,8 @@ import java.util.*;
  * @version 4/1/24
  */
 
-public class DataWriter extends Thread implements Database {
+ //REMEMBER TO READD THE INTERFACE
+public class DataWriter extends Thread  {
 
     // Gatekeepers
     public static Object gatekeeper = new Object();
@@ -23,7 +22,7 @@ public class DataWriter extends Thread implements Database {
 
     // Dynamic
     private Object[] inputObject;
-    private Object returnObject; //Threads can't return things so it will modify this field and then this
+    private Object[] returnObject; //Threads can't return things so it will modify this field and then this
     // field can be accesed to "return" 
     private String requiredJob; //You can't pass parameters to the run function so this
     // is my work around, you define it before starting thread
@@ -33,7 +32,7 @@ public class DataWriter extends Thread implements Database {
     private static String systemPath = System.getProperty("user.dir") + "/System/";   //Path to the system directory
     private static File systemInfo; //File in system directory containing system info
     private static File userNames; //File with all usernames currently in use
-    private static int numUsers;  //Number of total users
+    private static int numUsers = -1;  //Number of total users
     private static File userDirectories; //Folder of all the users
     private static String userPath = System.getProperty("user.dir") + "/UserDirectories/";  //Path the the userDirectory folder
     private static File allPosts;  //Directory containing all posts made on the platform
@@ -56,6 +55,8 @@ public class DataWriter extends Thread implements Database {
                     }
                 }
             }
+
+            
             systemInfo = new File(systemPath + "SystemInfo");
             if (!systemInfo.exists()) {
                 if (systemInfo.createNewFile()) {
@@ -83,7 +84,7 @@ public class DataWriter extends Thread implements Database {
             BufferedReader br = new BufferedReader(new FileReader(systemInfo));
             try {
                 synchronized (gatekeeper) {
-                    if (numUsers == 0) //Checking if its been initalized yet
+                    if (numUsers == -1) //Checking if its been initalized yet
                     {
                         numUsers = Integer.valueOf(br.readLine());
                     }
@@ -110,40 +111,60 @@ public class DataWriter extends Thread implements Database {
 
                 if (!(inputObject[0] instanceof User)) {
                     System.out.println("inputObject is not a user");
+                    returnObject = new Object[] {new InvalidInputObject("inputObject is not a user")};
                     break;
                 }
                 User newUser = (User) inputObject[0];
 
-                if (this.createUser(newUser)) {
-                    System.out.println("User created succesfully");
-                } else {
-                    System.out.printf("User could not be created");
+                try {
+                    if (this.createUser(newUser)) {
+                        System.out.println("User created succesfully");
+                    } else {
+                        System.out.printf("User could not be created");
+                    }
+                } catch(ImNotSureWhyException e) {
+                    returnObject = new Object[] {e};
+                } catch(AlreadyThereException e) {
+                    returnObject = new Object[] {e};
+                } catch(ExistingUsernameException e) {
+                    returnObject = new Object[] {e};
+                    System.out.println("UsernameAlreadyExists");
                 }
                 break;
+
+        //-----------------------
 
             case ("RedefineUser"):
                 if ((inputObject.length == 0)) {
                     System.out.println("Input object inisilized incorrectly");
+                    returnObject = new Object[] {new InvalidInputObject("inputObject is not a string")};
+
                 }
                 if (!(inputObject[0] instanceof String)) {
                     System.out.println("inputObject is not a string");
+                    returnObject = new Object[] {new InvalidInputObject("Input object inisilized incorrectly")};
                     break;
                 }
                 String newUserId = (String) inputObject[0];
 
-                if (redefineUser(newUserId)) {
-                    System.out.println("User redefined succesfully");
+                try {
+                    redefineUser(newUserId);
+                } catch (DoesNotExistException e) {
+                    returnObject = new Object[] {e, new User()};
 
-                } else {
-                    System.out.println("An error occured when redefining User");
-                    returnObject = new User();
+                } catch (ImNotSureWhyException e) {
+                    returnObject = new Object[] {e, new User()};
                 }
+
                 break;
+
+        //-----------------------
 
             case ("AddFriend"):
                 for (int i = 0; i < inputObject.length; i++) {
                     if (!(inputObject[i] instanceof User)) {
                         System.out.println("inputObject is not a user");
+                        returnObject = new Object[] {new InvalidInputObject("inputObject is not a user")};
                         break;
                     }
                 }
@@ -151,12 +172,26 @@ public class DataWriter extends Thread implements Database {
                 User newFriend = (User) inputObject[0];
                 User user = (User) inputObject[1];
 
-                if (!addFriends(newFriend, user)) {
-                    break;
+                try {
+                    addFriends(newFriend, user);
+                    
+                } catch(ImNotSureWhyException e) {
+                    returnObject = new Object[] {e};
+                } catch(AlreadyThereException e) {
+                    returnObject = new Object[] {e};
+                } catch(BlockedException e) {
+                    returnObject = new Object[] {e};
+                } catch(InvalidOperationException e) {
+                    returnObject = new Object[] {e};
+                } catch(DoesNotExistException e) {
+                    returnObject = new Object[] {e};
                 }
 
                 System.out.println("Friend succesfully added");
+                returnObject = new Object[] {true};
                 break;
+
+        //-----------------------
 
             case ("RemoveFriend"):
                 for (int i = 0; i < inputObject.length; i++) {
@@ -169,12 +204,19 @@ public class DataWriter extends Thread implements Database {
                 User oldFriend = (User) inputObject[0];
                 user = (User) inputObject[1];
 
-                if (!removeFriend(oldFriend, user)) {
-                    break;
+                try{
+                    removeFriend(oldFriend, user);
+                    
+                } catch (DoesNotExistException e) {
+                    returnObject = new Object[] {e};
+                } catch (ImNotSureWhyException e) {
+                    returnObject = new Object[] {e};
                 }
 
                 System.out.println("Friend succesfully removed");
                 break;
+
+        //-----------------------
 
             case ("BlockUser"):
                 for (int i = 0; i < inputObject.length; i++) {
@@ -187,11 +229,22 @@ public class DataWriter extends Thread implements Database {
                 User newBlock = (User) inputObject[0];
                 user = (User) inputObject[1];
 
-                if (!blockUser(newBlock, user)) {
-                    break;
+                try {
+                    if (!blockUser(newBlock, user)) {
+                        break;
+                    }
+                } catch(AlreadyThereException e) {
+                    returnObject = new Object[] {e};
+                } catch(DoesNotExistException e) {
+                    returnObject = new Object[] {e};
+                } catch(ImNotSureWhyException e) {
+                    returnObject = new Object[] {e};
                 }
+
                 System.out.println("User succesfully blocked");
                 break;
+
+        //-----------------------
 
             case ("UnBlockUser"):
                 for (int i = 0; i < inputObject.length; i++) {
@@ -204,11 +257,20 @@ public class DataWriter extends Thread implements Database {
                 User oldBlock = (User) inputObject[0];
                 user = (User) inputObject[1];
 
-                if (!unblockUser(oldBlock, user)) {
-                    break;
+                try {
+                    if (!unblockUser(oldBlock, user)) {
+                        break;
+                    }
+                } catch(ImNotSureWhyException e) {
+                    returnObject = new Object[] {e};
+                } catch(DoesNotExistException e) {
+                    returnObject = new Object[] {e};
                 }
+
                 System.out.println("User succesfully unblocked");
                 break;
+
+        //-----------------------
 
             case ("UpdateUser"):
                 if (!(inputObject[0] instanceof User)) {
@@ -233,6 +295,9 @@ public class DataWriter extends Thread implements Database {
                 }
                 System.out.println("User updated succesfully");
                 break;
+            
+        //-----------------------
+
             case ("SetProfile"):
 
                 if (!(inputObject[0] instanceof User)) {
@@ -241,7 +306,7 @@ public class DataWriter extends Thread implements Database {
                 }
 
                 if (!(inputObject[1] instanceof String)) {
-                    System.out.println("inputObject is not a user");
+                    System.out.println("inputObject[1] is not a user");
                     break;
                 }
 
@@ -253,6 +318,19 @@ public class DataWriter extends Thread implements Database {
 
                 System.out.println("Profile successfully set");
                 break;
+                
+            case ("CheckLogin"):
+                for (Object o : inputObject) {
+                    if (!(o instanceof String)) {
+                        System.out.println("Username or password not strings");
+                        break;
+                    }
+                }
+                String userName = (String)inputObject[0];
+                String password = (String)inputObject[1];
+
+                returnObject = new Object[] {(logIn(userName, password))};
+                break;
 
             case ("GetId"):
                 
@@ -260,7 +338,7 @@ public class DataWriter extends Thread implements Database {
                     System.out.println("input object isn't a string");
                 }
 
-                String userName = (String)inputObject[0];
+                userName = (String)inputObject[0];
 
                 if (!(getUserID(userName))) {
                     break;
@@ -268,15 +346,47 @@ public class DataWriter extends Thread implements Database {
 
                 System.out.println("Success!");
                 break;
-                
+
+            case ("MakePost"):        
+                if(!(inputObject[0] instanceof Post)) {
+                    System.out.println("Input object not a Post");
+                }
+
+                Post post = (Post)inputObject[0];
+
+                if (!(makePost(post))) {
+                    System.out.println("Post Failed");
+                    break;
+                }
+
+                System.out.println("Success");
+                break;
+
+            case ("UsernameExists"):
+                if(!(inputObject[0] instanceof String)) {
+                    System.out.println("Input object not string");
+                }
+
+                userName = (String)inputObject[0];
+
+                try {
+                returnObject = new Object[] {usernameExist(userName)};
+
+                } catch (ImNotSureWhyException e) {
+                    e.printStackTrace();
+                }
+
             default:
                 System.out.println("Not a valid job for DataWrtier: (" + requiredJob + ")");
+        
+            
         }
     }
 
-//----------------------------------------------------------------------------------------------------------
+//UserStuff--------------------------------------------------------------------------------------------------
 
-    public boolean createUser(User user) {
+//Exceptions - AlreadyThereException
+    public boolean createUser(User user) throws AlreadyThereException, ExistingUsernameException, ImNotSureWhyException{
         File userData = null;  //File for where user data, Private so multiple datawriters can 
         //write to diffrent userdatas simultaniously
         File friends = null;   //File for where friend's userIds are stored
@@ -301,12 +411,18 @@ public class DataWriter extends Thread implements Database {
             }
         }
 
+        if (!usernameExist(user.getUsername())) {
+            throw (new ExistingUsernameException("Read the exception name"));
+        }
+
         synchronized (gatekeeperArray.get(index)) {
             try {
 
                 if (new File(user.getUserId()).exists()) {
                     System.out.println("File already exists");
-                    return false; //Figure out what to do here but for now we will assume all inputs are valid
+
+                    //There is already a folder for the user
+                    throw (new AlreadyThereException("UserAlreadyExists"));
                 }
 
                 //Creating file in UserDirectories for new user
@@ -314,7 +430,9 @@ public class DataWriter extends Thread implements Database {
 
                 if (!userDirectory.exists() && !userDirectory.mkdir()) {
                     System.out.println("Error occured when making directory");
-                    return false;
+
+                    //The userDirectory does not exist and making it failed
+                    throw (new ImNotSureWhyException("userDirectroyError")); 
                 }
 
                 System.out.println("User directory has been made");
@@ -324,7 +442,8 @@ public class DataWriter extends Thread implements Database {
                     files[i] = new File(userDirectoryPath + fileNames[i]);
                     if (!files[i].createNewFile()) {
                         System.out.printf("Error occured when making %s file\n", fileNames[i]);
-                        return false;
+
+                        throw (new ImNotSureWhyException("File Writing Error"));
                     }
                     System.out.printf("%s file created succesfully\n", fileNames[i]);
                 }
@@ -361,7 +480,7 @@ public class DataWriter extends Thread implements Database {
                     br.close();
                     bw = null;
                     br = null;
-                    return false;
+                   throw (new ImNotSureWhyException("SystemInfoError"));
                 }
 
                 bw.close();
@@ -382,15 +501,17 @@ public class DataWriter extends Thread implements Database {
                 }
             } catch (IOException e) {
                 e.printStackTrace(); //Figure out what to do in this situation
+                throw (new ImNotSureWhyException("IOerror"));
             }
 
             return true;
         }
     }
 
-//----------------------------------------------------------------------------------------------------------
+//UserStuff--------------------------------------------------------------------------------------------------
 
-    public boolean redefineUser(String userId) {
+//Exceptions - DoesNotExistException
+    public boolean redefineUser(String userId) throws DoesNotExistException, ImNotSureWhyException {
         int index = 0;
         synchronized (gatekeeper) {
             for (int i = 0; i > gatekeeperArray.size(); i++) {
@@ -404,7 +525,9 @@ public class DataWriter extends Thread implements Database {
             //Making sure the user actually exists
             if (!(new File(directoryPaths[1] + userId)).exists()) {
                 System.out.println("UserId provided does not exist");
-                return false;  //Returns invalid user
+
+                //User thats trying to login does not exist
+                throw (new DoesNotExistException("UserDoesNotExist"));
             }
 
             try {
@@ -453,21 +576,22 @@ public class DataWriter extends Thread implements Database {
                 user.setProfile(buffer[0], buffer[1]);
                 user.getProfile().loadProfilePic();
 
-                returnObject = user;
+                returnObject = new Object[] {user};
 
                 return true;
 
 
             } catch (IOException e) {
                 e.printStackTrace();
-                return false;
+                throw (new ImNotSureWhyException("IOError"));
             }
         }
     }
 
-//----------------------------------------------------------------------------------------------------------
+//UserStuff--------------------------------------------------------------------------------------------------
 
-    public boolean addFriends(User newFreiend, User user) {
+//Exceptions - AlreadyThereException, BlockedException, InvalidOperationException
+    public boolean addFriends(User newFreiend, User user) throws AlreadyThereException, BlockedException, InvalidOperationException, ImNotSureWhyException, DoesNotExistException {
         int index = 0;
         synchronized (gatekeeper) {
             for (int i = 0; i > gatekeeperArray.size(); i++) {
@@ -485,7 +609,7 @@ public class DataWriter extends Thread implements Database {
                 if (friendsId != null) {
                     for (String f : friendsId) {
                         if (f != null && redefineUser(f)) {
-                            User newUser = (User) returnObject;
+                            User newUser = (User)returnObject[0];
                             friends.add(newUser);
                         }
                     }
@@ -493,17 +617,19 @@ public class DataWriter extends Thread implements Database {
 
                 if (friends != null && friends.contains(newFreiend)) {
                     System.out.println("Friend is already added");
-                    return false;
+                    throw (new AlreadyThereException("Freind already added"));
 
                 } else if (newFreiend.getBlockedUsers().contains(user.getUserId())) {
                     System.out.println("User you are trying to add has blocked you");
-                    return false;
+                    throw (new BlockedException("You are blocked"));
+
                 } else if (user.getBlockedUsers().contains(newFreiend.getUserId())) {
                     System.out.println("You have this user blocked, you cannot add them");
-                    return false;
+                    throw (new BlockedException("Yout have this user blocked"));
+
                 } else if (newFreiend.getUserId().equals(user.getUserId())) {
                     System.out.println("You cannot add yourself as a friend");
-                    return false;
+                    throw (new InvalidOperationException("You cannot add yourself"));
                 }
                 user.addFriend(newFreiend.getUserId());
 
@@ -523,16 +649,17 @@ public class DataWriter extends Thread implements Database {
 
             } catch (IOException e) {
                 System.out.println("Unable to add friend");
-                return false;
+                throw (new ImNotSureWhyException("IOError"));
             }
 
             return true;
         }
     }
 
-//----------------------------------------------------------------------------------------------------------
+//UserStuff--------------------------------------------------------------------------------------------------
 
-    public boolean removeFriend(User oldFreiendId, User userId) {
+//Exceptions - DoesNotExistException
+    public boolean removeFriend(User oldFreiendId, User userId) throws DoesNotExistException, ImNotSureWhyException {
         int index = 0;
         synchronized (gatekeeper) {
             for (int i = 0; i > gatekeeperArray.size(); i++) {
@@ -559,7 +686,7 @@ public class DataWriter extends Thread implements Database {
                 if (!friends.remove(oldFreiendId.getUserId())) {
                     System.out.println("User is not firend");
                     br.close();
-                    return false;
+                    throw (new DoesNotExistException("User is not friend"));
                 }
                 br.close();
 
@@ -578,14 +705,14 @@ public class DataWriter extends Thread implements Database {
 
             } catch (IOException e) {
                 e.printStackTrace();
-                return false;
+                throw (new ImNotSureWhyException("IOError"));
             }
         }
     }
 
-//----------------------------------------------------------------------------------------------------------
+//UserStuff--------------------------------------------------------------------------------------------------
 
-    public boolean blockUser(User newBlockId, User userId) {
+    public boolean blockUser(User newBlockId, User userId) throws AlreadyThereException, DoesNotExistException, ImNotSureWhyException {
         int index = 0;
         synchronized (gatekeeper) {
             for (int i = 0; i > gatekeeperArray.size(); i++) {
@@ -621,6 +748,7 @@ public class DataWriter extends Thread implements Database {
                 br = null;
                 bw = null;
 
+                
                 removeFriend(newBlockId, userId);
                 removeFriend(userId, newBlockId);
 
@@ -633,9 +761,10 @@ public class DataWriter extends Thread implements Database {
             return true;
         }
     }
-//----------------------------------------------------------------------------------------------------------
 
-    public boolean unblockUser(User oldBlock, User user) {
+//UserStuff--------------------------------------------------------------------------------------------------
+
+    public boolean unblockUser(User oldBlock, User user) throws DoesNotExistException, ImNotSureWhyException{
         int index = 0;
         synchronized (gatekeeper) {
             for (int i = 0; i > gatekeeperArray.size(); i++) {
@@ -687,8 +816,9 @@ public class DataWriter extends Thread implements Database {
         }
     }
 
+//UserStuff--------------------------------------------------------------------------------------------------
 
-    public boolean setProfile(User user, String profile) {
+    public boolean setProfile(User user, String profile) { //I'm not 100% sure what this method does, I need to comment more
         try {
             BufferedWriter bw = new BufferedWriter(new FileWriter(
                     new File(directoryPaths[1] + user.getUserId() + "/profile"), false));
@@ -705,8 +835,7 @@ public class DataWriter extends Thread implements Database {
         }
     }
 
-
-//----------------------------------------------------------------------------------------------------------
+//UserStuff--------------------------------------------------------------------------------------------------
 
     public boolean updateUser(User user, String username, String password) {
         try {
@@ -757,7 +886,7 @@ public class DataWriter extends Thread implements Database {
         }
     }
 
-//----------------------------------------------------------------------------------------------------------
+//UserStuff--------------------------------------------------------------------------------------------------
 
     public boolean logIn(String username, String password) {
         try {
@@ -810,7 +939,7 @@ public class DataWriter extends Thread implements Database {
         }
     }
 
-//----------------------------------------------------------------------------------------------------------
+//UserStuff--------------------------------------------------------------------------------------------------
 
     public Boolean getUserID(String userName) {
 
@@ -826,6 +955,7 @@ public class DataWriter extends Thread implements Database {
                     br = null;
                     returnObject = new Object[] {lineArray[1]};
                 }
+                line = br.readLine();
             }
 
             br.close();
@@ -838,8 +968,101 @@ public class DataWriter extends Thread implements Database {
         return false;
     }
 
-//----------------------------------------------------------------------------------------------------------
+//UserStuff--------------------------------------------------------------------------------------------------
 
+    public boolean usernameExist(String username) throws ImNotSureWhyException {
+
+        synchronized (gatekeeper) {
+            try {
+                BufferedReader br = new BufferedReader(new FileReader(directoryPaths[0] + "userNames"));
+
+                String line = br.readLine();
+                while (line != null) {
+                    String[] lineArray = line.split(", ");
+                    if (lineArray[0].equals(username)) {
+                        br.close();
+                        return false;
+                    }
+                    line = br.readLine();
+                }
+                br.close();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw (new ImNotSureWhyException("IOError"));
+            }
+        }
+
+        return true;
+    }
+
+//PostStuff--------------------------------------------------------------------------------------------------
+
+//Alot of this is the same as createUser but just diffrent files
+    public boolean makePost(Post post) {
+        File postDirectory = null;
+        File likes = null;
+        File dislikes = null;
+        File text = null;
+        File image = null;
+        File postInfo = null;
+        File[] files = {likes, dislikes, text, image, postInfo};
+        String[] fileNames = {"likes", "dislikes", "text", "image", "postInfo"};
+        String postDirectoryPath = null;
+
+        try {
+
+            if (new File(post.getPostCode()).exists()) {
+                System.out.println("The Post already exists");
+
+                return false;
+            }
+
+            postDirectory = new File(postPath + post.getPostCode());
+
+            if (!postDirectory.exists() && !postDirectory.mkdir()) {
+                System.out.println("Error occured when making directory");
+
+                //The userDirectory does not exist and making it failed
+                return false;
+            }
+
+            System.out.println("Post directory has been made");
+            postDirectoryPath = postPath + post.getPostCode() + "/";
+
+            for (int i = 0; i < files.length; i++) {
+                files[i] = new File(postDirectoryPath + fileNames[i]);
+                if (!files[i].createNewFile()) {
+                    System.out.printf("Error occured when making %s file\n", fileNames[i]);
+
+                    throw (new ImNotSureWhyException("File Writing Error"));
+                }
+                System.out.printf("%s file created succesfully\n", fileNames[i]);
+            }
+
+            BufferedWriter bw = new BufferedWriter(new FileWriter(postDirectoryPath + fileNames[2]));
+            bw.write(post.getText());
+            bw.flush();
+            bw.close();
+            bw = null;
+
+
+        } catch(Exception e) {
+
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
+
+
+    }
+
+//PostStuff--------------------------------------------------------------------------------------------------
+
+
+
+//OtherThings------------------------------------------------------------------------------------------------
     public void setJob(String job) {
         this.requiredJob = job;
     }
@@ -852,14 +1075,14 @@ public class DataWriter extends Thread implements Database {
         inputObject = object;
     }
 
-//Static Methods
-//----------------------------------------------------------------------------------------------------------
+
+//
+//StaticMethods----------------------------------------------------------------------------------------------
 
     public static int getNumUsers() {
         synchronized (gatekeeper) {
             return numUsers; // Do I need to synchronize to just return value?
         }
     }
-
 
 }
