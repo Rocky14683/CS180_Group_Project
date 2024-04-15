@@ -105,7 +105,7 @@ public class Server implements Runnable {
                             writer.flush();
                             break;
                         }
-                        User friend = (User) database.getReturnObject();
+                        User friend = (User) database.getReturnObject()[0];
                         database.addFriends(friend, user);
 
                         writer.println(friend.getUsername() + " added as a friend");
@@ -119,7 +119,7 @@ public class Server implements Runnable {
                             writer.flush();
                             break;
                         }
-                        User targetFriend = (User) database.getReturnObject();
+                        User targetFriend = (User) database.getReturnObject()[0];
                         database.removeFriend(user, targetFriend);
 
                         writer.println(targetFriend.getUsername() + " removed as a friend");
@@ -133,7 +133,7 @@ public class Server implements Runnable {
                             writer.flush();
                             break;
                         }
-                        User targetUser = (User) database.getReturnObject();
+                        User targetUser = (User) database.getReturnObject()[0];
                         database.removeFriend(user, targetUser); //removes user as friend (if they are friends
                         database.blockUser(user, targetUser);
 
@@ -148,7 +148,7 @@ public class Server implements Runnable {
                             writer.flush();
                             break;
                         }
-                        User targetUser = (User) database.getReturnObject();
+                        User targetUser = (User) database.getReturnObject()[0];
                         database.unblockUser(user, targetUser);
 
 
