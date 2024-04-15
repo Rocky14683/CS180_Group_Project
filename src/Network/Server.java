@@ -14,6 +14,14 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import javax.swing.JOptionPane;
 
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.*;
+import org.mockito.*;
+
+import java.io.*;
+
 /**
  * Server.java
  * <p>
@@ -219,4 +227,252 @@ public class Server implements Runnable {
     private static void directMessage(String message, User user) {      //TO BE IMPLEMENTED
 
     }
+}
+
+
+public class ServerTest {
+
+    private Server server;
+    private Socket socketMock;
+    private BufferedReader reader;
+    private PrintWriter writer;
+    private DataWriter databaseMock;
+
+    @BeforeEach
+    public void setUp() throws IOException {
+        socketMock = mock(Socket.class);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        writer = new PrintWriter(outputStream, true);
+        ByteArrayInputStream inputStream = new ByteArrayInputStream("".getBytes());
+
+        when(socketMock.getOutputStream()).thenReturn(outputStream);
+        when(socketMock.getInputStream()).thenReturn(inputStream);
+
+        reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream("".getBytes())));
+        databaseMock = mock(DataWriter.class);
+        Server.database = databaseMock;
+
+        server = new Server(socketMock);
+        server.writer = this.writer; // Override the writer to use our local mock
+        server.reader = this.reader; // Override the reader to use our local mock
+    }
+
+    @Test
+    public void testLoginSuccess() throws IOException {
+        String input = "login\nusername\npassword\n";
+        server.reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(input.getBytes())));
+        when(databaseMock.logIn("username", "password")).thenReturn(true);
+
+        server.run();
+
+        String expectedOutput = "Login successful\n";
+        assertEquals(expectedOutput, writer.toString());
+    }
+
+    @Test
+    public void testLoginFailure() throws IOException {
+        String input = "login\nusername\npassword\n";
+        server.reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(input.getBytes())));
+        when(databaseMock.logIn("username", "password")).thenReturn(false);
+
+        server.run();
+
+        String expectedOutput = "Invalid username or password\n";
+        assertEquals(expectedOutput, writer.toString());
+    }
+
+    @Test
+    public void testRegisterSuccess() throws IOException {
+        String input = "register\nnewuser\nnewpass\n";
+        server.reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(input.getBytes())));
+        User newUser = new User("newuser", "newpass");
+        when(databaseMock.createUser(any(User.class))).thenReturn(true);
+
+        server.run();
+
+        String expectedOutput = "Account created successfully\n";
+        assertEquals(expectedOutput, writer.toString());
+    }
+
+    @Test
+    public void testRegisterFailure() throws IOException {
+        String input = "register\nnewuser\nnewpass\n";
+        server.reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(input.getBytes())));
+        when(databaseMock.createUser(any(User.class))).thenReturn(false);
+
+        server.run();
+
+        String expectedOutput = "Invalid username or password\n";
+        assertEquals(expectedOutput, writer.toString());
+    }
+
+    // Add more tests for other commands like addFriend, removeFriend, etc.
+
+    @AfterEach
+    public void tearDown() throws IOException {
+        socketMock.close();
+    }
+
+    @Test
+    public void testAddFriendSuccess() throws IOException {
+        String input = "addFriend\nfriendId\n";
+        server.reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(input.getBytes())));
+        when(databaseMock.redefineUser("friendId")).thenReturn(true);
+        when(databaseMock.getReturnObject()).thenReturn(new User("friendId", "friendPassword"));
+
+        server.run();
+
+        String expectedOutput = "friendId added as a friend\n";
+        assertEquals(expectedOutput, writer.toString());
+    }
+
+    @Test
+    public void testAddFriendFailure() throws IOException {
+        String input = "addFriend\nfriendId\n";
+        server.reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(input.getBytes())));
+        when(databaseMock.redefineUser("friendId")).thenReturn(false);
+
+        server.run();
+
+        String expectedOutput = "User not found\n";
+        assertEquals(expectedOutput, writer.toString());
+    }
+
+    @Test
+    public void testRemoveFriendSuccess() throws IOException {
+        String input = "removeFriend\nfriendId\n";
+        server.reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(input.getBytes())));
+        when(databaseMock.redefineUser("friendId")).thenReturn(true);
+        when(databaseMock.getReturnObject()).thenReturn(new User("friendId", "friendPassword"));
+
+        server.run();
+
+        String expectedOutput = "friendId removed as a friend\n";
+        assertEquals(expectedOutput, writer.toString());
+    }
+
+    @Test
+    public void testRemoveFriendFailure() throws IOException {
+        String input = "removeFriend\nfriendId\n";
+        server.reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(input.getBytes())));
+        when(databaseMock.redefineUser("friendId")).thenReturn(false);
+
+        server.run();
+
+        String expectedOutput = "User not found\n";
+        assertEquals(expectedOutput, writer.toString());
+    }
+
+    @Test
+    public void testBlockUserSuccess() throws IOException {
+        String input = "blockUser\nuserId\n";
+        server.reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(input.getBytes())));
+        when(databaseMock.redefineUser("userId")).thenReturn(true);
+        when(databaseMock.getReturnObject()).thenReturn(new User("userId", "userPassword"));
+
+        server.run();
+
+        String expectedOutput = "userId has been blocked\n";
+        assertEquals(expectedOutput, writer.toString());
+    }
+
+    @Test
+    public void testBlockUserFailure() throws IOException {
+        String input = "blockUser\nuserId\n";
+        server.reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(input.getBytes())));
+        when(databaseMock.redefineUser("userId")).thenReturn(false);
+
+        server.run();
+
+        String expectedOutput = "User not found\n";
+        assertEquals(expectedOutput, writer.toString());
+    }
+
+    @Test
+    public void testUnblockUserSuccess() throws IOException {
+        String input = "unblockUser\nuserId\n";
+        server.reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(input.getBytes())));
+        when(databaseMock.redefineUser("userId")).thenReturn(true);
+        when(databaseMock.getReturnObject()).thenReturn(new User("userId", "userPassword"));
+
+        server.run();
+
+        String expectedOutput = "userId removed as a friend\n";
+        assertEquals(expectedOutput, writer.toString());
+    }
+
+    @Test
+    public void testUnblockUserFailure() throws IOException {
+        String input = "unblockUser\nuserId\n";
+        server.reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(input.getBytes())));
+        when(databaseMock.redefineUser("userId")).thenReturn(false);
+
+        server.run();
+
+        String expectedOutput = "User not found\n";
+        assertEquals(expectedOutput, writer.toString());
+    }
+
+    @Test
+    public void testUpdateUsername() throws IOException {
+        String input = "updateUsername\nnewUsername\n";
+        server.reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(input.getBytes())));
+        server.user = new User("oldUsername", "password"); // Set a user
+
+        server.run();
+
+        String expectedOutput = "Username updated successfully\n";
+        assertEquals(expectedOutput, writer.toString());
+    }
+
+    @Test
+    public void testUpdatePassword() throws IOException {
+        String input = "updatePassword\nnewPassword\n";
+        server.reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(input.getBytes())));
+        server.user = new User("username", "oldPassword"); // Set a user
+
+        server.run();
+
+        String expectedOutput = "Password updated successfully\n";
+        assertEquals(expectedOutput, writer.toString());
+    }
+
+    @Test
+    public void testUpdateProfilePicSuccess() throws IOException {
+        String input = "updateProfilePic\npathToPic\n";
+        server.reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(input.getBytes())));
+        server.user = new User("username", "password"); // Set a user
+        when(server.user.getProfile().loadProfilePic()).thenReturn(true);
+
+        server.run();
+
+        String expectedOutput = "Profile picture updated successfully\n";
+        assertEquals(expectedOutput, writer.toString());
+    }
+
+    @Test
+    public void testUpdateProfilePicFailure() throws IOException {
+        String input = "updateProfilePic\npathToPic\n";
+        server.reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(input.getBytes())));
+        server.user = new User("username", "password"); // Set a user
+        when(server.user.getProfile().loadProfilePic()).thenReturn(false);
+
+        server.run();
+
+        String expectedOutput = "Profile directory not found\n";
+        assertEquals(expectedOutput, writer.toString());
+    }
+
+    @Test
+    public void testUpdateProfileBio() throws IOException {
+        String input = "updateProfileBio\nnewBio\n";
+        server.reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(input.getBytes())));
+        server.user = new User("username", "password"); // Set a user
+
+        server.run();
+
+        String expectedOutput = "Bio updated successfully\n";
+        assertEquals(expectedOutput, writer.toString());
+    }
+
 }
