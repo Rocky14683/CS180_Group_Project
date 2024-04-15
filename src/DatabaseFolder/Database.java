@@ -1,5 +1,4 @@
 package DatabaseFolder;
-
 import UserFolder.User;
 
 /**
@@ -34,5 +33,4 @@ public interface Database {
     void setInputObject(Object[] object);
 
     boolean updateUser(User user, String username, String password);
-
 }
