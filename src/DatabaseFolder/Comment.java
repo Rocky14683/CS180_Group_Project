@@ -1,7 +1,9 @@
 package DatabaseFolder;
 import java.util.ArrayList;
 
+
 import UserFolder.*;
+
 
 public class Comment {
     private int likes;
@@ -50,7 +52,6 @@ public class Comment {
         if (user.equals(owner)) {
             return false;
         }
-
         dislikes += 1;
         dislikeUsers.add(user);
         return true;
@@ -72,4 +73,5 @@ public class Comment {
         return code;
     }
 
+    
 }
