@@ -127,6 +127,12 @@ public class Client {
                                 break;
                             }
                         }
+                        //return ACK
+                        if (reader.readLine().equals("ACK")) {
+                            continue;
+                        } else {
+                            //UI warning
+                        }
                     }
                 } catch (Exception e) {
                     e.printStackTrace(); //shouldn't happen

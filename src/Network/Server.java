@@ -201,23 +201,15 @@ public class Server implements Runnable {
                         break;
                     }
                 }
-
+                writer.println("ACK");
             }
-        } catch (IOException e) {
+        } catch (AlreadyThereException | ExistingUsernameException | InvalidOperationException |
+                 BlockedException | DoesNotExistException | ImNotSureWhyException e) {
+            writer.println(e.getMessage());
+        } catch (Exception e) {
             e.printStackTrace();
-        } catch (AlreadyThereException e) {
-            throw new RuntimeException(e);
-        } catch (ExistingUsernameException e) {
-            throw new RuntimeException(e);
-        } catch (InvalidOperationException e) {
-            throw new RuntimeException(e);
-        } catch (BlockedException e) {
-            throw new RuntimeException(e);
-        } catch (DoesNotExistException e) {
-            throw new RuntimeException(e);
-        } catch (ImNotSureWhyException e) {
-            throw new RuntimeException(e);
-        } //<= to be implemented
+        }
+        //<= to be implemented
     }
 
     private static void publicChat(String message) {    //TO BE IMPLEMENTED
