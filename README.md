@@ -12,22 +12,37 @@ XYZ Name - Submitted Vocareum workspace and Presentation
 
 ## Classes
 (Chat Folder)
-- Chat.java
-- GroupChat.java
-- PersonalChat.java
+- Publisher.java
+- Subscriber.java
+- Topic.java
 
 (Core)
 - App_Core.java
 
 (DatabaseFolder)
+- AlreadyThereException.java
+- BlockedException.java
+- Comment.java
+- DataWriter.java
 - Database.java
+- DoesNotExistException.java
+- ExistingUsernameException.java
+- ImNotSureWhyException.java
+- InvalidInputObject.java
+- InvalidOperationException.java
+- Post.java
+- Test.java
+
+(Network)
+- Client.java
+- Client_temp_unuse.java
+- Server.java
 
 (UserFolder)
+- IUserOperations.java
 - User.java
-- UserDataBase.java
 - UserProfile.java
-- UserRelationList.java
-
+  
 
 - Main.java
 
