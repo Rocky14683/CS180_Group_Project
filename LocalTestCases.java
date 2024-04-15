@@ -264,6 +264,8 @@ public class LocalTestCases {
             test = false;
         }
 
+        System.out.println("exit");
+
 
         return test;
 
