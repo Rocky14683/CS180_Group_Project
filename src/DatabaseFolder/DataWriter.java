@@ -347,6 +347,20 @@ public class DataWriter extends Thread  {
                 System.out.println("Success!");
                 break;
 
+            case ("UsernameExists"):
+                if(!(inputObject[0] instanceof String)) {
+                    System.out.println("Input object not string");
+                }
+
+                userName = (String)inputObject[0];
+
+                try {
+                returnObject = new Object[] {usernameExist(userName)};
+
+                } catch (ImNotSureWhyException e) {
+                    e.printStackTrace();
+                }
+
             case ("MakePost"):        
                 if(!(inputObject[0] instanceof Post)) {
                     System.out.println("Input object not a Post");
@@ -362,17 +376,180 @@ public class DataWriter extends Thread  {
                 System.out.println("Success");
                 break;
 
-            case ("UsernameExists"):
+            case ("RedefinePost"):
                 if(!(inputObject[0] instanceof String)) {
-                    System.out.println("Input object not string");
+                    System.out.println("Input object not a string");
                 }
 
-                userName = (String)inputObject[0];
+                String postCode = (String)inputObject[0];
 
                 try {
-                returnObject = new Object[] {usernameExist(userName)};
+                    if(!(redefinePost(postCode))) {
+                        System.out.println("Error redefining post");
+                        break;
+                    }
 
-                } catch (ImNotSureWhyException e) {
+                    System.out.println("Post Redefined");
+                    break;
+                } catch (DoesNotExistException | ImNotSureWhyException e) {
+                    e.printStackTrace();
+                }
+
+            case("LikePost"):
+                System.out.println();
+                System.out.println("Trying to like post:");
+                if(!(inputObject[0] instanceof Post)) {
+                    System.out.println("Input object[0] not a Post");
+                    break;
+                }
+
+                if(!(inputObject[1] instanceof User)) {
+                    System.out.println("Input object[1] not a User");
+                    break;
+                }
+
+                post = (Post)inputObject[0];
+                user = (User)inputObject[1];
+
+                try {
+                    if(!(likePost(post, user))) {
+                        System.out.println("Failed to like post");
+                        break;
+                    }
+                    System.out.println("Post liked");
+                    break;
+
+                } catch (AlreadyThereException e) {
+                    e.printStackTrace();
+                }
+
+
+            case("UnlikePost"):
+                System.out.println();
+                System.out.println("Trying to unlike post:");
+                if(!(inputObject[0] instanceof Post)) {
+                    System.out.println("Input object[0] not a Post");
+                    break;
+                }
+
+                if(!(inputObject[1] instanceof User)) {
+                    System.out.println("Input object[1] not a User");
+                    break;
+                }
+
+                post = (Post)inputObject[0];
+                user = (User)inputObject[1];
+
+                try {
+                    if(!(unlikePost(post, user))) {
+                        System.out.println("Failed to like post");
+                        break;
+                    }
+                    System.out.println("Post liked");
+                    break;
+
+                } catch (DoesNotExistException e) {
+                    e.printStackTrace();
+                }
+
+
+            case("DisikePost"):
+                System.out.println();
+                System.out.println("Trying to dislike post:");
+                if(!(inputObject[0] instanceof Post)) {
+                    System.out.println("Input object[0] not a Post");
+                    break;
+                }
+
+                if(!(inputObject[1] instanceof User)) {
+                    System.out.println("Input object[1] not a User");
+                    break;
+                }
+
+                post = (Post)inputObject[0];
+                user = (User)inputObject[1];
+
+                try {
+                    if(!(dislikePost(post, user))) {
+                        System.out.println("Failed to dislike post");
+                        break;
+                    }
+                    System.out.println("Post disliked");
+                    break;
+                } catch (AlreadyThereException e) {
+                    e.printStackTrace();
+                }
+
+            case("UndislikePost"):
+                System.out.println();
+                System.out.println("Trying to undislike post:");
+                if(!(inputObject[0] instanceof Post)) {
+                    System.out.println("Input object[0] not a Post");
+                    break;
+                }
+
+                if(!(inputObject[1] instanceof User)) {
+                    System.out.println("Input object[1] not a User");
+                    break;
+                }
+
+                post = (Post)inputObject[0];
+                user = (User)inputObject[1];
+
+                try {
+                    if(!(undislikePost(post, user))) {
+                        System.out.println("Failed to undislike post");
+                        break;
+                    }
+                    System.out.println("Post undisliked");
+                    break;
+                } catch (DoesNotExistException e) {
+                    e.printStackTrace();
+                }  
+                
+                case("HidePost"):
+                if(!(inputObject[0] instanceof Post)) {
+                    System.out.println("Input object[0] not a Post");
+                }
+
+                if(!(inputObject[1] instanceof User)) {
+                    System.out.println("Input object[1] not a User");
+                }
+
+                post = (Post)inputObject[0];
+                user = (User)inputObject[1];
+
+                try {
+                    if(!(hidePost(post, user))) {
+                        System.out.println("Failed to hide post");
+                        break;
+                    }
+                    System.out.println("Post hidden");
+                    break;
+                } catch (AlreadyThereException e) {
+                    e.printStackTrace();
+                }
+
+            case("UnhidePost"):
+                if(!(inputObject[0] instanceof Post)) {
+                    System.out.println("Input object[0] not a Post");
+                }
+
+                if(!(inputObject[0] instanceof User)) {
+                    System.out.println("Input object[1] not a User");
+                }
+
+                post = (Post)inputObject[0];
+                user = (User)inputObject[1];
+
+                try {
+                    if(!(unhidePost(post, user))) {
+                        System.out.println("Failed to unhide post");
+                        break;
+                    }
+                    System.out.println("Post u hidden");
+                    break;
+                } catch (DoesNotExistException e) {
                     e.printStackTrace();
                 }
 
@@ -387,6 +564,8 @@ public class DataWriter extends Thread  {
 
 //Exceptions - AlreadyThereException
     public boolean createUser(User user) throws AlreadyThereException, ExistingUsernameException, ImNotSureWhyException{
+        System.out.println();
+        System.out.println("Creating user with Id: " + user.getUserId());
         File userData = null;  //File for where user data, Private so multiple datawriters can 
         //write to diffrent userdatas simultaniously
         File friends = null;   //File for where friend's userIds are stored
@@ -467,11 +646,12 @@ public class DataWriter extends Thread  {
                 try {
                     synchronized (gatekeeper) {
                         numUsers++;
+                        bw.write(String.valueOf(numUsers));
+                        bw.flush();
                     }
 
 
-                    bw.write(String.valueOf(numUsers));
-                    bw.flush();
+
 
                 } catch (IOException e) {
                     System.out.println("Error occured when writing the SystemInfo file");
@@ -1006,8 +1186,10 @@ public class DataWriter extends Thread  {
         File text = null;
         File image = null;
         File postInfo = null;
-        File[] files = {likes, dislikes, text, image, postInfo};
-        String[] fileNames = {"likes", "dislikes", "text", "image", "postInfo"};
+        File hiddenFrom = null;
+        File[] files = {likes, dislikes, text, image, postInfo, hiddenFrom};
+        String[] fileNames = {"likes", "dislikes", "text", "image", "postInfo", "hiddenFrom"};
+        File comments = null;
         String postDirectoryPath = null;
 
         try {
@@ -1040,12 +1222,23 @@ public class DataWriter extends Thread  {
                 System.out.printf("%s file created succesfully\n", fileNames[i]);
             }
 
+            comments = new File(postDirectoryPath + "comments");
+            if (!comments.mkdir()) {
+                System.out.printf("Directroy couln't be made");
+
+                throw (new ImNotSureWhyException("File Writing Error"));
+            }
+
             BufferedWriter bw = new BufferedWriter(new FileWriter(postDirectoryPath + fileNames[2]));
             bw.write(post.getText());
             bw.flush();
             bw.close();
             bw = null;
 
+            bw = new BufferedWriter(new FileWriter(directoryPaths[1] + post.getOwner().getUserId() + "/posts"));
+
+            bw.write(post.getPostCode());
+            bw.close();
 
         } catch(Exception e) {
 
@@ -1054,8 +1247,300 @@ public class DataWriter extends Thread  {
         }
 
         return true;
+    }
 
+//PostStuff--------------------------------------------------------------------------------------------------
 
+    public boolean redefinePost(String code) throws DoesNotExistException, ImNotSureWhyException {
+        String thisPostPath = postPath + code;
+        File postDirectory = new File(thisPostPath);
+
+        if (!postDirectory.exists()) {
+            return false;
+        }
+
+        String ownerId = code.split("-")[0];
+
+        redefineUser(ownerId);
+        User owner = (User)returnObject[0];
+
+        ArrayList<User> likes = new ArrayList<>();
+        ArrayList<User> dislikes = new ArrayList<>();
+        String text = "";
+        ArrayList<User> hiddenFrom = new ArrayList<>();
+        ArrayList<Comment> comments = new ArrayList<>();
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(thisPostPath + "/likes"));
+            String line = br.readLine();
+
+            
+            while (line != null) {
+                redefineUser(line);
+                likes.add((User)returnObject[0]);
+                line = br.readLine();
+            }
+
+            br.close();
+            br = new BufferedReader(new FileReader(thisPostPath + "/dislikes"));
+            line = br.readLine();
+
+            while (line != null) {
+                redefineUser(line);
+                dislikes.add((User)returnObject[0]);
+                line = br.readLine();
+            }
+
+            br.close();
+            br = new BufferedReader(new FileReader(thisPostPath + "/text"));
+            text = br.readLine();
+
+            br.close();
+            br = new BufferedReader(new FileReader(thisPostPath + "/hiddenFrom"));
+            line = br.readLine();
+
+            while (line != null) {
+                redefineUser(line);
+                hiddenFrom.add((User)returnObject[0]);
+                line = br.readLine();
+            }
+
+            br.close();
+
+        } catch(IOException e) {
+            return false;
+        }
+
+        returnObject = new Object[] {new Post(owner, text, likes, dislikes, hiddenFrom, comments)};
+        
+        return true;
+    }
+
+//PostStuff--------------------------------------------------------------------------------------------------
+
+    public boolean likePost(Post post, User liker) throws AlreadyThereException {
+
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(postPath + post.getPostCode() + "/likes"));
+            String line = br.readLine();
+
+            while (line != null) {
+                if (line.equals(liker.getUserId())) {
+                    br.close();
+                    br = null;
+                    throw (new AlreadyThereException("User already liked post"));
+                }
+                line = br.readLine();
+            }
+
+            BufferedWriter bw = new BufferedWriter(new FileWriter(postPath + post.getPostCode() +"/likes", true));
+            bw.write(liker.getUserId());
+            bw.newLine();
+            bw.flush();
+            bw.close();
+            bw = null;
+            br.close();
+            br = null;
+        } catch(IOException e) {
+            return false;
+        }
+
+        return true;
+
+    }
+
+//PostStuff--------------------------------------------------------------------------------------------------
+
+    public boolean unlikePost(Post post, User unliker) throws DoesNotExistException {
+
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(postPath + post.getPostCode() + "/likes"));
+            String line = br.readLine();
+
+            boolean liked = false;
+            ArrayList<String> likeIds= new ArrayList<>();
+            while (line != null) {
+                if (line.equals(unliker.getUserId())) {
+                    liked = true;
+                } else {
+                    likeIds.add(line);
+                }
+                line = br.readLine();
+            }
+
+            if (!liked) {
+                br.close();
+                br = null;
+                throw(new DoesNotExistException("User has not liked post"));
+            }
+
+            BufferedWriter bw = new BufferedWriter(new FileWriter(postPath + post.getPostCode() +"/likes"));
+
+            for(String s : likeIds) {
+                bw.write(s);
+                bw.newLine();
+                bw.flush();
+            }
+            bw.close();
+            bw = null;
+            br.close();
+            br = null;
+        } catch(IOException e) {
+            return false;
+        }
+
+        return true;
+
+    }
+
+//PostStuff--------------------------------------------------------------------------------------------------
+
+    public boolean dislikePost(Post post, User disliker) throws AlreadyThereException {
+
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(postPath + post.getPostCode() + "/dislikes"));
+            String line = br.readLine();
+
+            while (line != null) {
+                if (line.equals(disliker.getUserId())) {
+                    br.close();
+                    br = null;
+                    throw (new AlreadyThereException("User already disliked post"));
+                }
+                line = br.readLine();
+            }
+
+            BufferedWriter bw = new BufferedWriter(new FileWriter(postPath + post.getPostCode() +"/dislikes", true));
+            bw.write(disliker.getUserId());
+            bw.newLine();
+            bw.flush();
+            bw.close();
+            bw = null;
+            br.close();
+            br = null;
+        } catch(IOException e) {
+            return false;
+        }
+
+        return true;
+
+    }
+
+//PostStuff--------------------------------------------------------------------------------------------------
+
+    public boolean undislikePost(Post post, User undisliker) throws DoesNotExistException {
+
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(postPath + post.getPostCode() + "/dislikes"));
+            String line = br.readLine();
+
+            boolean disliked = false;
+            ArrayList<String> dislikeIds= new ArrayList<>();
+            while (line != null) {
+                if (line.equals(undisliker.getUserId())) {
+                    disliked = true;
+                } else {
+                    dislikeIds.add(line);
+                }
+                line = br.readLine();
+            }
+
+            if (!disliked) {
+                br.close();
+                br = null;
+                throw(new DoesNotExistException("User has not disliked post"));
+            }
+
+            BufferedWriter bw = new BufferedWriter(new FileWriter(postPath + post.getPostCode() +"/dislikes"));
+
+            for(String s : dislikeIds) {
+                bw.write(s);
+                bw.newLine();
+                bw.flush();
+            }
+            bw.close();
+            bw = null;
+            br.close();
+            br = null;
+        } catch(IOException e) {
+            return false;
+        }
+
+        return true;
+    }
+
+//PostStuff--------------------------------------------------------------------------------------------------
+
+    public boolean hidePost(Post post, User user) throws AlreadyThereException {
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(postPath + post.getPostCode() + "/hiddenFrom"));
+
+            String line = br.readLine();
+
+            while (line != null) {
+                if (line.equals(user.getUserId())) {
+                    br.close();
+                    br = null;
+                    throw (new AlreadyThereException("Post is already hidden"));
+                } 
+            }
+            br.close();
+            br = null;
+
+            BufferedWriter bw = new BufferedWriter(new FileWriter(postPath + post.getPostCode() + "/hiddenFrom"));
+
+            bw.write(user.getUserId());
+            bw.newLine();
+            bw.flush();
+            bw.close();
+            bw = null;
+
+        } catch (IOException e) {
+            return false;
+        }
+
+        return true;
+    }
+
+//PostStuff--------------------------------------------------------------------------------------------------
+
+    public boolean unhidePost(Post post, User user) throws DoesNotExistException {
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(postPath + post.getPostCode() + "/hiddenFrom"));
+            String line = br.readLine();
+
+            boolean hidden = false;
+            ArrayList<String> hiddenIds= new ArrayList<>();
+            while (line != null) {
+                if (line.equals(user.getUserId())) {
+                    hidden = true;
+                } else {
+                    hiddenIds.add(line);
+                }
+                line = br.readLine();
+            }
+
+            if (!hidden) {
+                br.close();
+                br = null;
+                throw(new DoesNotExistException("User has not hidden this post"));
+            }
+
+            BufferedWriter bw = new BufferedWriter(new FileWriter(postPath + post.getPostCode() +"/hiddenFrom"));
+
+            for(String s : hiddenIds) {
+                bw.write(s);
+                bw.newLine();
+                bw.flush();
+            }
+            bw.close();
+            bw = null;
+            br.close();
+            br = null;
+        } catch(IOException e) {
+            return false;
+        }
+
+        return true;
     }
 
 //PostStuff--------------------------------------------------------------------------------------------------
@@ -1067,7 +1552,7 @@ public class DataWriter extends Thread  {
         this.requiredJob = job;
     }
 
-    public Object getReturnObject() {
+    public Object[] getReturnObject() {
         return returnObject;
     }
 

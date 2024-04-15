@@ -33,6 +33,23 @@ public class Post {
 
     }
 
+    public Post(User owner, String text, ArrayList<User> likes, ArrayList<User> dislikes, ArrayList<User> hidden, ArrayList<Comment> comments) {
+        this.owner = owner;
+        this.text = text;
+        this.likes = likes.size();
+        this.likesUsers = likes;
+        this.dislikes = dislikes.size();
+        this.dislikesUsers = dislikes;
+        this.hiddenFrom = hidden;
+        this.comments = comments;
+    }
+
+    public String toString() {
+        String returnString = owner + ", Text: " + text + ", Likes: " + likesUsers + ", Dislikes: " + dislikesUsers;
+
+        return returnString;
+    }
+
     public boolean likePost(User user) {
         for (User u : likesUsers) {
             if (u.equals(user)){
@@ -87,6 +104,10 @@ public class Post {
 
     public String getPostCode() {
         return postCode;
+    }
+
+    public User getOwner() {
+        return owner;
     }
 
     

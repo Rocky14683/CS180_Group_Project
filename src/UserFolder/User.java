@@ -189,7 +189,7 @@ public class User implements IUserOperations {
             dw.start();
 
             dw.join();
-            return (User) dw.getReturnObject();
+            return (User) dw.getReturnObject()[0];
         } catch (InterruptedException e) {
             e.printStackTrace();
             return new User();
