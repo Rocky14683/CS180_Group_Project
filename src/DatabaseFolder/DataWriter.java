@@ -1,5 +1,4 @@
 package DatabaseFolder;
-
 import UserFolder.*;
 import java.io.*;
 import java.util.*;
@@ -1069,48 +1068,41 @@ public class DataWriter extends Thread  {
 //UserStuff--------------------------------------------------------------------------------------------------
 
     public boolean logIn(String username, String password) {
+        System.out.println("Hits login"); 
         try {
 
             boolean usernameExists = false;
             String userId = null;
             BufferedReader br = null;
 
-            synchronized (gatekeeper) {
-                br = new BufferedReader(new FileReader(userNames));
-                String line = br.readLine();
 
-                while (line != null) {
-                    String[] lineArray = line.split(", ");
-                    if (lineArray[0].equals(username)) {
-                        userId = lineArray[1];
-                        usernameExists = true;
-                        break;
-                    }
+            br = new BufferedReader(new FileReader(userNames));
+            String line = br.readLine();
+
+            while (line != null) {
+                String[] lineArray = line.split(", ");
+                if (lineArray[0].equals(username)) {
+                    userId = lineArray[1];
+                    usernameExists = true;
+                    break;
                 }
-                br.close();
-                if (!usernameExists) {
-                    return false;
-                }
+                line = br.readLine();
             }
 
-            int index = 0;
-            synchronized (gatekeeper) {
-                for (int i = 0; i > gatekeeperArray.size(); i++) {
-                    if (gatekeeperArray.get(i)[0].equals(userId)) {
-                        index = i;
-                    }
-                }
+            br.close();
+            if (!usernameExists) {
+                return false;
             }
+            
             String realPassword = null;
 
-            synchronized (gatekeeperArray.get(index)) {
-                br = new BufferedReader(new FileReader(new File(directoryPaths[1] + userId + "/userData")));
+            br = new BufferedReader(new FileReader(new File(directoryPaths[1] + userId + "/userData")));
 
-                for (int i = 0; i < 3; i++) {
-                    realPassword = br.readLine();
-                }
-                br.close();
+            for (int i = 0; i < 3; i++) {
+                realPassword = br.readLine();
             }
+            br.close();
+            
             return password.equals(realPassword);
 
         } catch (IOException e) {

@@ -5,6 +5,8 @@ import UserFolder.User;
 import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Scanner;
+
 import javax.swing.JOptionPane;
 
 
@@ -28,28 +30,50 @@ public class Client {
     public static void main(String[] args) {
         Socket socket = null;
         try {
+            System.out.println("Connecting to server");
             socket = new Socket("localhost", Server.SOCKET_PORT);  //connects to server
+            System.out.println("Connected to server");
             Client client = new Client(socket);
+            System.out.println(1);
             BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            PrintWriter writer = new PrintWriter(socket.getOutputStream());
+            System.out.println(2);
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            
+            Scanner scan = new Scanner(System.in);
             while (true) {
                 try {
                     if (!client.loggedIn) {
-                        String option = "";// this is where the GUI for login/register will be
-                        writer.println(option);
+                        System.out.print("Operation: ");
+                        String option = scan.nextLine();// this is where the GUI for login/register will be
+                        writer.write(option);
+                        writer.newLine();
                         switch (option) {
                             case "login":
-                                String username = JOptionPane.showInputDialog("Enter username:");
-                                String password = JOptionPane.showInputDialog("Enter password:");
-                                writer.println(username);
-                                writer.println(password);
+                            System.out.println("test");
+                                // String username = JOptionPane.showInputDialog("Enter username:");
+
+                                // String password = JOptionPane.showInputDialog("Enter password:");
+                                System.out.println("Username: ");
+                                String username = scan.nextLine();
+                                System.out.println("Password: ");
+                                String password = scan.nextLine();
+                                writer.write(username);
+                                writer.newLine();
+                                writer.write(password);
+                                writer.newLine();
                                 writer.flush();
                                 break;
                             case "register":
-                                String newUsername = JOptionPane.showInputDialog("Enter new username:");
-                                String newPassword = JOptionPane.showInputDialog("Enter new password:");
-                                writer.println(newUsername);
-                                writer.println(newPassword);
+                                // String newUsername = JOptionPane.showInputDialog("Enter new username:");
+                                // String newPassword = JOptionPane.showInputDialog("Enter new password:");
+                                System.out.println("Username: ");
+                                String newUsername = scan.nextLine();
+                                System.out.println("Password: ");
+                                String newPassword = scan.nextLine();
+                                writer.write(newUsername);
+                                writer.newLine();
+                                writer.write(newPassword);
+                                writer.newLine();
                                 writer.flush();
                                 break;
                             default:
@@ -64,56 +88,66 @@ public class Client {
                         }
                     } else {
                         String cmd = ""; // this is where the GUI for the user actions will be
-                        writer.println(cmd);
+                        writer.write(cmd);
+                        writer.newLine();
+                        writer.flush();
                         switch (cmd) {
                             // all command goes here
 
                             case "addFriend": {     //adds given username as friend to current logged in user
                                 String userId = ""; //GUI for new userid
-                                writer.println(userId);
+                                writer.write(userId);
+                                writer.newLine();
                                 writer.flush();
                                 break;
                             }
                             case "removeFriend": {
                                 String userId = ""; //GUI for new userid
-                                writer.println(userId);
+                                writer.write(userId);
+                                writer.newLine();
                                 writer.flush();
                                 break;
                             }
                             case "blockUser": {
                                 String userId = ""; //GUI for new userid
-                                writer.println(userId);
+                                writer.write(userId);
+                                writer.newLine();
                                 writer.flush();
                                 break;
                             }
                             case "unblockUser": {
                                 String userId = ""; //GUI for new userid
-                                writer.println(userId);
+                                writer.write(userId);
+                                writer.newLine();
                                 writer.flush();
                                 break;
                             }
                             case "updateUsername": {    //updates current user to given info
                                 String newName = ""; //GUI for new username
                                 //NEEDS TO CHECK WHETHER USERNAME IS ALREADY TAKEN OR NOT TO AVOID DUPLICATION
-                                writer.println(newName);
+                                writer.write(newName);
+                                writer.newLine();
                                 writer.flush();
                                 break;
                             }
                             case "updatePassword": {    //updates current user to given info
                                 String newPassword = ""; //GUI for new password
-                                writer.println(newPassword);
+                                writer.write(newPassword);
+                                writer.newLine();
                                 writer.flush();
                                 break;
                             }
                             case "updateProfilePic": {    //updates current user to given info
                                 String dir = ""; //GUI for new profile picture path
-                                writer.println(dir);
+                                writer.write(dir);
+                                writer.newLine();
                                 writer.flush();
                                 break;
                             }
                             case "updateProfileBio": {    //updates current user to given info
                                 String info = reader.readLine(); //new bio text
-                                writer.println(info);
+                                writer.write(info);
+                                writer.newLine();
                                 writer.flush();
                                 break;
                             }
@@ -122,7 +156,8 @@ public class Client {
                                 break;
                             }
                             default: {
-                                writer.println("Invalid command");
+                                writer.write("Invalid command");
+                                writer.newLine();
                                 writer.flush();
                                 break;
                             }
@@ -149,8 +184,12 @@ public class Client {
 
 
     public Client(Socket socket) throws IOException {
+        System.out.println("11");
         this.socket = socket;
-        this.out = new ObjectOutputStream(socket.getOutputStream());
-        this.in = new ObjectInputStream(socket.getInputStream());
+        System.out.println("12");
+        // this.out = new ObjectOutputStream(socket.getOutputStream());
+        // System.out.println("13");
+        // // this.in = new ObjectInputStream(socket.getInputStream());
+        // // System.out.println("14");
     }
 };
