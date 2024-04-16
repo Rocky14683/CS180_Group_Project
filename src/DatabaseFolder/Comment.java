@@ -1,6 +1,6 @@
 package DatabaseFolder;
 import java.util.ArrayList;
-
+import java.io.*;
 
 import UserFolder.*;
 
@@ -13,19 +13,35 @@ public class Comment {
     private String text;
     private User owner;
     private String code;
+    private Post parent;
+    private File commentPath;
     private static int numComments = 0;
 
-    public Comment(String text, User owner) {
+    public Comment(Post parent, String text, User owner) { //Making new comment
         likes = 0;
         dislikes = 0;
         likeUsers = new ArrayList<>();
         dislikeUsers = new ArrayList<>();
-
         this.text = text;
         this.owner = owner;
-
+        this.parent = parent;
         numComments += 1;
         this.code = String.format("%s-%08d", owner.getUserId(), numComments);
+    }
+
+    public Comment(ArrayList<User> likes, ArrayList<User> dislikes, String text, User owner, Post parent, String code) {
+        this.likes = likes.size();
+        this.dislikes = dislikes.size();
+        this.dislikeUsers = dislikes;
+        this.likeUsers = likes;
+        this.text = text;
+        this.owner = owner;
+        this.parent = parent;
+        this.code = code;
+    }
+
+    public Comment() {
+        likes = -1; //Indicates its null
     }
 
     public boolean likePost(User user) {
@@ -73,5 +89,20 @@ public class Comment {
         return code;
     }
 
+    public Post getParent() {
+        return parent;
+    }
+
+    public void setCommentPath(File commentPath) {
+        this.commentPath = commentPath;
+    }
+
+    public File getCommentPath() {
+        return commentPath;
+    }
+
+    public User getOwner() {
+        return owner;
+    }
     
 }

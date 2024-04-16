@@ -14,18 +14,11 @@ import java.util.*;
  */
 
  //REMEMBER TO READD THE INTERFACE
-public class DataWriter extends Thread  {
+public class DataWriter {
 
     // Gatekeepers
     public static Object gatekeeper = new Object();
     public static ArrayList<String[]> gatekeeperArray = new ArrayList<String[]>();
-
-    // Dynamic
-    private Object[] inputObject;
-    private Object[] returnObject; //Threads can't return things so it will modify this field and then this
-    // field can be accesed to "return" 
-    private String requiredJob; //You can't pass parameters to the run function so this
-    // is my work around, you define it before starting thread
 
 
     // Static
@@ -102,464 +95,6 @@ public class DataWriter extends Thread  {
 
     }
 
-//----------------------------------------------------------------------------------------------------------
-
-    public void run() {
-        switch (this.requiredJob) //Switch case to decide what job the thread is completeing
-        {
-            case ("CreateUser"):
-
-                if (!(inputObject[0] instanceof User)) {
-                    System.out.println("inputObject is not a user");
-                    returnObject = new Object[] {new InvalidInputObject("inputObject is not a user")};
-                    break;
-                }
-                User newUser = (User) inputObject[0];
-
-                try {
-                    if (this.createUser(newUser)) {
-                        System.out.println("User created succesfully");
-                    } else {
-                        System.out.printf("User could not be created");
-                    }
-                } catch(ImNotSureWhyException e) {
-                    returnObject = new Object[] {e};
-                } catch(AlreadyThereException e) {
-                    returnObject = new Object[] {e};
-                } catch(ExistingUsernameException e) {
-                    returnObject = new Object[] {e};
-                    System.out.println("UsernameAlreadyExists");
-                }
-                break;
-
-        //-----------------------
-
-            case ("RedefineUser"):
-                if ((inputObject.length == 0)) {
-                    System.out.println("Input object inisilized incorrectly");
-                    returnObject = new Object[] {new InvalidInputObject("inputObject is not a string")};
-
-                }
-                if (!(inputObject[0] instanceof String)) {
-                    System.out.println("inputObject is not a string");
-                    returnObject = new Object[] {new InvalidInputObject("Input object inisilized incorrectly")};
-                    break;
-                }
-                String newUserId = (String) inputObject[0];
-
-                try {
-                    redefineUser(newUserId);
-                } catch (DoesNotExistException e) {
-                    returnObject = new Object[] {e, new User()};
-
-                } catch (ImNotSureWhyException e) {
-                    returnObject = new Object[] {e, new User()};
-                }
-
-                break;
-
-        //-----------------------
-
-            case ("AddFriend"):
-                for (int i = 0; i < inputObject.length; i++) {
-                    if (!(inputObject[i] instanceof User)) {
-                        System.out.println("inputObject is not a user");
-                        returnObject = new Object[] {new InvalidInputObject("inputObject is not a user")};
-                        break;
-                    }
-                }
-
-                User newFriend = (User) inputObject[0];
-                User user = (User) inputObject[1];
-
-                try {
-                    addFriends(newFriend, user);
-                    
-                } catch(ImNotSureWhyException e) {
-                    returnObject = new Object[] {e};
-                } catch(AlreadyThereException e) {
-                    returnObject = new Object[] {e};
-                } catch(BlockedException e) {
-                    returnObject = new Object[] {e};
-                } catch(InvalidOperationException e) {
-                    returnObject = new Object[] {e};
-                } catch(DoesNotExistException e) {
-                    returnObject = new Object[] {e};
-                }
-
-                System.out.println("Friend succesfully added");
-                returnObject = new Object[] {true};
-                break;
-
-        //-----------------------
-
-            case ("RemoveFriend"):
-                for (int i = 0; i < inputObject.length; i++) {
-                    if (!(inputObject[i] instanceof User)) {
-                        System.out.println("inputObject is not a user");
-                        break;
-                    }
-                }
-
-                User oldFriend = (User) inputObject[0];
-                user = (User) inputObject[1];
-
-                try{
-                    removeFriend(oldFriend, user);
-                    
-                } catch (DoesNotExistException e) {
-                    returnObject = new Object[] {e};
-                } catch (ImNotSureWhyException e) {
-                    returnObject = new Object[] {e};
-                }
-
-                System.out.println("Friend succesfully removed");
-                break;
-
-        //-----------------------
-
-            case ("BlockUser"):
-                for (int i = 0; i < inputObject.length; i++) {
-                    if (!(inputObject[i] instanceof User)) {
-                        System.out.println("inputObject is not a user");
-                        break;
-                    }
-                }
-
-                User newBlock = (User) inputObject[0];
-                user = (User) inputObject[1];
-
-                try {
-                    if (!blockUser(newBlock, user)) {
-                        break;
-                    }
-                } catch(AlreadyThereException e) {
-                    returnObject = new Object[] {e};
-                } catch(DoesNotExistException e) {
-                    returnObject = new Object[] {e};
-                } catch(ImNotSureWhyException e) {
-                    returnObject = new Object[] {e};
-                }
-
-                System.out.println("User succesfully blocked");
-                break;
-
-        //-----------------------
-
-            case ("UnBlockUser"):
-                for (int i = 0; i < inputObject.length; i++) {
-                    if (!(inputObject[i] instanceof User)) {
-                        System.out.println("inputObject is not a user");
-                        break;
-                    }
-                }
-
-                User oldBlock = (User) inputObject[0];
-                user = (User) inputObject[1];
-
-                try {
-                    if (!unblockUser(oldBlock, user)) {
-                        break;
-                    }
-                } catch(ImNotSureWhyException e) {
-                    returnObject = new Object[] {e};
-                } catch(DoesNotExistException e) {
-                    returnObject = new Object[] {e};
-                }
-
-                System.out.println("User succesfully unblocked");
-                break;
-
-        //-----------------------
-
-            case ("UpdateUser"):
-                if (!(inputObject[0] instanceof User)) {
-                    System.out.println("inputObject[0] is not a user");
-                    break;
-                }
-                for (int i = 1; i < inputObject.length; i++) {
-                    {
-                        if (!(inputObject[i] instanceof String)) {
-                            System.out.println("inputObject is not a user");
-                            break;
-                        }
-                    }
-                }
-                user = (User) inputObject[0];
-                String newUsername = (String) inputObject[1];
-                String newPassword = (String) inputObject[2];
-
-                if (!updateUser(user, newUsername, newPassword)) {
-                    System.out.println("Unable to update user");
-                    break;
-                }
-                System.out.println("User updated succesfully");
-                break;
-            
-        //-----------------------
-
-            case ("SetProfile"):
-
-                if (!(inputObject[0] instanceof User)) {
-                    System.out.println("inputObject[0] is not a user");
-                    break;
-                }
-
-                if (!(inputObject[1] instanceof String)) {
-                    System.out.println("inputObject[1] is not a user");
-                    break;
-                }
-
-                user = (User) inputObject[0];
-                String profile = (String) inputObject[1];
-                if (!setProfile(user, profile)) {
-                    break;
-                }
-
-                System.out.println("Profile successfully set");
-                break;
-                
-            case ("CheckLogin"):
-                for (Object o : inputObject) {
-                    if (!(o instanceof String)) {
-                        System.out.println("Username or password not strings");
-                        break;
-                    }
-                }
-                String userName = (String)inputObject[0];
-                String password = (String)inputObject[1];
-
-                returnObject = new Object[] {(logIn(userName, password))};
-                break;
-
-            case ("GetId"):
-                
-                if (!(inputObject[0] instanceof String)) {
-                    System.out.println("input object isn't a string");
-                }
-
-                userName = (String)inputObject[0];
-
-                if (!(getUserID(userName))) {
-                    break;
-                }
-
-                System.out.println("Success!");
-                break;
-
-            case ("UsernameExists"):
-                if(!(inputObject[0] instanceof String)) {
-                    System.out.println("Input object not string");
-                }
-
-                userName = (String)inputObject[0];
-
-                try {
-                returnObject = new Object[] {usernameExist(userName)};
-
-                } catch (ImNotSureWhyException e) {
-                    e.printStackTrace();
-                }
-
-            case ("MakePost"):        
-                if(!(inputObject[0] instanceof Post)) {
-                    System.out.println("Input object not a Post");
-                }
-
-                Post post = (Post)inputObject[0];
-
-                if (!(makePost(post))) {
-                    System.out.println("Post Failed");
-                    break;
-                }
-
-                System.out.println("Success");
-                break;
-
-            case ("RedefinePost"):
-                if(!(inputObject[0] instanceof String)) {
-                    System.out.println("Input object not a string");
-                }
-
-                String postCode = (String)inputObject[0];
-
-                try {
-                    if(!(redefinePost(postCode))) {
-                        System.out.println("Error redefining post");
-                        break;
-                    }
-
-                    System.out.println("Post Redefined");
-                    break;
-                } catch (DoesNotExistException | ImNotSureWhyException e) {
-                    e.printStackTrace();
-                }
-
-            case("LikePost"):
-                System.out.println();
-                System.out.println("Trying to like post:");
-                if(!(inputObject[0] instanceof Post)) {
-                    System.out.println("Input object[0] not a Post");
-                    break;
-                }
-
-                if(!(inputObject[1] instanceof User)) {
-                    System.out.println("Input object[1] not a User");
-                    break;
-                }
-
-                post = (Post)inputObject[0];
-                user = (User)inputObject[1];
-
-                try {
-                    if(!(likePost(post, user))) {
-                        System.out.println("Failed to like post");
-                        break;
-                    }
-                    System.out.println("Post liked");
-                    break;
-
-                } catch (AlreadyThereException e) {
-                    e.printStackTrace();
-                }
-
-
-            case("UnlikePost"):
-                System.out.println();
-                System.out.println("Trying to unlike post:");
-                if(!(inputObject[0] instanceof Post)) {
-                    System.out.println("Input object[0] not a Post");
-                    break;
-                }
-
-                if(!(inputObject[1] instanceof User)) {
-                    System.out.println("Input object[1] not a User");
-                    break;
-                }
-
-                post = (Post)inputObject[0];
-                user = (User)inputObject[1];
-
-                try {
-                    if(!(unlikePost(post, user))) {
-                        System.out.println("Failed to like post");
-                        break;
-                    }
-                    System.out.println("Post liked");
-                    break;
-
-                } catch (DoesNotExistException e) {
-                    e.printStackTrace();
-                }
-
-
-            case("DisikePost"):
-                System.out.println();
-                System.out.println("Trying to dislike post:");
-                if(!(inputObject[0] instanceof Post)) {
-                    System.out.println("Input object[0] not a Post");
-                    break;
-                }
-
-                if(!(inputObject[1] instanceof User)) {
-                    System.out.println("Input object[1] not a User");
-                    break;
-                }
-
-                post = (Post)inputObject[0];
-                user = (User)inputObject[1];
-
-                try {
-                    if(!(dislikePost(post, user))) {
-                        System.out.println("Failed to dislike post");
-                        break;
-                    }
-                    System.out.println("Post disliked");
-                    break;
-                } catch (AlreadyThereException e) {
-                    e.printStackTrace();
-                }
-
-            case("UndislikePost"):
-                System.out.println();
-                System.out.println("Trying to undislike post:");
-                if(!(inputObject[0] instanceof Post)) {
-                    System.out.println("Input object[0] not a Post");
-                    break;
-                }
-
-                if(!(inputObject[1] instanceof User)) {
-                    System.out.println("Input object[1] not a User");
-                    break;
-                }
-
-                post = (Post)inputObject[0];
-                user = (User)inputObject[1];
-
-                try {
-                    if(!(undislikePost(post, user))) {
-                        System.out.println("Failed to undislike post");
-                        break;
-                    }
-                    System.out.println("Post undisliked");
-                    break;
-                } catch (DoesNotExistException e) {
-                    e.printStackTrace();
-                }  
-                
-                case("HidePost"):
-                if(!(inputObject[0] instanceof Post)) {
-                    System.out.println("Input object[0] not a Post");
-                }
-
-                if(!(inputObject[1] instanceof User)) {
-                    System.out.println("Input object[1] not a User");
-                }
-
-                post = (Post)inputObject[0];
-                user = (User)inputObject[1];
-
-                try {
-                    if(!(hidePost(post, user))) {
-                        System.out.println("Failed to hide post");
-                        break;
-                    }
-                    System.out.println("Post hidden");
-                    break;
-                } catch (AlreadyThereException e) {
-                    e.printStackTrace();
-                }
-
-            case("UnhidePost"):
-                if(!(inputObject[0] instanceof Post)) {
-                    System.out.println("Input object[0] not a Post");
-                }
-
-                if(!(inputObject[0] instanceof User)) {
-                    System.out.println("Input object[1] not a User");
-                }
-
-                post = (Post)inputObject[0];
-                user = (User)inputObject[1];
-
-                try {
-                    if(!(unhidePost(post, user))) {
-                        System.out.println("Failed to unhide post");
-                        break;
-                    }
-                    System.out.println("Post u hidden");
-                    break;
-                } catch (DoesNotExistException e) {
-                    e.printStackTrace();
-                }
-
-            default:
-                System.out.println("Not a valid job for DataWrtier: (" + requiredJob + ")");
-        
-            
-        }
-    }
-
 //UserStuff--------------------------------------------------------------------------------------------------
 
 //Exceptions - AlreadyThereException
@@ -580,21 +115,12 @@ public class DataWriter extends Thread  {
         synchronized (gatekeeper) {
             gatekeeperArray.add(new String[]{user.getUserId()});
         }
-        int index = 0;
-
-        synchronized (gatekeeper) {
-            for (int i = 0; i > gatekeeperArray.size(); i++) {
-                if (gatekeeperArray.get(i)[0].equals(user.getUserId())) {
-                    index = i;
-                }
-            }
-        }
 
         if (!usernameExist(user.getUsername())) {
             throw (new ExistingUsernameException("Read the exception name"));
         }
 
-        synchronized (gatekeeperArray.get(index)) {
+        synchronized (gatekeeperArray) {
             try {
 
                 if (new File(user.getUserId()).exists()) {
@@ -627,7 +153,6 @@ public class DataWriter extends Thread  {
                     System.out.printf("%s file created succesfully\n", fileNames[i]);
                 }
 
-
                 //Writing data to the userData file
                 BufferedWriter bw = new BufferedWriter(new FileWriter(files[0]));
                 bw.write(user.getUserId());
@@ -649,9 +174,6 @@ public class DataWriter extends Thread  {
                         bw.write(String.valueOf(numUsers));
                         bw.flush();
                     }
-
-
-
 
                 } catch (IOException e) {
                     System.out.println("Error occured when writing the SystemInfo file");
@@ -690,18 +212,11 @@ public class DataWriter extends Thread  {
 
 //UserStuff--------------------------------------------------------------------------------------------------
 
+//Needs to return User
 //Exceptions - DoesNotExistException
-    public boolean redefineUser(String userId) throws DoesNotExistException, ImNotSureWhyException {
-        int index = 0;
-        synchronized (gatekeeper) {
-            for (int i = 0; i > gatekeeperArray.size(); i++) {
-                if (gatekeeperArray.get(i)[0].equals(userId)) {
-                    index = i;
-                }
-            }
-        }
+    public User redefineUser(String userId) throws DoesNotExistException, ImNotSureWhyException {
 
-        synchronized (gatekeeperArray.get(index)) {
+        synchronized (gatekeeperArray) {
             //Making sure the user actually exists
             if (!(new File(directoryPaths[1] + userId)).exists()) {
                 System.out.println("UserId provided does not exist");
@@ -756,9 +271,7 @@ public class DataWriter extends Thread  {
                 user.setProfile(buffer[0], buffer[1]);
                 user.getProfile().loadProfilePic();
 
-                returnObject = new Object[] {user};
-
-                return true;
+                return user;
 
 
             } catch (IOException e) {
@@ -772,26 +285,16 @@ public class DataWriter extends Thread  {
 
 //Exceptions - AlreadyThereException, BlockedException, InvalidOperationException
     public boolean addFriends(User newFreiend, User user) throws AlreadyThereException, BlockedException, InvalidOperationException, ImNotSureWhyException, DoesNotExistException {
-        int index = 0;
-        synchronized (gatekeeper) {
-            for (int i = 0; i > gatekeeperArray.size(); i++) {
-                if (gatekeeperArray.get(i)[0].equals(user.getUserId())) {
-                    index = i;
-                }
-            }
-        }
 
-        synchronized (gatekeeperArray.get(index)) {
+        synchronized (gatekeeperArray) {
             try {
                 ArrayList<User> friends = new ArrayList<>();
                 ArrayList<String> friendsId = user.getFriends();
 
                 if (friendsId != null) {
                     for (String f : friendsId) {
-                        if (f != null && redefineUser(f)) {
-                            User newUser = (User)returnObject[0];
-                            friends.add(newUser);
-                        }
+                        User newUser = redefineUser(f);
+                        friends.add(newUser);
                     }
                 }
 
@@ -840,16 +343,8 @@ public class DataWriter extends Thread  {
 
 //Exceptions - DoesNotExistException
     public boolean removeFriend(User oldFreiendId, User userId) throws DoesNotExistException, ImNotSureWhyException {
-        int index = 0;
-        synchronized (gatekeeper) {
-            for (int i = 0; i > gatekeeperArray.size(); i++) {
-                if (gatekeeperArray.get(i)[0].equals(userId.getUserId())) {
-                    index = i;
-                }
-            }
-        }
 
-        synchronized (gatekeeperArray.get(index)) {
+        synchronized (gatekeeperArray) {
             ArrayList<String> friends = new ArrayList<String>();
             try {
                 BufferedReader br = new BufferedReader(new FileReader(new File(directoryPaths[1]
@@ -893,16 +388,8 @@ public class DataWriter extends Thread  {
 //UserStuff--------------------------------------------------------------------------------------------------
 
     public boolean blockUser(User newBlockId, User userId) throws AlreadyThereException, DoesNotExistException, ImNotSureWhyException {
-        int index = 0;
-        synchronized (gatekeeper) {
-            for (int i = 0; i > gatekeeperArray.size(); i++) {
-                if (gatekeeperArray.get(i)[0].equals(userId.getUserId())) {
-                    index = i;
-                }
-            }
-        }
 
-        synchronized (gatekeeperArray.get(index)) {
+        synchronized (gatekeeperArray) {
             try {
                 if (userId.getBlockedUsers().contains(newBlockId.getUserId())) {
                     System.out.println("This user is already blocked");
@@ -945,16 +432,8 @@ public class DataWriter extends Thread  {
 //UserStuff--------------------------------------------------------------------------------------------------
 
     public boolean unblockUser(User oldBlock, User user) throws DoesNotExistException, ImNotSureWhyException{
-        int index = 0;
-        synchronized (gatekeeper) {
-            for (int i = 0; i > gatekeeperArray.size(); i++) {
-                if (gatekeeperArray.get(i)[0].equals(user.getUserId())) {
-                    index = i;
-                }
-            }
-        }
 
-        synchronized (gatekeeperArray.get(index)) {
+        synchronized (gatekeeperArray) {
 
             ArrayList<String> blocked = new ArrayList<>();
             try {
@@ -1068,49 +547,42 @@ public class DataWriter extends Thread  {
 
 //UserStuff--------------------------------------------------------------------------------------------------
 
-    public boolean logIn(String username, String password) {
+    public Boolean logIn(String username, String password) {
+        System.out.println("Hits login"); 
         try {
 
             boolean usernameExists = false;
             String userId = null;
             BufferedReader br = null;
 
-            synchronized (gatekeeper) {
-                br = new BufferedReader(new FileReader(userNames));
-                String line = br.readLine();
 
-                while (line != null) {
-                    String[] lineArray = line.split(", ");
-                    if (lineArray[0].equals(username)) {
-                        userId = lineArray[1];
-                        usernameExists = true;
-                        break;
-                    }
+            br = new BufferedReader(new FileReader(userNames));
+            String line = br.readLine();
+
+            while (line != null) {
+                String[] lineArray = line.split(", ");
+                if (lineArray[0].equals(username)) {
+                    userId = lineArray[1];
+                    usernameExists = true;
+                    break;
                 }
-                br.close();
-                if (!usernameExists) {
-                    return false;
-                }
+                line = br.readLine();
             }
 
-            int index = 0;
-            synchronized (gatekeeper) {
-                for (int i = 0; i > gatekeeperArray.size(); i++) {
-                    if (gatekeeperArray.get(i)[0].equals(userId)) {
-                        index = i;
-                    }
-                }
+            br.close();
+            if (!usernameExists) {
+                return false;
             }
+            
             String realPassword = null;
 
-            synchronized (gatekeeperArray.get(index)) {
-                br = new BufferedReader(new FileReader(new File(directoryPaths[1] + userId + "/userData")));
+            br = new BufferedReader(new FileReader(new File(directoryPaths[1] + userId + "/userData")));
 
-                for (int i = 0; i < 3; i++) {
-                    realPassword = br.readLine();
-                }
-                br.close();
+            for (int i = 0; i < 3; i++) {
+                realPassword = br.readLine();
             }
+            br.close();
+            
             return password.equals(realPassword);
 
         } catch (IOException e) {
@@ -1121,7 +593,8 @@ public class DataWriter extends Thread  {
 
 //UserStuff--------------------------------------------------------------------------------------------------
 
-    public Boolean getUserID(String userName) {
+//returns String
+    public String getUserID(String userName) throws DoesNotExistException {
 
         try {
             BufferedReader br = new BufferedReader(new FileReader(directoryPaths[0] + "userNames"));
@@ -1133,7 +606,7 @@ public class DataWriter extends Thread  {
                 if (lineArray[0].equals(userName)) {
                     br.close();
                     br = null;
-                    returnObject = new Object[] {lineArray[1]};
+                    return lineArray[1];
                 }
                 line = br.readLine();
             }
@@ -1145,7 +618,8 @@ public class DataWriter extends Thread  {
             System.out.println("Something is broken");
         }
 
-        return false;
+        throw (new DoesNotExistException("User does not exist"));
+
     }
 
 //UserStuff--------------------------------------------------------------------------------------------------
@@ -1202,6 +676,8 @@ public class DataWriter extends Thread  {
 
             postDirectory = new File(postPath + post.getPostCode());
 
+            post.setPostPath(postDirectory);
+
             if (!postDirectory.exists() && !postDirectory.mkdir()) {
                 System.out.println("Error occured when making directory");
 
@@ -1251,18 +727,18 @@ public class DataWriter extends Thread  {
 
 //PostStuff--------------------------------------------------------------------------------------------------
 
-    public boolean redefinePost(String code) throws DoesNotExistException, ImNotSureWhyException {
+//Return a post
+    public Post redefinePost(String code) throws DoesNotExistException, ImNotSureWhyException {
         String thisPostPath = postPath + code;
         File postDirectory = new File(thisPostPath);
 
         if (!postDirectory.exists()) {
-            return false;
+            return new Post();
         }
 
         String ownerId = code.split("-")[0];
 
-        redefineUser(ownerId);
-        User owner = (User)returnObject[0];
+        User owner = redefineUser(ownerId);
 
         ArrayList<User> likes = new ArrayList<>();
         ArrayList<User> dislikes = new ArrayList<>();
@@ -1275,8 +751,7 @@ public class DataWriter extends Thread  {
 
             
             while (line != null) {
-                redefineUser(line);
-                likes.add((User)returnObject[0]);
+                likes.add(redefineUser(line));
                 line = br.readLine();
             }
 
@@ -1285,8 +760,7 @@ public class DataWriter extends Thread  {
             line = br.readLine();
 
             while (line != null) {
-                redefineUser(line);
-                dislikes.add((User)returnObject[0]);
+                dislikes.add(redefineUser(line));
                 line = br.readLine();
             }
 
@@ -1299,20 +773,18 @@ public class DataWriter extends Thread  {
             line = br.readLine();
 
             while (line != null) {
-                redefineUser(line);
-                hiddenFrom.add((User)returnObject[0]);
+                hiddenFrom.add(redefineUser(line));
                 line = br.readLine();
             }
 
             br.close();
 
         } catch(IOException e) {
-            return false;
+            e.printStackTrace();
+            return new Post();
         }
-
-        returnObject = new Object[] {new Post(owner, text, likes, dislikes, hiddenFrom, comments)};
         
-        return true;
+        return new Post(owner, text, likes, dislikes, hiddenFrom, comments);
     }
 
 //PostStuff--------------------------------------------------------------------------------------------------
@@ -1545,23 +1017,339 @@ public class DataWriter extends Thread  {
 
 //PostStuff--------------------------------------------------------------------------------------------------
 
+    public boolean deletePost(Post post, User user) throws DoesNotExistException, ImNotSureWhyException {
 
+        if (!user.equals(post.getOwner())) {
+            System.out.println("Cannot delete post you don't own");
+            return false;
+        }
 
-//OtherThings------------------------------------------------------------------------------------------------
-    public void setJob(String job) {
-        this.requiredJob = job;
+        
+        File postDirectory = new File(postPath + post.getPostCode());
+        File commentDirectroy = new File(postDirectory + "/" + "comments");
+        String[] comments = commentDirectroy.list();
+
+        System.out.println(comments.length);
+        for (String s : comments) {
+            System.out.println("1");
+            Comment comment = redefineComment(post, s);
+            System.out.println("2");
+            deleteComment(comment, user);
+            System.out.println("3");
+        }
+        commentDirectroy.delete();
+        String[] files = postDirectory.list();
+
+        for (String s : files) {
+            File file = new File(postDirectory + "/" + s);
+            file.delete();
+        }
+        postDirectory.delete();
+
+        try {
+            BufferedReader br = new BufferedReader(new FileReader("userDirectories" + "/" + user.getUserId() + "/posts"));
+            BufferedWriter bw = new BufferedWriter(new FileWriter("userDirectories" + "/" + user.getUserId() + "/posts"));
+
+            String line = br.readLine();
+            ArrayList<String> postCodes = new ArrayList<>();
+            while (line != null) {
+                if (!line.equals(post.getPostCode())) {
+                    postCodes.add(line);
+                }
+            }
+
+            for (String s : postCodes) {
+                bw.write(s);
+                bw.newLine();
+            }
+
+            bw.flush();
+            
+            br.close();
+            bw.close();
+            br = null;
+            bw = null;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return true;
     }
 
-    public Object[] getReturnObject() {
-        return returnObject;
+//PostStuff--------------------------------------------------------------------------------------------------
+
+    public boolean makeComment(Post post, Comment comment) {
+        File likes = null;
+        File dislikes = null;
+        File text = null;
+        File[] files = {likes, dislikes, text};
+        String[] fileNames = {"likes", "dislikes", "text"};
+
+        try {
+            File commentDirectory = new File(post.getPostPath() + "/comments/" + comment.getCode());
+            comment.setCommentPath(commentDirectory);
+
+            if (!commentDirectory.mkdir()) {
+                System.out.println("making comment directory failed");
+            }
+
+            for (int i = 0; i < files.length; i++) {
+                files[i] = new File(commentDirectory + "/" + fileNames[i]);
+
+                if (!files[i].createNewFile()) {
+                    System.out.println("Error making " + fileNames[i] + " file");
+                } else {
+                    System.out.println(fileNames[i] + " file made succesfully");
+                }
+            }
+
+            BufferedWriter bw = new BufferedWriter(new FileWriter(commentDirectory + "/" + fileNames[2]));
+
+            bw.write(comment.getText());
+            bw.flush();
+            
+            bw.close();
+            bw = null;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        return true;
     }
 
-    public void setInputObject(Object[] object) {
-        inputObject = object;
+//PostStuff--------------------------------------------------------------------------------------------------
+
+    public boolean likeComment(Comment comment, User user) {
+
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(comment.getCommentPath() + "/likes"));
+
+            String line = br.readLine();
+
+            while (line != null) {
+                if (line.equals(user.getUserId())) {
+                    System.out.println("Already liked this comment");
+                    br.close();
+                    br = null;
+                    return false;
+                }
+
+                line = br.readLine();
+            }
+            br.close();
+            br = null;
+
+            BufferedWriter bw = new BufferedWriter(new FileWriter(comment.getCommentPath() + "/likes", true));
+
+            bw.write(user.getUserId());
+            bw.newLine();
+            bw.flush();
+
+            bw.close();
+            bw = null;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return true;
     }
 
+//PostStuff--------------------------------------------------------------------------------------------------
 
-//
+    public boolean dislikeComment(Comment comment, User user) {
+
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(comment.getCommentPath() + "/dislikes"));
+
+            String line = br.readLine();
+
+            while (line != null) {
+                if (line.equals(user.getUserId())) {
+                    System.out.println("Already liked this comment");
+                    br.close();
+                    br = null;
+                    return false;
+                }
+
+                line = br.readLine();
+            }
+            br.close();
+            br = null;
+
+            BufferedWriter bw = new BufferedWriter(new FileWriter(comment.getCommentPath() + "/dislikes", true));
+
+            bw.write(user.getUserId());
+            bw.newLine();
+            bw.flush();
+
+            bw.close();
+            bw = null;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return true;
+    }
+
+//PostStuff--------------------------------------------------------------------------------------------------
+
+    public boolean unlikeComment(Comment comment, User unliker) throws DoesNotExistException {
+
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(comment.getCommentPath() + "/likes"));
+            String line = br.readLine();
+
+            boolean liked = false;
+            ArrayList<String> likeIds= new ArrayList<>();
+            while (line != null) {
+                if (line.equals(unliker.getUserId())) {
+                    liked = true;
+                } else {
+                    likeIds.add(line);
+                }
+                line = br.readLine();
+            }
+
+            if (!liked) {
+                br.close();
+                br = null;
+                throw(new DoesNotExistException("User has not liked comment"));
+            }
+
+            BufferedWriter bw = new BufferedWriter(new FileWriter(comment.getCommentPath() + "/likes"));
+
+            for(String s : likeIds) {
+                bw.write(s);
+                bw.newLine();
+                bw.flush();
+            }
+            bw.close();
+            bw = null;
+            br.close();
+            br = null;
+        } catch(IOException e) {
+            return false;
+        }
+
+        return true;
+
+    }
+
+//PostStuff--------------------------------------------------------------------------------------------------
+
+    public boolean undislikeComment(Comment comment, User unliker) throws DoesNotExistException {
+
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(comment.getCommentPath() + "/dislikes"));
+            String line = br.readLine();
+
+            boolean liked = false;
+            ArrayList<String> likeIds= new ArrayList<>();
+            while (line != null) {
+                if (line.equals(unliker.getUserId())) {
+                    liked = true;
+                } else {
+                    likeIds.add(line);
+                }
+                line = br.readLine();
+            }
+
+            if (!liked) {
+                br.close();
+                br = null;
+                throw(new DoesNotExistException("User has not disliked comment"));
+            }
+
+            BufferedWriter bw = new BufferedWriter(new FileWriter(comment.getCommentPath() + "/dislikes"));
+
+            for(String s : likeIds) {
+                bw.write(s);
+                bw.newLine();
+                bw.flush();
+            }
+            bw.close();
+            bw = null;
+            br.close();
+            br = null;
+        } catch(IOException e) {
+            return false;
+        }
+
+        return true;
+
+    }
+
+//PostStuff--------------------------------------------------------------------------------------------------
+
+    public Comment redefineComment(Post post, String code) throws DoesNotExistException, ImNotSureWhyException {
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(post.getPostPath() + "/comments/" + code + "/likes"));
+
+            String line = br.readLine();
+            ArrayList<User> likes = new ArrayList<>();
+            while (line != null) {
+                User userLike = redefineUser(line);
+                likes.add(userLike);
+
+                line = br.readLine();
+            }
+
+            br.close();
+            br = new BufferedReader(new FileReader(post.getPostPath() + "/comments/" + code + "/dislikes"));
+
+            line = br.readLine();
+            ArrayList<User> dislikes = new ArrayList<>();
+            while (line != null) {
+                User userDislike = redefineUser(line);
+                likes.add(userDislike);
+
+                line = br.readLine();
+            }
+
+            br.close();
+            br = new BufferedReader(new FileReader(post.getPostPath() + "/comments/" + code + "/text"));
+
+            String text = br.readLine();
+
+            br.close();
+            br = null;
+
+            String[] codeArray = code.split("-");
+            User owner = redefineUser(codeArray[0]);
+
+            return new Comment(likes, dislikes, text, owner, post, code);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return new Comment();
+    }
+
+//PostStuff--------------------------------------------------------------------------------------------------
+
+    public boolean deleteComment(Comment comment, User user) {
+
+        if (!(user.equals(comment.getParent().getOwner()) || user.equals(comment.getOwner()))) {
+            System.out.println("Only post owner and comment owner can delete this comment");
+            return false;
+        }
+        File commentPath = comment.getCommentPath();
+
+        String[] files = commentPath.list();
+
+        for (String s : files) {
+            File newFile = new File(commentPath + "/" + s);
+            newFile.delete();
+        }
+        commentPath.delete();
+
+        return true;
+    }
+
 //StaticMethods----------------------------------------------------------------------------------------------
 
     public static int getNumUsers() {

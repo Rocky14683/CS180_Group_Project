@@ -4,15 +4,9 @@ package Network;
 import DatabaseFolder.*;
 import UserFolder.User;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.UnknownHostException;
-import javax.swing.JOptionPane;
+import java.io.*;
+import java.net.*;
+
 
 /**
  * Server.java
@@ -33,7 +27,7 @@ public class Server implements Runnable {
     private User user = null;
 
     private Socket socket;
-    private static DataWriter database = new DataWriter();
+    private static DataWriter dataWriter = new DataWriter();
     BufferedReader reader;
     PrintWriter writer;
 
@@ -49,174 +43,201 @@ public class Server implements Runnable {
     }
 
     public static void main(String[] args) throws IOException {
+        @SuppressWarnings("resource")
         ServerSocket serverSocket = new ServerSocket(SOCKET_PORT);
 
         while (true) {
+            System.out.println();
+            System.out.println();
+            System.out.println("Waiting for connection...");
             Socket socket = serverSocket.accept(); //wait for socket connection established
+            System.out.println("User Connected");
             Server server = new Server(socket);
             new Thread(server).start();
         }
+
     }
 
     @Override
     public void run() {
+        while (true) {
+            try {
+                if (user == null) {
+                    System.out.println("Waiting for cmd");
+                    String cmd = reader.readLine();
+                    System.out.println(cmd);
+                    String username = reader.readLine(); //username
+                    System.out.println(username);
+                    String password = reader.readLine(); //password
+                    System.out.println(password);
+                    switch (cmd) {
+                        case "login": {
+                            System.out.println();
+                            if (!dataWriter.logIn(username, password)) {
+                                System.out.println("Invalid");
+                                writer.println("Invalid username or password");
+                                writer.flush();
+                                return;
+                            }
+                            String userId = dataWriter.getUserID(username);
+                            if (userId.equals("")) { //--------------------------------------------------------
+                                System.out.println("Failed to get userid");
+                                return;
+                            }
 
-        try {
-            if (user == null) {
-                String cmd = reader.readLine();
-                String username = reader.readLine(); //username
-                String password = reader.readLine(); //password
-                switch (cmd) {
-                    case "login": {
-                        if (!database.logIn(username, password)) {
-                            writer.println("Invalid username or password");
-                            writer.flush();
-                            return;
+                            user = dataWriter.redefineUser(userId);
+                            if (user.getUserId().equals("")) { //--------------------------------------------------------
+                                System.out.println("Failed to redefine user");
+                                return;
+                            }
+                            System.out.println("valid");
+                            writer.println("Login successful");
+                            break;
                         }
-                        //                user = database.getUserId();
-                        writer.println("Login successful");
-                        break;
-                    }
-                    case "register": {
-                        user = new User(username, password);
-                        if (!database.createUser(user)) {
-                            writer.println("Invalid username or password");
-                            writer.flush();
-                            return;
+                        case "register": {
+                            user = new User(username, password);
+                            if (!dataWriter.createUser(user)) {
+                                writer.println("Invalid username or password");
+                                writer.flush();
+                                return;
+                            }
+                            writer.println("Account created successfully");
+                            break;
                         }
-                        writer.println("Account created successfully");
-                        break;
+                        default: {
+                            writer.println("Invalid command");
+                            break;
+                        }
                     }
-                    default: {
-                        writer.println("Invalid command");
-                        break;
+                    writer.flush();
+                } else {
+                    System.out.println("Waiting for cmd");
+                    String cmd = reader.readLine();
+                    switch (cmd) {
+                        // all command goes here
+
+                        case "addFriend": {     //adds given username as friend to current logged in user
+                            String friendId = reader.readLine(); //userid of friend
+                            System.out.println("b4");
+
+                            User friend = dataWriter.redefineUser(friendId);
+                            if (friend.getUserId().equals("")) { //--------------------------------------------------------
+                                writer.println("User not found");
+                                writer.flush();
+                                break;
+                            }
+                            System.out.println("after");
+                            dataWriter.addFriends(friend, user);
+                            System.out.println(friend.getUsername() + " added as a friend");
+                            writer.println(friend.getUsername() + " added as a friend");
+                            writer.flush();
+                            continue;
+                        }
+                        case "removeFriend": {
+                            String friendId = reader.readLine(); //userid of friend
+
+                            User targetFriend = dataWriter.redefineUser(friendId);
+                            if (targetFriend.getUserId().equals("")) { //--------------------------------------------------------
+                                writer.println("User not found");
+                                writer.flush();
+                                break;
+                            }
+                            dataWriter.removeFriend(targetFriend, user);
+
+                            writer.println(targetFriend.getUsername() + " removed as a friend");
+                            writer.flush();
+                            break;
+                        }
+                        case "blockUser": {
+                            String userId = reader.readLine(); //userid of friend
+
+                            User targetUser = dataWriter.redefineUser(userId);
+                            if (targetUser.getUserId().equals("")) { //--------------------------------------------------------
+                                writer.println("User not found");
+                                writer.flush();
+                                break;
+                            }
+                            try {
+                                dataWriter.removeFriend(targetUser, user);
+                            } catch (DoesNotExistException e) {
+                            } finally {
+                                dataWriter.blockUser(targetUser, user);
+                            }
+                            //do nothing
+                            //removes user as friend (if they are friends
+
+                            writer.println(targetUser.getUsername() + " has been blocked");
+                            writer.flush();
+                            break;
+                        }
+                        case "unblockUser": {
+                            String userId = reader.readLine(); //userid of friend
+                            User targetUser = dataWriter.redefineUser(userId);
+
+                            if (targetUser.getUserId().equals("")) { //--------------------------------------------------------
+                                writer.println("User not found");
+                                writer.flush();
+                                break;
+                            }
+
+                            dataWriter.unblockUser(targetUser, user);
+                            writer.println(targetUser.getUsername() + " has been unblocked");
+                            writer.flush();
+                            break;
+                        }
+                        case "updateUsername": {    //updates current user to given info
+                            String newName = reader.readLine(); //new username
+                            //NEEDS TO CHECK WHETHER USERNAME IS ALREADY TAKEN OR NOT TO AVOID DUPLICATION
+                            user.setUsername(newName, dataWriter);
+                            writer.println("Username updated successfully");
+                            writer.flush();
+                            break;
+                        }
+                        case "updatePassword": {    //updates current user to given info
+                            String newPassword = reader.readLine(); //new password
+                            user.setPassword(newPassword, dataWriter);
+                            writer.println("Password updated successfully");
+                            writer.flush();
+                            break;
+                        }
+
+                        case "updateProfileBio": {    //updates current user to given info
+                            String info = reader.readLine(); //new bio text
+                            user.getProfile().setBio(info);
+                            writer.println("Bio updated successfully");
+                            writer.flush();
+                            break;
+                        }
+
+                        case "exit": {
+                            socket.close();
+                            break;
+                        }
+                        default: {
+                            writer.println("Invalid command");
+                            writer.flush();
+                            break;
+                        }
                     }
                 }
-                writer.flush();
-            } else {
-                String cmd = reader.readLine();
-                switch (cmd) {
-                    // all command goes here
-
-                    case "addFriend": {     //adds given username as friend to current logged in user
-                        String friendId = reader.readLine(); //userid of friend
-                        if (!database.redefineUser(friendId)) {
-                            writer.println("User not found");
-                            writer.flush();
-                            break;
-                        }
-                        User friend = (User) database.getReturnObject()[0];
-                        database.addFriends(friend, user);
-
-                        writer.println(friend.getUsername() + " added as a friend");
-                        writer.flush();
-                        break;
-                    }
-                    case "removeFriend": {
-                        String friendId = reader.readLine(); //userid of friend
-                        if (!database.redefineUser(friendId)) {
-                            writer.println("User not found");
-                            writer.flush();
-                            break;
-                        }
-                        User targetFriend = (User) database.getReturnObject()[0];
-                        database.removeFriend(user, targetFriend);
-
-                        writer.println(targetFriend.getUsername() + " removed as a friend");
-                        writer.flush();
-                        break;
-                    }
-                    case "blockUser": {
-                        String userId = reader.readLine(); //userid of friend
-                        if (!database.redefineUser(userId)) {
-                            writer.println("User not found");
-                            writer.flush();
-                            break;
-                        }
-                        User targetUser = (User) database.getReturnObject()[0];
-                        database.removeFriend(user, targetUser); //removes user as friend (if they are friends
-                        database.blockUser(user, targetUser);
-
-                        writer.println(targetUser.getUsername() + " has been blocked");
-                        writer.flush();
-                        break;
-                    }
-                    case "unblockUser": {
-                        String userId = reader.readLine(); //userid of friend
-                        if (!database.redefineUser(userId)) {
-                            writer.println("User not found");
-                            writer.flush();
-                            break;
-                        }
-                        User targetUser = (User) database.getReturnObject()[0];
-                        database.unblockUser(user, targetUser);
-
-
-                        writer.println(targetUser.getUsername() + " removed as a friend");
-                        writer.flush();
-                        break;
-                    }
-                    case "updateUsername": {    //updates current user to given info
-                        String newName = reader.readLine(); //new username
-                        //NEEDS TO CHECK WHETHER USERNAME IS ALREADY TAKEN OR NOT TO AVOID DUPLICATION
-                        user.setUsername(newName, this.database);
-                        writer.println("Username updated successfully");
-                        writer.flush();
-                        break;
-                    }
-                    case "updatePassword": {    //updates current user to given info
-                        String newPassword = reader.readLine(); //new password
-                        user.setPassword(newPassword, this.database);
-                        writer.println("Password updated successfully");
-                        writer.flush();
-                        break;
-                    }
-                    case "updateProfilePic": {    //updates current user to given info
-                        String dir = reader.readLine(); //new profile picture filename
-                        user.getProfile().setProfilePicName(dir);
-                        if (!user.getProfile().loadProfilePic()) {
-                            writer.println("Profile directory not found");
-                            writer.flush();
-                            break;
-                        }
-
-                        writer.println("Profile picture updated successfully");
-                        writer.flush();
-                        break;
-                    }
-                    case "updateProfileBio": {    //updates current user to given info
-                        String info = reader.readLine(); //new bio text
-                        user.getProfile().setBio(info);
-                        writer.println("Bio updated successfully");
-                        writer.flush();
-                        break;
-                    }
-                    case "exit": {
-                        socket.close();
-                        break;
-                    }
-                    default: {
-                        writer.println("Invalid command");
-                        writer.flush();
-                        break;
-                    }
-                }
-                writer.println("ACK");
+            } catch (AlreadyThereException | ExistingUsernameException | InvalidOperationException |
+                     BlockedException | DoesNotExistException | ImNotSureWhyException e) {
+                e.printStackTrace();
+                writer.println(e.getMessage());
+            } catch (Exception e) {
+                e.printStackTrace();
+                return;
             }
-        } catch (AlreadyThereException | ExistingUsernameException | InvalidOperationException |
-                 BlockedException | DoesNotExistException | ImNotSureWhyException e) {
-            writer.println(e.getMessage());
-        } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("loop");
         }
         //<= to be implemented
     }
 
-    private static void publicChat(String message) {    //TO BE IMPLEMENTED
+    // private static void publicChat(String message) {    //TO BE IMPLEMENTED
 
-    }
+    // }
 
-    private static void directMessage(String message, User user) {      //TO BE IMPLEMENTED
+    // private static void directMessage(String message, User user) {      //TO BE IMPLEMENTED
 
-    }
+    // }
 }

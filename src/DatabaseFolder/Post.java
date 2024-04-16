@@ -2,6 +2,7 @@ package DatabaseFolder;
 
 import UserFolder.*;
 import java.util.*;
+import java.io.*;
 
 public class Post {
 
@@ -16,6 +17,7 @@ public class Post {
     private ArrayList<User> dislikesUsers;
     private ArrayList<Comment> comments;
     private ArrayList<User> hiddenFrom;
+    private File postPath;
 
 
     public Post(String text, String image, User owner) {
@@ -42,6 +44,10 @@ public class Post {
         this.dislikesUsers = dislikes;
         this.hiddenFrom = hidden;
         this.comments = comments;
+    }
+
+    public Post() {
+        likes = -1; //Indicates its not a valid post
     }
 
     public String toString() {
@@ -108,6 +114,18 @@ public class Post {
 
     public User getOwner() {
         return owner;
+    }
+
+    public void setPostPath(File postPath) {
+        this.postPath = postPath;
+    }
+
+    public File getPostPath() {
+        return postPath;
+    }
+
+    public ArrayList<User> getHiddenFrom() {
+        return hiddenFrom;
     }
 
     
