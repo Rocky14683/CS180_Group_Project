@@ -1017,26 +1017,38 @@ public class DataWriter {
 
 //PostStuff--------------------------------------------------------------------------------------------------
 
-    public boolean deletePost(Post post, User user) {
+    public boolean deletePost(Post post, User user) throws DoesNotExistException, ImNotSureWhyException {
 
         if (!user.equals(post.getOwner())) {
             System.out.println("Cannot delete post you don't own");
             return false;
         }
 
+        
         File postDirectory = new File(postPath + post.getPostCode());
+        File commentDirectroy = new File(postDirectory + "/" + "comments");
+        String[] comments = commentDirectroy.list();
 
+        System.out.println(comments.length);
+        for (String s : comments) {
+            System.out.println("1");
+            Comment comment = redefineComment(post, s);
+            System.out.println("2");
+            deleteComment(comment, user);
+            System.out.println("3");
+        }
+        commentDirectroy.delete();
         String[] files = postDirectory.list();
 
         for (String s : files) {
-            File file = new File(postDirectory + s);
+            File file = new File(postDirectory + "/" + s);
             file.delete();
         }
         postDirectory.delete();
 
         try {
-            BufferedReader br = new BufferedReader(new FileReader(userDirectories + user.getUserId() + "/posts"));
-            BufferedWriter bw = new BufferedWriter(new FileWriter(userDirectories + user.getUserId() + "/posts"));
+            BufferedReader br = new BufferedReader(new FileReader("userDirectories" + "/" + user.getUserId() + "/posts"));
+            BufferedWriter bw = new BufferedWriter(new FileWriter("userDirectories" + "/" + user.getUserId() + "/posts"));
 
             String line = br.readLine();
             ArrayList<String> postCodes = new ArrayList<>();
@@ -1082,7 +1094,7 @@ public class DataWriter {
             }
 
             for (int i = 0; i < files.length; i++) {
-                files[i] = new File(commentDirectory + fileNames[i]);
+                files[i] = new File(commentDirectory + "/" + fileNames[i]);
 
                 if (!files[i].createNewFile()) {
                     System.out.println("Error making " + fileNames[i] + " file");
@@ -1091,7 +1103,7 @@ public class DataWriter {
                 }
             }
 
-            BufferedWriter bw = new BufferedWriter(new FileWriter(commentDirectory + fileNames[2]));
+            BufferedWriter bw = new BufferedWriter(new FileWriter(commentDirectory + "/" + fileNames[2]));
 
             bw.write(comment.getText());
             bw.flush();
@@ -1111,7 +1123,7 @@ public class DataWriter {
     public boolean likeComment(Comment comment, User user) {
 
         try {
-            BufferedReader br = new BufferedReader(new FileReader(comment.getCommentPath() + "likes"));
+            BufferedReader br = new BufferedReader(new FileReader(comment.getCommentPath() + "/likes"));
 
             String line = br.readLine();
 
@@ -1128,7 +1140,7 @@ public class DataWriter {
             br.close();
             br = null;
 
-            BufferedWriter bw = new BufferedWriter(new FileWriter(comment.getCommentPath() + "likes", true));
+            BufferedWriter bw = new BufferedWriter(new FileWriter(comment.getCommentPath() + "/likes", true));
 
             bw.write(user.getUserId());
             bw.newLine();
@@ -1149,7 +1161,7 @@ public class DataWriter {
     public boolean dislikeComment(Comment comment, User user) {
 
         try {
-            BufferedReader br = new BufferedReader(new FileReader(comment.getCommentPath() + "dislikes"));
+            BufferedReader br = new BufferedReader(new FileReader(comment.getCommentPath() + "/dislikes"));
 
             String line = br.readLine();
 
@@ -1166,7 +1178,7 @@ public class DataWriter {
             br.close();
             br = null;
 
-            BufferedWriter bw = new BufferedWriter(new FileWriter(comment.getCommentPath() + "dislikes", true));
+            BufferedWriter bw = new BufferedWriter(new FileWriter(comment.getCommentPath() + "/dislikes", true));
 
             bw.write(user.getUserId());
             bw.newLine();
@@ -1187,7 +1199,7 @@ public class DataWriter {
     public boolean unlikeComment(Comment comment, User unliker) throws DoesNotExistException {
 
         try {
-            BufferedReader br = new BufferedReader(new FileReader(comment.getCommentPath() + "likes"));
+            BufferedReader br = new BufferedReader(new FileReader(comment.getCommentPath() + "/likes"));
             String line = br.readLine();
 
             boolean liked = false;
@@ -1207,7 +1219,7 @@ public class DataWriter {
                 throw(new DoesNotExistException("User has not liked comment"));
             }
 
-            BufferedWriter bw = new BufferedWriter(new FileWriter(comment.getCommentPath() + "likes"));
+            BufferedWriter bw = new BufferedWriter(new FileWriter(comment.getCommentPath() + "/likes"));
 
             for(String s : likeIds) {
                 bw.write(s);
@@ -1231,7 +1243,7 @@ public class DataWriter {
     public boolean undislikeComment(Comment comment, User unliker) throws DoesNotExistException {
 
         try {
-            BufferedReader br = new BufferedReader(new FileReader(comment.getCommentPath() + "dislikes"));
+            BufferedReader br = new BufferedReader(new FileReader(comment.getCommentPath() + "/dislikes"));
             String line = br.readLine();
 
             boolean liked = false;
@@ -1251,7 +1263,7 @@ public class DataWriter {
                 throw(new DoesNotExistException("User has not disliked comment"));
             }
 
-            BufferedWriter bw = new BufferedWriter(new FileWriter(comment.getCommentPath() + "dislikes"));
+            BufferedWriter bw = new BufferedWriter(new FileWriter(comment.getCommentPath() + "/dislikes"));
 
             for(String s : likeIds) {
                 bw.write(s);
@@ -1281,6 +1293,8 @@ public class DataWriter {
             while (line != null) {
                 User userLike = redefineUser(line);
                 likes.add(userLike);
+
+                line = br.readLine();
             }
 
             br.close();
@@ -1291,6 +1305,8 @@ public class DataWriter {
             while (line != null) {
                 User userDislike = redefineUser(line);
                 likes.add(userDislike);
+
+                line = br.readLine();
             }
 
             br.close();
@@ -1326,7 +1342,7 @@ public class DataWriter {
         String[] files = commentPath.list();
 
         for (String s : files) {
-            File newFile = new File(commentPath + s);
+            File newFile = new File(commentPath + "/" + s);
             newFile.delete();
         }
         commentPath.delete();
