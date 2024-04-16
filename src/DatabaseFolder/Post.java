@@ -60,6 +60,7 @@ public class Post {
             return false;
         }
 
+        
         likes += 1;
         likesUsers.add(user);
         return true;
