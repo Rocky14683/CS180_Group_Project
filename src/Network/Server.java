@@ -191,6 +191,87 @@ public class Server implements Runnable {
                         writer.flush();
                         break;
                     }
+
+                    case "MakePost": {
+                        String text = reader.readLine();
+                        Post post = new Post(text, null, user);
+                        dataWriter.makePost(post);
+                        writer.println("Post made succefully");
+                        writer.flush();
+                        break;
+                    }
+
+                    case "LikePost":
+                        String postCode = reader.readLine();
+                        if (dataWriter.redefinePost(postCode)) {
+                            dataWriter.likePost((Post)dataWriter.getReturnObject()[0], user);
+                            writer.println("Post liked");
+                            writer.flush();
+                        } else {
+                            writer.println("Failed to like post");
+                            writer.flush();
+                        }
+                        break;
+
+                    case "UnlikePost":
+                        postCode = reader.readLine();
+                        if (dataWriter.redefinePost(postCode)) {
+                            dataWriter.unlikePost((Post)dataWriter.getReturnObject()[0], user);
+                            writer.println("Post unliked");
+                            writer.flush();
+                        } else {
+                            writer.println("Failed to unlike post");
+                            writer.flush();
+                        }
+                        break;
+
+                    case "DislikePost":
+                        postCode = reader.readLine();
+                        if (dataWriter.redefinePost(postCode)) {
+                            dataWriter.dislikePost((Post)dataWriter.getReturnObject()[0], user);
+                            writer.println("Post disliked");
+                            writer.flush();
+                        } else {
+                            writer.println("Failed to dislike post");
+                            writer.flush();
+                        }
+                        break;
+
+                    case "UndislikePost":
+                        postCode = reader.readLine();
+                        if (dataWriter.redefinePost(postCode)) {
+                            dataWriter.undislikePost((Post)dataWriter.getReturnObject()[0], user);
+                            writer.println("Post undisliked");
+                            writer.flush();
+                        } else {
+                            writer.println("Failed to undislike post");
+                            writer.flush();
+                        }
+                        break;
+
+                    case "HidePost":
+                        postCode = reader.readLine();
+                        if (dataWriter.redefinePost(postCode)) {
+                            dataWriter.hidePost((Post)dataWriter.getReturnObject()[0], user);
+                            writer.println("Post hidden");
+                            writer.flush();
+                        } else {
+                            writer.println("Failed to hide post");
+                            writer.flush();
+                        }
+                        break;
+
+                    case "UnhidePost":
+                        postCode = reader.readLine();
+                        if (dataWriter.redefinePost(postCode)) {
+                            dataWriter.unhidePost((Post)dataWriter.getReturnObject()[0], user);
+                            writer.println("Post unhidden");
+                            writer.flush();
+                        } else {
+                            writer.println("Failed to unhide post");
+                            writer.flush();
+                        }
+                        break;
                     
                     case "exit": {
                         socket.close();

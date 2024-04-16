@@ -1,6 +1,12 @@
 package UserFolder;
 
+import DatabaseFolder.AlreadyThereException;
+import DatabaseFolder.BlockedException;
 import DatabaseFolder.DataWriter;
+import DatabaseFolder.DoesNotExistException;
+import DatabaseFolder.ImNotSureWhyException;
+import DatabaseFolder.InvalidOperationException;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -11,7 +17,7 @@ import DatabaseFolder.DataWriter;
 
 import java.util.*;
 
-public class User implements IUserOperations {
+public class User {
     private String userId;
     private String username;
     private String password; //hashing in future for security
@@ -71,9 +77,8 @@ public class User implements IUserOperations {
     }
 
     public void setUsername(String newUsername, DataWriter dw) {
-        dw.setInputObject(new Object[]{this, newUsername, this.password});
-        dw.setJob("UpdateUser");
-        dw.start();
+        dw.updateUser(this, newUsername, this.password);
+        this.password = newUsername;
 
         this.username = newUsername;
     }
@@ -83,9 +88,7 @@ public class User implements IUserOperations {
     }
 
     public void setPassword(String newPassword, DataWriter dw) {
-        dw.setInputObject(new Object[]{this, this.username, newPassword});
-        dw.setJob("UpdateUser");
-        dw.start();
+        dw.updateUser(this, this.username, newPassword);
         this.password = newPassword;
     }
 
@@ -97,20 +100,17 @@ public class User implements IUserOperations {
         return blockedUsers;
     }
 
-    public void addFriend(User user, DataWriter dw) {
-        dw.setInputObject(new Object[]{user, this});
-        dw.setJob("AddFriend");
-        dw.start();
+    public void addFriend(User user, DataWriter dw) throws AlreadyThereException, BlockedException, InvalidOperationException, ImNotSureWhyException, DoesNotExistException {
+        dw.addFriends(user, this);
+        friends.add(user.getUserId());
     }
 
-    public void addFriend(String newUserId) {
-        friends.add(newUserId);
+    public void addFriend(String newFriend) {
+        friends.add(newFriend);
     }
 
     public void setProfile(UserProfile profile, DataWriter dw) {
-        dw.setInputObject(new Object[]{this, profile});
-        dw.setJob("SetProfile");
-        dw.start();
+        dw.setProfile(this, profile.toString());
         this.profile = profile;
     }
 
@@ -128,36 +128,32 @@ public class User implements IUserOperations {
         this.profile.setProfilePic(image);
     }
 
-    public void removeFriend(User user, DataWriter dw) {
-        dw.setInputObject(new Object[]{user, this});
-        dw.setJob("RemoveFriend");
-        dw.start();
+    public void removeFriend(User user, DataWriter dw) throws DoesNotExistException, ImNotSureWhyException {
+        dw.removeFriend(user, this);
+        friends.remove(user.getUserId());
+    }
+
+    public void removeFriend(String oldFriend) {
+        friends.remove(oldFriend);
+    }
+
+    public void blockUser(User user, DataWriter dw) throws AlreadyThereException, DoesNotExistException, ImNotSureWhyException {
+        dw.blockUser(user, this);
+        blockedUsers.add(user.getUserId());
+    }
+
+    public void blockUser(String newBlock) {
+        blockedUsers.add(newBlock);
+    }
+
+    public void unblockUser(User user, DataWriter dw) throws DoesNotExistException, ImNotSureWhyException {
+        dw.unblockUser(user, this);
+        blockedUsers.remove(user.getUserId());
 
     }
 
-    public void removeFriend(String newUserId) {
-        friends.remove(newUserId);
-    }
-
-    public void blockUser(User user, DataWriter dw) {
-        dw.setInputObject(new Object[]{user, this});
-        dw.setJob("BlockUser");
-        dw.start();
-    }
-
-    public void blockUser(String newUserId) {
-        blockedUsers.add(newUserId);
-    }
-
-    public void unblockUser(User user, DataWriter dw) {
-        dw.setInputObject(new Object[]{user, this});
-        dw.setJob("UnBlockUser");
-        dw.start();
-
-    }
-
-    public void unblockUser(String newUserId) {
-        blockedUsers.remove(newUserId);
+    public void unblockUser(String oldBlock) {
+        blockedUsers.remove(oldBlock);
     }
 
     public boolean equals(Object o) {
@@ -172,9 +168,7 @@ public class User implements IUserOperations {
 
     public boolean writeUser(DataWriter dw) {
         try {
-            dw.setInputObject(new Object[]{this});
-            dw.setJob("CreateUser");
-            dw.start();
+            dw.createUser(this);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -182,18 +176,11 @@ public class User implements IUserOperations {
         }
     }
 
-    public static User redifneUser(String newUserId, DataWriter dw) {
-        try {
-            dw.setInputObject(new Object[]{newUserId});
-            dw.setJob("RedefineUser");
-            dw.start();
+    public static User redifneUser(String newUserId, DataWriter dw) throws DoesNotExistException, ImNotSureWhyException {
+    
+        dw.redefineUser(newUserId);
+        return (User) dw.getReturnObject()[0];
 
-            dw.join();
-            return (User) dw.getReturnObject()[0];
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            return new User();
-        }
     }
 
 }

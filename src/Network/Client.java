@@ -151,6 +151,51 @@ public class Client {
                                 writer.flush();
                                 break;
                             }
+                            case "MakePost": {
+                                String text = "";
+                                writer.write(text);
+                                writer.newLine();
+                                writer.flush();
+                            }
+                            case "LikePost": {
+                                String postCode = "";
+                                writer.write(postCode);
+                                writer.newLine();
+                                writer.flush();
+                            }
+                            case "UnlikePost": {
+                                String postCode = "";
+                                writer.write(postCode);
+                                writer.newLine();
+                                writer.flush();
+                            }
+                            case "DisikePost": {
+                                String postCode = "";
+                                writer.write(postCode);
+                                writer.newLine();
+                                writer.flush();
+                            }
+                            case "UndislikePost": {
+                                String postCode = "";
+                                writer.write(postCode);
+                                writer.newLine();
+                                writer.flush();
+                            }
+                            case "HidePost": {
+                                String postCode = "";
+                                writer.write(postCode);
+                                writer.newLine();
+                                writer.flush();
+                            }
+                            case "UnhidePost": {
+                                String postCode = "";
+                                writer.write(postCode);
+                                writer.newLine();
+                                writer.flush();
+                            }
+
+
+
                             case "exit": {
                                 writer.flush();
                                 break;
