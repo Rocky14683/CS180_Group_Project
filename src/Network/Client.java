@@ -97,42 +97,47 @@ public class Client {
                             // all command goes here
 
                             case "addFriend": {     //adds given username as friend to current logged in user
-                                String userId = scan.nextLine(); //GUI for new userid
-                                writer.write(userId);
+                                System.out.println("Enter the username of the friend");
+                                String username = scan.nextLine(); //GUI for new username
+                                writer.write(username);
                                 writer.newLine();
                                 writer.flush();
                                 break;
                             }
                             case "removeFriend": {
-                                String userId = scan.nextLine(); //GUI for new userid
-                                writer.write(userId);
+                                System.out.println("Enter the username of the friend");
+                                String username = scan.nextLine(); //GUI for new username
+                                writer.write(username);
                                 writer.newLine();
                                 writer.flush();
                                 break;
                             }
                             case "blockUser": {
-                                String userId = scan.nextLine(); //GUI for new userid
-                                writer.write(userId);
+                                System.out.println("Enter the username of the user to block");
+                                String username = scan.nextLine(); //GUI for new username
+                                writer.write(username);
                                 writer.newLine();
                                 writer.flush();
                                 break;
                             }
                             case "unblockUser": {
-                                String userId = scan.nextLine(); //GUI for new userid
-                                writer.write(userId);
+                                System.out.println("Enter the username of the user to unblock");
+                                String username = scan.nextLine(); //GUI for new username
+                                writer.write(username);
                                 writer.newLine();
                                 writer.flush();
                                 break;
                             }
                             case "updateUsername": {    //updates current user to given info
+                                System.out.println("Enter your new username (No duplicate usernames)");
                                 String newName = scan.nextLine(); //GUI for new username
-                                //NEEDS TO CHECK WHETHER USERNAME IS ALREADY TAKEN OR NOT TO AVOID DUPLICATION
                                 writer.write(newName);
                                 writer.newLine();
                                 writer.flush();
                                 break;
                             }
                             case "updatePassword": {    //updates current user to given info
+                                System.out.println("Enter your new password");
                                 String newPassword = scan.nextLine(); //GUI for new password
                                 writer.write(newPassword);
                                 writer.newLine();
@@ -140,60 +145,196 @@ public class Client {
                                 break;
                             }
                             case "updateProfilePic": {    //updates current user to given info
-                                String dir = ""; //GUI for new profile picture path
+                                System.out.println("Enter the directory of your picture");
+                                String dir = scan.nextLine(); //GUI for new profile picture path
                                 writer.write(dir);
                                 writer.newLine();
                                 writer.flush();
                                 break;
                             }
                             case "updateProfileBio": {    //updates current user to given info
-                                String info = reader.readLine(); //new bio text
+                                System.out.println("Enter the new text for your bio");
+                                String info = scan.nextLine(); //new bio text
                                 writer.write(info);
                                 writer.newLine();
                                 writer.flush();
                                 break;
                             }
-                            case "MakePost": {
-                                String text = "";
+                            case "searchUser": {    //searches for given username
+                                System.out.println("Enter the username of the user to search");
+                                String username = scan.nextLine();
+                                writer.write(username);
+                                writer.newLine();
+                                writer.flush();
+                                break;
+                            }
+                            case "makePost": {
+                                System.out.println("Enter the text of the post");
+                                String text = reader.readLine();    //post text
+                                System.out.println("Enter the directory of the image");
+                                String image = reader.readLine();   //image file?
                                 writer.write(text);
                                 writer.newLine();
                                 writer.flush();
+                                writer.write(image);
+                                writer.newLine();
+                                writer.flush();
+                                break;
                             }
-                            case "LikePost": {
-                                String postCode = "";
+                            case "likePost": {
+                                System.out.println("Enter the Post Code");
+                                String postCode = scan.nextLine();
                                 writer.write(postCode);
                                 writer.newLine();
                                 writer.flush();
+                                break;
                             }
-                            case "UnlikePost": {
-                                String postCode = "";
+                            case "unlikePost": {
+                                System.out.println("Enter the Post Code");
+                                String postCode = scan.nextLine();
                                 writer.write(postCode);
                                 writer.newLine();
                                 writer.flush();
+                                break;
                             }
-                            case "DisikePost": {
-                                String postCode = "";
+                            case "disikePost": {
+                                System.out.println("Enter the Post Code");
+                                String postCode = scan.nextLine();
                                 writer.write(postCode);
                                 writer.newLine();
                                 writer.flush();
+                                break;
                             }
-                            case "UndislikePost": {
-                                String postCode = "";
+                            case "undislikePost": {
+                                System.out.println("Enter the Post Code");
+                                String postCode = scan.nextLine();
                                 writer.write(postCode);
                                 writer.newLine();
                                 writer.flush();
+                                break;
                             }
-                            case "HidePost": {
-                                String postCode = "";
+                            case "hidePost": {
+                                System.out.println("Enter the Post Code");
+                                String postCode = scan.nextLine();
                                 writer.write(postCode);
                                 writer.newLine();
                                 writer.flush();
+                                break;
                             }
-                            case "UnhidePost": {
-                                String postCode = "";
+                            case "unhidePost": {
+                                System.out.println("Enter the Post Code");
+                                String postCode = scan.nextLine();
                                 writer.write(postCode);
                                 writer.newLine();
                                 writer.flush();
+                                break;
+                            }
+                            case "deletePost": {
+                                System.out.println("Enter the Post Code");
+                                String postCode = scan.nextLine();
+                                writer.write(postCode);
+                                writer.newLine();
+                                writer.flush();
+                                break;
+                            }
+                            case "makeComment": {
+                                System.out.println("Enter the Post Code");
+                                String postCode = scan.nextLine();  //postcode
+                                writer.write(postCode);
+                                writer.newLine();
+                                writer.flush();
+                                System.out.println("Enter the Comment Code");
+                                String comment = scan.nextLine();   //comment
+                                writer.write(comment);
+                                writer.newLine();
+                                writer.flush();
+                                break;
+                            }
+                            case "likeComment": {
+                                System.out.println("Enter the Post Code");
+                                String postCode = scan.nextLine();  //postcode
+                                writer.write(postCode);
+                                writer.newLine();
+                                writer.flush();
+                                System.out.println("Enter the Comment Code");
+                                String comment = scan.nextLine();   //comment
+                                writer.write(comment);
+                                writer.newLine();
+                                writer.flush();
+                                break;
+                            }
+                            case "unlikeComment": {
+                                System.out.println("Enter the Post Code");
+                                String postCode = scan.nextLine();  //postcode
+                                writer.write(postCode);
+                                writer.newLine();
+                                writer.flush();
+                                System.out.println("Enter the Comment Code");
+                                String comment = scan.nextLine();   //comment
+                                writer.write(comment);
+                                writer.newLine();
+                                writer.flush();
+                                break;
+                            }
+                            case "dislikeComment": {
+                                System.out.println("Enter the Post Code");
+                                String postCode = scan.nextLine();  //postcode
+                                writer.write(postCode);
+                                writer.newLine();
+                                writer.flush();
+                                System.out.println("Enter the Comment Code");
+                                String comment = scan.nextLine();   //comment
+                                writer.write(comment);
+                                writer.newLine();
+                                writer.flush();
+                                break;
+                            }
+                            case "undislikeComment": {
+                                System.out.println("Enter the Post Code");
+                                String postCode = scan.nextLine();  //postcode
+                                writer.write(postCode);
+                                writer.newLine();
+                                writer.flush();
+                                System.out.println("Enter the Comment Code");
+                                String comment = scan.nextLine();   //comment
+                                writer.write(comment);
+                                writer.newLine();
+                                writer.flush();
+                                break;
+                            }
+                            case "deleteComment": {
+                                System.out.println("Enter the Post Code");
+                                String postCode = scan.nextLine();  //postcode
+                                writer.write(postCode);
+                                writer.newLine();
+                                writer.flush();
+                                System.out.println("Enter the Comment Code");
+                                String comment = scan.nextLine();   //comment
+                                writer.write(comment);
+                                writer.newLine();
+                                writer.flush();
+                                break;
+                            }
+                            case "searchPost": {
+                                System.out.println("Enter the Post Code");
+                                String postCode = scan.nextLine();  //postcode
+                                writer.write(postCode);
+                                writer.newLine();
+                                writer.flush();
+                                break;
+                            }
+                            case "searchComment": {
+                                System.out.println("Enter the Post Code");
+                                String postCode = scan.nextLine();  //postcode
+                                writer.write(postCode);
+                                writer.newLine();
+                                writer.flush();
+                                System.out.println("Enter the Comment Code");
+                                String commentCode = scan.nextLine();  //postcode
+                                writer.write(commentCode);
+                                writer.newLine();
+                                writer.flush();
+                                break;
                             }
                             case "exit": {
                                 writer.flush();
@@ -213,7 +354,7 @@ public class Client {
                             System.out.println(retCheck);
                             continue;
                         } else {
-                            System.out.println(retCheck);
+                            System.out.println(retCheck);   //server response
                             continue;
                         }
                     }
