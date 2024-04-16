@@ -86,6 +86,10 @@ public class Post {
         return true;
     }
 
+    public ArrayList<Comment> getComments() {
+        return this.comments;
+    }
+
     public boolean addComment(User user, Comment comment) {
         comments.add(comment);
 

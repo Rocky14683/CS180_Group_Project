@@ -104,5 +104,12 @@ public class Comment {
     public User getOwner() {
         return owner;
     }
+
+    //same format as post (owner, text, likes, dislikes)
+    public String toString() {
+        String commentString = comment.getOwner() + ", Text: " + comment.getText() + 
+        ", Likes: " + comment.getLikes() + ", Dislikes: " + comment.getDislikes();
+        return commentString;
+    }
     
 }
