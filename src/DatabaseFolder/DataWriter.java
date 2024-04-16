@@ -133,7 +133,7 @@ public class DataWriter {
             throw (new ExistingUsernameException("Read the exception name"));
         }
 
-        synchronized (gatekeeperArray.get(index)) {
+        synchronized (gatekeeperArray) {
             try {
 
                 if (new File(user.getUserId()).exists()) {
@@ -240,7 +240,7 @@ public class DataWriter {
             }
         }
 
-        synchronized (gatekeeperArray.get(index)) {
+        synchronized (gatekeeperArray) {
             //Making sure the user actually exists
             if (!(new File(directoryPaths[1] + userId)).exists()) {
                 System.out.println("UserId provided does not exist");
@@ -320,7 +320,7 @@ public class DataWriter {
             }
         }
 
-        synchronized (gatekeeperArray.get(index)) {
+        synchronized (gatekeeperArray) {
             try {
                 ArrayList<User> friends = new ArrayList<>();
                 ArrayList<String> friendsId = user.getFriends();
@@ -328,7 +328,7 @@ public class DataWriter {
                 if (friendsId != null) {
                     for (String f : friendsId) {
                         if (f != null && redefineUser(f)) {
-                            User newUser = (User)returnObject[0];
+                            User newUser = (User) returnObject[0];
                             friends.add(newUser);
                         }
                     }
@@ -388,7 +388,7 @@ public class DataWriter {
             }
         }
 
-        synchronized (gatekeeperArray.get(index)) {
+        synchronized (gatekeeperArray) {
             ArrayList<String> friends = new ArrayList<String>();
             try {
                 BufferedReader br = new BufferedReader(new FileReader(new File(directoryPaths[1]
@@ -441,7 +441,7 @@ public class DataWriter {
             }
         }
 
-        synchronized (gatekeeperArray.get(index)) {
+        synchronized (gatekeeperArray) {
             try {
                 if (userId.getBlockedUsers().contains(newBlockId.getUserId())) {
                     System.out.println("This user is already blocked");
@@ -467,9 +467,9 @@ public class DataWriter {
                 br = null;
                 bw = null;
 
-                
-                removeFriend(newBlockId, userId);
-                removeFriend(userId, newBlockId);
+
+//                removeFriend(newBlockId, userId);
+//                removeFriend(userId, newBlockId);
 
             } catch (IOException e) {
                 System.out.println("Unable to add friend");
@@ -493,7 +493,7 @@ public class DataWriter {
             }
         }
 
-        synchronized (gatekeeperArray.get(index)) {
+        synchronized (gatekeeperArray) {
 
             ArrayList<String> blocked = new ArrayList<>();
             try {
@@ -666,6 +666,7 @@ public class DataWriter {
                     br.close();
                     br = null;
                     returnObject = new Object[] {lineArray[1]};
+                    return true;
                 }
                 line = br.readLine();
             }
