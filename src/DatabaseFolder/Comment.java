@@ -5,7 +5,7 @@ import java.io.*;
 import UserFolder.*;
 
 
-public class Comment {
+public class Comment implements CommentInterface {
     private int likes;
     private ArrayList<User> likeUsers;
     private int dislikes;

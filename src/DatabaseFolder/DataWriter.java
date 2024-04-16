@@ -15,7 +15,7 @@ import java.util.*;
  */
 
 //REMEMBER TO READD THE INTERFACE
-public class DataWriter {
+public class DataWriter implements Database {
 
     // Gatekeepers
     public static Object gatekeeper = new Object();
@@ -557,7 +557,7 @@ public class DataWriter {
 
 //UserStuff--------------------------------------------------------------------------------------------------
 
-    public Boolean logIn(String username, String password) {
+    public boolean logIn(String username, String password) {
         System.out.println("Hits login");
         try {
 

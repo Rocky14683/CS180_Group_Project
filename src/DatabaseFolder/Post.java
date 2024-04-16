@@ -4,7 +4,7 @@ import UserFolder.*;
 import java.util.*;
 import java.io.*;
 
-public class Post {
+public class Post implements PostInterface{
 
     private static int numPosts = 0;
     private String text;
