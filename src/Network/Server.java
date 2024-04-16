@@ -155,12 +155,10 @@ public class Server implements Runnable {
                                 writer.flush();
                                 break;
                             }
-                            try {
-                                dataWriter.removeFriend(targetUser, user);
-                            } catch (DoesNotExistException e) {
-                            } finally {
-                                dataWriter.blockUser(targetUser, user);
+                            if (!dataWriter.blockUser(targetUser, user)) {
+                                throw new BlockedException("User is already blocked");
                             }
+
                             //do nothing
                             //removes user as friend (if they are friends
 
@@ -179,7 +177,9 @@ public class Server implements Runnable {
                                 break;
                             }
 
-                            dataWriter.unblockUser(targetUser, user);
+                            if (!dataWriter.unblockUser(targetUser, user)) {
+                                throw new BlockedException("User is not blocked");
+                            }
                             writer.println(targetUser.getUsername() + " has been unblocked");
                             writer.flush();
                             break;
@@ -461,8 +461,10 @@ public class Server implements Runnable {
                 }
             } catch (AlreadyThereException | ExistingUsernameException | InvalidOperationException |
                      BlockedException | DoesNotExistException | ImNotSureWhyException e) {
-                e.printStackTrace();
-                writer.println(e.getMessage());
+//                e.printStackTrace();
+                writer.println("Failed " + e.getMessage());
+                writer.flush();
+                System.out.println("Failed " + e.getMessage());
             } catch (Exception e) {
                 e.printStackTrace();
                 return;

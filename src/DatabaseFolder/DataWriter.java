@@ -1,6 +1,7 @@
 package DatabaseFolder;
 
 import UserFolder.*;
+
 import java.io.*;
 import java.util.*;
 
@@ -13,7 +14,7 @@ import java.util.*;
  * @version 4/1/24
  */
 
- //REMEMBER TO READD THE INTERFACE
+//REMEMBER TO READD THE INTERFACE
 public class DataWriter {
 
     // Gatekeepers
@@ -49,7 +50,7 @@ public class DataWriter {
                 }
             }
 
-            
+
             systemInfo = new File(systemPath + "SystemInfo");
             if (!systemInfo.exists()) {
                 if (systemInfo.createNewFile()) {
@@ -97,8 +98,8 @@ public class DataWriter {
 
 //UserStuff--------------------------------------------------------------------------------------------------
 
-//Exceptions - AlreadyThereException
-    public boolean createUser(User user) throws AlreadyThereException, ExistingUsernameException, ImNotSureWhyException{
+    //Exceptions - AlreadyThereException
+    public boolean createUser(User user) throws AlreadyThereException, ExistingUsernameException, ImNotSureWhyException {
         System.out.println();
         System.out.println("Creating user with Id: " + user.getUserId());
         File userData = null;  //File for where user data, Private so multiple datawriters can 
@@ -137,7 +138,7 @@ public class DataWriter {
                     System.out.println("Error occured when making directory");
 
                     //The userDirectory does not exist and making it failed
-                    throw (new ImNotSureWhyException("userDirectroyError")); 
+                    throw (new ImNotSureWhyException("userDirectroyError"));
                 }
 
                 System.out.println("User directory has been made");
@@ -182,7 +183,7 @@ public class DataWriter {
                     br.close();
                     bw = null;
                     br = null;
-                   throw (new ImNotSureWhyException("SystemInfoError"));
+                    throw (new ImNotSureWhyException("SystemInfoError"));
                 }
 
                 bw.close();
@@ -212,7 +213,7 @@ public class DataWriter {
 
 //UserStuff--------------------------------------------------------------------------------------------------
 
-//Needs to return User
+    //Needs to return User
 //Exceptions - DoesNotExistException
     public User redefineUser(String userId) throws DoesNotExistException, ImNotSureWhyException {
 
@@ -283,7 +284,7 @@ public class DataWriter {
 
 //UserStuff--------------------------------------------------------------------------------------------------
 
-//Exceptions - AlreadyThereException, BlockedException, InvalidOperationException
+    //Exceptions - AlreadyThereException, BlockedException, InvalidOperationException
     public boolean addFriends(User newFreiend, User user) throws AlreadyThereException, BlockedException, InvalidOperationException, ImNotSureWhyException, DoesNotExistException {
 
         synchronized (gatekeeperArray) {
@@ -341,7 +342,7 @@ public class DataWriter {
 
 //UserStuff--------------------------------------------------------------------------------------------------
 
-//Exceptions - DoesNotExistException
+    //Exceptions - DoesNotExistException
     public boolean removeFriend(User oldFreiendId, User userId) throws DoesNotExistException, ImNotSureWhyException {
 
         synchronized (gatekeeperArray) {
@@ -415,9 +416,18 @@ public class DataWriter {
                 br = null;
                 bw = null;
 
-                
-                removeFriend(newBlockId, userId);
-                removeFriend(userId, newBlockId);
+                try {
+                    removeFriend(newBlockId, userId);
+                } catch (DoesNotExistException e) {
+                    //ignore
+                }
+
+                try {
+                    removeFriend(userId, newBlockId);
+                } catch (DoesNotExistException e) {
+                    //ignore
+                }
+
 
             } catch (IOException e) {
                 System.out.println("Unable to add friend");
@@ -431,7 +441,7 @@ public class DataWriter {
 
 //UserStuff--------------------------------------------------------------------------------------------------
 
-    public boolean unblockUser(User oldBlock, User user) throws DoesNotExistException, ImNotSureWhyException{
+    public boolean unblockUser(User oldBlock, User user) throws DoesNotExistException, ImNotSureWhyException {
 
         synchronized (gatekeeperArray) {
 
@@ -548,7 +558,7 @@ public class DataWriter {
 //UserStuff--------------------------------------------------------------------------------------------------
 
     public Boolean logIn(String username, String password) {
-        System.out.println("Hits login"); 
+        System.out.println("Hits login");
         try {
 
             boolean usernameExists = false;
@@ -573,7 +583,7 @@ public class DataWriter {
             if (!usernameExists) {
                 return false;
             }
-            
+
             String realPassword = null;
 
             br = new BufferedReader(new FileReader(new File(directoryPaths[1] + userId + "/userData")));
@@ -582,7 +592,7 @@ public class DataWriter {
                 realPassword = br.readLine();
             }
             br.close();
-            
+
             return password.equals(realPassword);
 
         } catch (IOException e) {
@@ -593,7 +603,7 @@ public class DataWriter {
 
 //UserStuff--------------------------------------------------------------------------------------------------
 
-//returns String
+    //returns String
     public String getUserID(String userName) throws DoesNotExistException {
 
         try {
@@ -652,7 +662,7 @@ public class DataWriter {
 
 //PostStuff--------------------------------------------------------------------------------------------------
 
-//Alot of this is the same as createUser but just diffrent files
+    //Alot of this is the same as createUser but just diffrent files
     public boolean makePost(Post post) {
         File postDirectory = null;
         File likes = null;
@@ -716,7 +726,7 @@ public class DataWriter {
             bw.write(post.getPostCode());
             bw.close();
 
-        } catch(Exception e) {
+        } catch (Exception e) {
 
             e.printStackTrace();
             return false;
@@ -727,7 +737,7 @@ public class DataWriter {
 
 //PostStuff--------------------------------------------------------------------------------------------------
 
-//Return a post
+    //Return a post
     public Post redefinePost(String code) throws DoesNotExistException, ImNotSureWhyException {
         String thisPostPath = postPath + code;
         File postDirectory = new File(thisPostPath);
@@ -749,7 +759,7 @@ public class DataWriter {
             BufferedReader br = new BufferedReader(new FileReader(thisPostPath + "/likes"));
             String line = br.readLine();
 
-            
+
             while (line != null) {
                 likes.add(redefineUser(line));
                 line = br.readLine();
@@ -779,11 +789,11 @@ public class DataWriter {
 
             br.close();
 
-        } catch(IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             return new Post();
         }
-        
+
         return new Post(owner, text, likes, dislikes, hiddenFrom, comments);
     }
 
@@ -804,7 +814,7 @@ public class DataWriter {
                 line = br.readLine();
             }
 
-            BufferedWriter bw = new BufferedWriter(new FileWriter(postPath + post.getPostCode() +"/likes", true));
+            BufferedWriter bw = new BufferedWriter(new FileWriter(postPath + post.getPostCode() + "/likes", true));
             bw.write(liker.getUserId());
             bw.newLine();
             bw.flush();
@@ -812,7 +822,7 @@ public class DataWriter {
             bw = null;
             br.close();
             br = null;
-        } catch(IOException e) {
+        } catch (IOException e) {
             return false;
         }
 
@@ -829,7 +839,7 @@ public class DataWriter {
             String line = br.readLine();
 
             boolean liked = false;
-            ArrayList<String> likeIds= new ArrayList<>();
+            ArrayList<String> likeIds = new ArrayList<>();
             while (line != null) {
                 if (line.equals(unliker.getUserId())) {
                     liked = true;
@@ -842,12 +852,12 @@ public class DataWriter {
             if (!liked) {
                 br.close();
                 br = null;
-                throw(new DoesNotExistException("User has not liked post"));
+                throw (new DoesNotExistException("User has not liked post"));
             }
 
-            BufferedWriter bw = new BufferedWriter(new FileWriter(postPath + post.getPostCode() +"/likes"));
+            BufferedWriter bw = new BufferedWriter(new FileWriter(postPath + post.getPostCode() + "/likes"));
 
-            for(String s : likeIds) {
+            for (String s : likeIds) {
                 bw.write(s);
                 bw.newLine();
                 bw.flush();
@@ -856,7 +866,7 @@ public class DataWriter {
             bw = null;
             br.close();
             br = null;
-        } catch(IOException e) {
+        } catch (IOException e) {
             return false;
         }
 
@@ -881,7 +891,7 @@ public class DataWriter {
                 line = br.readLine();
             }
 
-            BufferedWriter bw = new BufferedWriter(new FileWriter(postPath + post.getPostCode() +"/dislikes", true));
+            BufferedWriter bw = new BufferedWriter(new FileWriter(postPath + post.getPostCode() + "/dislikes", true));
             bw.write(disliker.getUserId());
             bw.newLine();
             bw.flush();
@@ -889,7 +899,7 @@ public class DataWriter {
             bw = null;
             br.close();
             br = null;
-        } catch(IOException e) {
+        } catch (IOException e) {
             return false;
         }
 
@@ -906,7 +916,7 @@ public class DataWriter {
             String line = br.readLine();
 
             boolean disliked = false;
-            ArrayList<String> dislikeIds= new ArrayList<>();
+            ArrayList<String> dislikeIds = new ArrayList<>();
             while (line != null) {
                 if (line.equals(undisliker.getUserId())) {
                     disliked = true;
@@ -919,12 +929,12 @@ public class DataWriter {
             if (!disliked) {
                 br.close();
                 br = null;
-                throw(new DoesNotExistException("User has not disliked post"));
+                throw (new DoesNotExistException("User has not disliked post"));
             }
 
-            BufferedWriter bw = new BufferedWriter(new FileWriter(postPath + post.getPostCode() +"/dislikes"));
+            BufferedWriter bw = new BufferedWriter(new FileWriter(postPath + post.getPostCode() + "/dislikes"));
 
-            for(String s : dislikeIds) {
+            for (String s : dislikeIds) {
                 bw.write(s);
                 bw.newLine();
                 bw.flush();
@@ -933,7 +943,7 @@ public class DataWriter {
             bw = null;
             br.close();
             br = null;
-        } catch(IOException e) {
+        } catch (IOException e) {
             return false;
         }
 
@@ -953,7 +963,7 @@ public class DataWriter {
                     br.close();
                     br = null;
                     throw (new AlreadyThereException("Post is already hidden"));
-                } 
+                }
             }
             br.close();
             br = null;
@@ -981,7 +991,7 @@ public class DataWriter {
             String line = br.readLine();
 
             boolean hidden = false;
-            ArrayList<String> hiddenIds= new ArrayList<>();
+            ArrayList<String> hiddenIds = new ArrayList<>();
             while (line != null) {
                 if (line.equals(user.getUserId())) {
                     hidden = true;
@@ -994,12 +1004,12 @@ public class DataWriter {
             if (!hidden) {
                 br.close();
                 br = null;
-                throw(new DoesNotExistException("User has not hidden this post"));
+                throw (new DoesNotExistException("User has not hidden this post"));
             }
 
-            BufferedWriter bw = new BufferedWriter(new FileWriter(postPath + post.getPostCode() +"/hiddenFrom"));
+            BufferedWriter bw = new BufferedWriter(new FileWriter(postPath + post.getPostCode() + "/hiddenFrom"));
 
-            for(String s : hiddenIds) {
+            for (String s : hiddenIds) {
                 bw.write(s);
                 bw.newLine();
                 bw.flush();
@@ -1008,7 +1018,7 @@ public class DataWriter {
             bw = null;
             br.close();
             br = null;
-        } catch(IOException e) {
+        } catch (IOException e) {
             return false;
         }
 
@@ -1024,7 +1034,7 @@ public class DataWriter {
             return false;
         }
 
-        
+
         File postDirectory = new File(postPath + post.getPostCode());
         File commentDirectroy = new File(postDirectory + "/" + "comments");
         String[] comments = commentDirectroy.list();
@@ -1064,7 +1074,7 @@ public class DataWriter {
             }
 
             bw.flush();
-            
+
             br.close();
             bw.close();
             br = null;
@@ -1107,7 +1117,7 @@ public class DataWriter {
 
             bw.write(comment.getText());
             bw.flush();
-            
+
             bw.close();
             bw = null;
         } catch (IOException e) {
@@ -1203,7 +1213,7 @@ public class DataWriter {
             String line = br.readLine();
 
             boolean liked = false;
-            ArrayList<String> likeIds= new ArrayList<>();
+            ArrayList<String> likeIds = new ArrayList<>();
             while (line != null) {
                 if (line.equals(unliker.getUserId())) {
                     liked = true;
@@ -1216,12 +1226,12 @@ public class DataWriter {
             if (!liked) {
                 br.close();
                 br = null;
-                throw(new DoesNotExistException("User has not liked comment"));
+                throw (new DoesNotExistException("User has not liked comment"));
             }
 
             BufferedWriter bw = new BufferedWriter(new FileWriter(comment.getCommentPath() + "/likes"));
 
-            for(String s : likeIds) {
+            for (String s : likeIds) {
                 bw.write(s);
                 bw.newLine();
                 bw.flush();
@@ -1230,7 +1240,7 @@ public class DataWriter {
             bw = null;
             br.close();
             br = null;
-        } catch(IOException e) {
+        } catch (IOException e) {
             return false;
         }
 
@@ -1247,7 +1257,7 @@ public class DataWriter {
             String line = br.readLine();
 
             boolean liked = false;
-            ArrayList<String> likeIds= new ArrayList<>();
+            ArrayList<String> likeIds = new ArrayList<>();
             while (line != null) {
                 if (line.equals(unliker.getUserId())) {
                     liked = true;
@@ -1260,12 +1270,12 @@ public class DataWriter {
             if (!liked) {
                 br.close();
                 br = null;
-                throw(new DoesNotExistException("User has not disliked comment"));
+                throw (new DoesNotExistException("User has not disliked comment"));
             }
 
             BufferedWriter bw = new BufferedWriter(new FileWriter(comment.getCommentPath() + "/dislikes"));
 
-            for(String s : likeIds) {
+            for (String s : likeIds) {
                 bw.write(s);
                 bw.newLine();
                 bw.flush();
@@ -1274,7 +1284,7 @@ public class DataWriter {
             bw = null;
             br.close();
             br = null;
-        } catch(IOException e) {
+        } catch (IOException e) {
             return false;
         }
 

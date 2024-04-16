@@ -63,7 +63,6 @@ public class Client {
                                 writer.write(password);
                                 writer.newLine();
                                 writer.flush();
-                                client.loggedIn = true;
                                 break;
                             case "register":
                                 // String newUsername = JOptionPane.showInputDialog("Enter new username:");
@@ -75,17 +74,18 @@ public class Client {
                                 writer.write(newUsername + "\n");
                                 writer.write(newPassword + "\n");
                                 writer.flush();
-                                client.loggedIn = true;
                                 break;
                             default:
                                 JOptionPane.showMessageDialog(null, "Invalid option");
                                 break;
                         }
-                        if (reader.readLine().equals("ACK")) {
+                        String retCheck = reader.readLine();
+                        if (retCheck.contains("successful")) {
                             client.loggedIn = true;
                             System.out.println("success");
                             continue;
                         } else {
+                            System.out.println(retCheck);
                             //UI warning
                             continue;
                         }
