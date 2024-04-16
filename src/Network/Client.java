@@ -373,6 +373,9 @@ public class Client {
 
     }
 
+    public Socket getSocket() {
+        return socket;
+    }
 
     public Client(Socket socket) throws IOException {
         System.out.println("11");
