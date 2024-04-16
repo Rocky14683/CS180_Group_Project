@@ -6,7 +6,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.junit.*;
-import org.junit.runner.RunWith;
+
 
 
 /**

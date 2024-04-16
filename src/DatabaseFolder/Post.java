@@ -46,6 +46,10 @@ public class Post {
         this.comments = comments;
     }
 
+    public Post() {
+        likes = -1; //Indicates its not a valid post
+    }
+
     public String toString() {
         String returnString = owner + ", Text: " + text + ", Likes: " + likesUsers + ", Dislikes: " + dislikesUsers;
 
@@ -118,6 +122,10 @@ public class Post {
 
     public File getPostPath() {
         return postPath;
+    }
+
+    public ArrayList<User> getHiddenFrom() {
+        return hiddenFrom;
     }
 
     

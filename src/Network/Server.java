@@ -4,16 +4,9 @@ package Network;
 import DatabaseFolder.*;
 import UserFolder.User;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.UnknownHostException;
-import javax.swing.JOptionPane;
+import java.io.*;
+import java.net.*;
+
 
 /**
  * Server.java
@@ -50,6 +43,7 @@ public class Server implements Runnable {
     }
 
     public static void main(String[] args) throws IOException {
+        @SuppressWarnings("resource")
         ServerSocket serverSocket = new ServerSocket(SOCKET_PORT);
 
         while (true) {
@@ -61,6 +55,7 @@ public class Server implements Runnable {
             Server server = new Server(socket);
             new Thread(server).start();
         }
+
     }
 
     @Override
@@ -84,16 +79,17 @@ public class Server implements Runnable {
                                 writer.flush();
                                 return;
                             }
-                            if (!dataWriter.getUserID(username)) {
+                            String userId = dataWriter.getUserID(username);
+                            if (userId.equals("")) { //--------------------------------------------------------
                                 System.out.println("Failed to get userid");
                                 return;
                             }
-                            String userId = (String) dataWriter.getReturnObject()[0];
-                            if (!dataWriter.redefineUser(userId)) {
+
+                            user = dataWriter.redefineUser(userId);
+                            if (user.getUserId().equals("")) { //--------------------------------------------------------
                                 System.out.println("Failed to redefine user");
                                 return;
                             }
-                            user = (User) dataWriter.getReturnObject()[0];
                             System.out.println("valid");
                             writer.println("Login successful");
                             break;
@@ -123,13 +119,14 @@ public class Server implements Runnable {
                         case "addFriend": {     //adds given username as friend to current logged in user
                             String friendId = reader.readLine(); //userid of friend
                             System.out.println("b4");
-                            if (!dataWriter.redefineUser(friendId)) {
+
+                            User friend = dataWriter.redefineUser(friendId);
+                            if (friend.getUserId().equals("")) { //--------------------------------------------------------
                                 writer.println("User not found");
                                 writer.flush();
                                 break;
                             }
                             System.out.println("after");
-                            User friend = (User) dataWriter.getReturnObject()[0];
                             dataWriter.addFriends(friend, user);
                             System.out.println(friend.getUsername() + " added as a friend");
                             writer.println(friend.getUsername() + " added as a friend");
@@ -138,12 +135,13 @@ public class Server implements Runnable {
                         }
                         case "removeFriend": {
                             String friendId = reader.readLine(); //userid of friend
-                            if (!dataWriter.redefineUser(friendId)) {
+
+                            User targetFriend = dataWriter.redefineUser(friendId);
+                            if (targetFriend.getUserId().equals("")) { //--------------------------------------------------------
                                 writer.println("User not found");
                                 writer.flush();
                                 break;
                             }
-                            User targetFriend = (User) dataWriter.getReturnObject()[0];
                             dataWriter.removeFriend(targetFriend, user);
 
                             writer.println(targetFriend.getUsername() + " removed as a friend");
@@ -152,12 +150,13 @@ public class Server implements Runnable {
                         }
                         case "blockUser": {
                             String userId = reader.readLine(); //userid of friend
-                            if (!dataWriter.redefineUser(userId)) {
+
+                            User targetUser = dataWriter.redefineUser(userId);
+                            if (targetUser.getUserId().equals("")) { //--------------------------------------------------------
                                 writer.println("User not found");
                                 writer.flush();
                                 break;
                             }
-                            User targetUser = (User) dataWriter.getReturnObject()[0];
                             try {
                                 dataWriter.removeFriend(targetUser, user);
                             } catch (DoesNotExistException e) {
@@ -173,15 +172,15 @@ public class Server implements Runnable {
                         }
                         case "unblockUser": {
                             String userId = reader.readLine(); //userid of friend
-                            if (!dataWriter.redefineUser(userId)) {
+                            User targetUser = dataWriter.redefineUser(userId);
+
+                            if (targetUser.getUserId().equals("")) { //--------------------------------------------------------
                                 writer.println("User not found");
                                 writer.flush();
                                 break;
                             }
-                            User targetUser = (User) dataWriter.getReturnObject()[0];
+
                             dataWriter.unblockUser(targetUser, user);
-
-
                             writer.println(targetUser.getUsername() + " has been unblocked");
                             writer.flush();
                             break;
@@ -189,14 +188,14 @@ public class Server implements Runnable {
                         case "updateUsername": {    //updates current user to given info
                             String newName = reader.readLine(); //new username
                             //NEEDS TO CHECK WHETHER USERNAME IS ALREADY TAKEN OR NOT TO AVOID DUPLICATION
-                            user.setUsername(newName, this.dataWriter);
+                            user.setUsername(newName, dataWriter);
                             writer.println("Username updated successfully");
                             writer.flush();
                             break;
                         }
                         case "updatePassword": {    //updates current user to given info
                             String newPassword = reader.readLine(); //new password
-                            user.setPassword(newPassword, this.dataWriter);
+                            user.setPassword(newPassword, dataWriter);
                             writer.println("Password updated successfully");
                             writer.flush();
                             break;
@@ -234,11 +233,11 @@ public class Server implements Runnable {
         //<= to be implemented
     }
 
-    private static void publicChat(String message) {    //TO BE IMPLEMENTED
+    // private static void publicChat(String message) {    //TO BE IMPLEMENTED
 
-    }
+    // }
 
-    private static void directMessage(String message, User user) {      //TO BE IMPLEMENTED
+    // private static void directMessage(String message, User user) {      //TO BE IMPLEMENTED
 
-    }
+    // }
 }

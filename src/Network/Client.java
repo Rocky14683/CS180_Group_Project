@@ -1,6 +1,5 @@
 package Network;
 
-import UserFolder.User;
 
 import java.io.*;
 import java.net.Socket;
@@ -23,9 +22,10 @@ import javax.swing.JOptionPane;
 
 public class Client {
     private boolean loggedIn = false;
+    @SuppressWarnings("unused")
     private Socket socket;
-    private ObjectOutputStream out;
-    private ObjectInputStream in;
+    // private ObjectOutputStream out;
+    // private ObjectInputStream in;
 
     public static void main(String[] args) {
         Socket socket = null;
@@ -38,6 +38,7 @@ public class Client {
             BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             System.out.println(2);
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            @SuppressWarnings("resource")
             Scanner scan = new Scanner(System.in);
             while (true) {
                 System.out.print("Operation: \n");

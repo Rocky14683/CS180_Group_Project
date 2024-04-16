@@ -1,8 +1,8 @@
 package Network;
 
-import java.io.BufferedReader;
+//import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
+//import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -25,7 +25,7 @@ public class Client_temp_unuse {
         try {
             socket = new Socket("localhost", Server.SOCKET_PORT);  //connects to server
             try {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                //BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 PrintWriter writer = new PrintWriter(socket.getOutputStream());
 
                 writer.write("client entry");   //allows client to be connected to server

@@ -7,15 +7,12 @@ import DatabaseFolder.DoesNotExistException;
 import DatabaseFolder.ImNotSureWhyException;
 import DatabaseFolder.InvalidOperationException;
 
-import org.junit.Assert;
+//import org.junit.Assert;
 import org.junit.Test;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
-import DatabaseFolder.DataWriter;
-
-import java.util.*;
 
 public class User {
     private String userId;
@@ -176,12 +173,6 @@ public class User {
         }
     }
 
-    public static User redifneUser(String newUserId, DataWriter dw) throws DoesNotExistException, ImNotSureWhyException {
-    
-        dw.redefineUser(newUserId);
-        return (User) dw.getReturnObject()[0];
-
-    }
 
 }
 
