@@ -7,8 +7,8 @@ import java.io.*;
 public class Post {
 
     private static int numPosts = 0;
-    private String text;    
-    private String image; 
+    private String text;
+    private String image;
     private String postCode;
     private User owner;
     private int likes;
@@ -86,6 +86,10 @@ public class Post {
         return true;
     }
 
+    public ArrayList<Comment> getComments() {
+        return this.comments;
+    }
+
     public boolean addComment(User user, Comment comment) {
         comments.add(comment);
 
@@ -95,7 +99,7 @@ public class Post {
     public int getDislikes() {
         return dislikes;
     }
-    
+
     public int getLikes() {
         return likes;
     }
@@ -128,5 +132,5 @@ public class Post {
         return hiddenFrom;
     }
 
-    
+
 }
