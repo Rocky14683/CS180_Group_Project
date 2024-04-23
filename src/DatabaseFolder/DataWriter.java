@@ -15,7 +15,7 @@ import java.util.*;
  */
 
 //REMEMBER TO READD THE INTERFACE
-public class DataWriter implements Database {
+public class DataWriter {
 
     // Gatekeepers
     public static Object gatekeeper = new Object();
@@ -558,7 +558,6 @@ public class DataWriter implements Database {
 //UserStuff--------------------------------------------------------------------------------------------------
 
     public boolean logIn(String username, String password) {
-        System.out.println("Hits login");
         try {
 
             boolean usernameExists = false;
@@ -1358,6 +1357,59 @@ public class DataWriter implements Database {
         commentPath.delete();
 
         return true;
+    }
+
+    //Return all users
+    public ArrayList<String[]> getUsers() throws ImNotSureWhyException{
+
+        try {
+            ArrayList<String[]> allUsers = new ArrayList<>();
+            BufferedReader br = new BufferedReader(new FileReader(userNames));
+            String line = br.readLine();
+
+            line = br.readLine();
+
+            while (line != null) {
+                String[] lineArray = line.split(", ");
+                allUsers.add(lineArray);
+
+                line = br.readLine();
+            }
+
+            br.close();
+            br = null;
+            return allUsers;
+
+        } catch (IOException e) {
+            throw (new ImNotSureWhyException("IOexception in getUsers"));
+        }
+
+    }
+
+    public ArrayList<String> getPosts() {
+
+
+        String[] allPostIds = directories[2].list();
+        ArrayList<String> allPostIdsButArrayList = new ArrayList<>();
+
+        for (String s : allPostIds) {
+            allPostIdsButArrayList.add(s);
+        }
+
+        return allPostIdsButArrayList;
+    }
+
+    public ArrayList<String> getComments(Post post) {
+        File commetFolder = new File(post.getPostPath() + "/Comments");
+
+        String[] allPostIds = commetFolder.list();
+        ArrayList<String> allCommentsButArrayList = new ArrayList<>();
+        
+        for (String s : allPostIds) {
+            allCommentsButArrayList.add(s);
+        }
+
+        return allCommentsButArrayList;
     }
 
 //StaticMethods----------------------------------------------------------------------------------------------
