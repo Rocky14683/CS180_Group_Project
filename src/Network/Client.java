@@ -1,11 +1,14 @@
 package Network;
 
 
+import UI.LoginUI;
+
 import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Scanner;
 
+import javax.security.auth.login.LoginContext;
 import javax.swing.JOptionPane;
 
 
@@ -41,23 +44,34 @@ public class Client {
             @SuppressWarnings("resource")
             Scanner scan = new Scanner(System.in);
             while (true) {
-                System.out.print("Operation: \n");
-                String option = scan.nextLine();// this is where the GUI for login/register will be
                 try {
                     if (!client.loggedIn) {
+                        LoginUI loginUI = new LoginUI();
+                        while (!loginUI.dataUsable) {
+                            try {
+                                Thread.sleep(10);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        String ret[] = loginUI.getReturnObjects();
+                        String username = ret[1];
+                        String password = ret[2];
+                        String option = ret[0];
+
+
                         writer.write(option);
                         writer.newLine();
                         writer.flush();
                         switch (option) {
                             case "login":
-                                System.out.println("test");
+
+//                                System.out.println("test");
                                 // String username = JOptionPane.showInputDialog("Enter username:");
 
                                 // String password = JOptionPane.showInputDialog("Enter password:");
                                 System.out.println("Username: ");
-                                String username = scan.nextLine();
                                 System.out.println("Password: ");
-                                String password = scan.nextLine();
                                 writer.write(username);
                                 writer.newLine();
                                 writer.write(password);
@@ -68,11 +82,9 @@ public class Client {
                                 // String newUsername = JOptionPane.showInputDialog("Enter new username:");
                                 // String newPassword = JOptionPane.showInputDialog("Enter new password:");
                                 System.out.println("Username: ");
-                                String newUsername = scan.nextLine();
                                 System.out.println("Password: ");
-                                String newPassword = scan.nextLine();
-                                writer.write(newUsername + "\n");
-                                writer.write(newPassword + "\n");
+                                writer.write(username + "\n");
+                                writer.write(password + "\n");
                                 writer.flush();
                                 break;
                             default:
@@ -83,13 +95,16 @@ public class Client {
                         if (retCheck.contains("successful")) {
                             client.loggedIn = true;
                             System.out.println("success");
+                            loginUI.kill();
                             continue;
                         } else {
+                            loginUI.reset();
                             System.out.println(retCheck);
                             //UI warning
                             continue;
                         }
                     } else {
+                        String option = scan.nextLine();
                         writer.write(option);
                         writer.newLine();
                         writer.flush();
