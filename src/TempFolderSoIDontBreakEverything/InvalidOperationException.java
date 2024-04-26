@@ -1,0 +1,9 @@
+package TempFolderSoIDontBreakEverything;
+// package DatabaseFolder;
+
+public class InvalidOperationException extends Exception{
+    
+    public InvalidOperationException(String message) {
+        super(message);
+    }
+}
