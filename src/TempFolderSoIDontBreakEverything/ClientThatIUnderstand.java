@@ -1,13 +1,11 @@
-package TempFolderSoIDontBreakEverything;
-
 import java.io.*;
 import java.net.Socket;
 import java.util.*;
 
-public class ClientThatIUnderstand {
+import javax.swing.*;
 
-    
-    private boolean loggedIn = false;
+
+public class ClientThatIUnderstand {
     BufferedReader reader;
     BufferedWriter writer;
 
@@ -21,8 +19,8 @@ public class ClientThatIUnderstand {
             System.out.println("Connected to server");
             reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-            @SuppressWarnings("resource")
-            Scanner scan = new Scanner(System.in);
+
+
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -43,6 +41,10 @@ public class ClientThatIUnderstand {
             Boolean isValid = reader.readLine().equals("Login successful");
 
             System.out.println(isValid);
+
+            if (!isValid) {
+                JOptionPane.showMessageDialog(null, "Username already exists", "Error", JOptionPane.WARNING_MESSAGE);
+            }
             return isValid;
 
         } catch(IOException e) {
@@ -59,9 +61,13 @@ public class ClientThatIUnderstand {
             writer.write(newPassword + "\n");
             writer.flush();
 
-            boolean isValid = reader.readLine().equals("Account created successfully");
+            String result = reader.readLine();
+            boolean isValid = result.equals("Account created successfully");
             
             System.out.println(isValid);
+            if (!isValid) {
+                JOptionPane.showMessageDialog(null, "Username already exists", "Error", JOptionPane.WARNING_MESSAGE);
+            }
             return isValid;
         } catch (IOException e) {
             e.printStackTrace();
@@ -78,7 +84,10 @@ public class ClientThatIUnderstand {
         writer.newLine();
         writer.flush();
 
-        reader.readLine();
+        String exceptions = reader.readLine();
+        if (exceptions.equals("Blocked")) {
+            JOptionPane.showMessageDialog(null, "Cannot add friend\n\nThis user has you blocked or you have them blocked", "Adding friend error", JOptionPane.WARNING_MESSAGE);
+        }
 
     }
 
@@ -189,10 +198,15 @@ public class ClientThatIUnderstand {
 
     public ArrayList<String[]> getComments(String postCode) throws IOException {
         writer.write("getComments\n");
+        writer.write(postCode + "\n");
         writer.flush();
         String commentString = reader.readLine();
+        System.out.println("getComments commentString: " + commentString);
+
+        System.out.println("Made it back to client, getComments");
 
         String[] commentStringArray = commentString.split(";;");
+        System.out.println("Size: " + commentStringArray.length);
 
         ArrayList<String[]> returnList = new ArrayList<>();
 
@@ -200,7 +214,7 @@ public class ClientThatIUnderstand {
             returnList.add(s.split(";"));
         }
 
-        return new ArrayList<>();
+        return returnList;
     }
 
     public void makePost(String text) throws IOException {
@@ -213,5 +227,225 @@ public class ClientThatIUnderstand {
         reader.readLine();
 
     }
+
+    public void likePost(String postCode) throws IOException {
+        System.out.println("Like post");
+        writer.write("likePost\n");
+        writer.write(postCode + "\n");
+        writer.flush();
+        reader.readLine();
+    }
+
+    public void unlikePost(String postCode) throws IOException {
+        writer.write("unlikePost\n");
+        writer.write(postCode + "\n");
+        writer.flush();
+        reader.readLine();
+    }
+
+    public void dislikePost(String postCode) throws IOException {
+        writer.write("dislikePost\n");
+        writer.write(postCode + "\n");
+        writer.flush();
+        reader.readLine();
+    }
+
+    public void undislikePost(String postCode) throws IOException {
+        writer.write("undislikePost\n");
+        writer.write(postCode + "\n");
+        writer.flush();
+        reader.readLine();
+    }
+
+    public boolean hasLiked(String postcode) throws IOException {
+        writer.write("hasLiked\n");
+        writer.write(postcode + "\n");
+        writer.flush();
+
+        boolean hasLiked = reader.readLine().equals("liked");
+        System.out.println(hasLiked);
+        return hasLiked;
+    }
+
+    public boolean hasDisliked(String postcode) throws IOException {
+        writer.write("hasDisliked\n");
+        writer.write(postcode + "\n");
+        writer.flush();
+
+        boolean hasDisliked = reader.readLine().equals("disliked");
+        System.out.println(hasDisliked);
+        return hasDisliked;
+    }
+
+    public boolean isOwnerPost(String postCode) throws IOException {
+        writer.write("isOwnerPost\n");
+        writer.write(postCode);
+        writer.newLine();
+        writer.flush();
+
+
+        return reader.readLine().equals("owner");
+    }
+
+    public boolean isHidden(String postCode) throws IOException {
+        writer.write("isHidden\n");
+        writer.write(postCode);
+        writer.newLine();
+        writer.flush();
+
+
+        return reader.readLine().equals("hidden");
+    }
+
+    public void deletePost(String postCode) throws IOException {
+        writer.write("deletePost\n");
+        writer.write(postCode);
+        writer.newLine();
+        writer.flush();
+
+        reader.readLine();
+    }
+
+    public void deleteComment(String commentCode) throws IOException {
+        writer.write("deleteComment\n");
+        writer.write(commentCode);
+        writer.newLine();
+        writer.flush();
+
+        reader.readLine();
+    }
+
+    public void hidePost(String postCode) throws IOException {
+        writer.write("hidePost\n");
+        writer.write(postCode);
+        writer.newLine();
+        writer.flush();
+
+        reader.readLine();
+    }
+
+    public void updateUsername(String newUsername) throws IOException{
+        writer.write("updateUsername\n");
+        writer.write(newUsername);
+        writer.newLine();
+        writer.flush();
+
+        String didItWork = reader.readLine();
+
+        if(!didItWork.equals("yes")) {
+            JOptionPane.showMessageDialog(null, "Username is taken", "Error", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+
+    public void updatePassword(String newPassword) throws IOException{
+        writer.write("updatePassword\n");
+        writer.write(newPassword);
+        writer.newLine();
+        writer.flush();
+    }
+
+    public void showInfo() {
+        JOptionPane.showMessageDialog(null, "Username is taken", "Error", JOptionPane.WARNING_MESSAGE);
+    }
+
+    public void makeComment(String postCode, String text) throws IOException {
+        writer.write("makeComment");
+        writer.newLine();
+        writer.write(postCode + "\n" + text + "\n");
+        writer.flush();
+        
+        reader.readLine();
+    }
+
+    //-------------------------------------------------------------------
+
+    public void likeComment(String postCode, String commentCode) throws IOException {
+        writer.write("likeComment\n");
+        writer.write(postCode);
+        writer.newLine();
+        writer.write(commentCode);
+        writer.newLine();
+        writer.flush();
+
+        reader.readLine();
+    }
+
+    public void unlikeComment(String postCode, String commentCode) throws IOException {
+        writer.write("unlikeComment\n");
+        writer.write(postCode);
+        writer.newLine();
+        writer.write(commentCode);
+        writer.newLine();
+        writer.flush();
+
+        reader.readLine();
+    }
+
+    public void dislikeComment(String postCode, String commentCode) throws IOException {
+        writer.write("dislikeComment\n");
+        writer.write(postCode);
+        writer.newLine();
+        writer.write(commentCode);
+        writer.newLine();
+        writer.flush();
+
+        reader.readLine();
+    }
+
+    public void undislikeComment(String postCode, String commentCode) throws IOException {
+        writer.write("undislikeComment\n");
+        writer.write(postCode);
+        writer.newLine();
+        writer.write(commentCode);
+        writer.newLine();
+        writer.flush();
+
+        reader.readLine();
+    }
+
+    public boolean hasLikedComment(String postCode, String commentCode) throws IOException {
+        writer.write("hasLikedComment\n");
+        writer.write(postCode);
+        writer.newLine();
+        writer.write(commentCode);
+        writer.newLine();
+        writer.flush();
+
+        return reader.readLine().equals("liked");
+    }
+
+    public boolean hasDislikedComment(String postCode, String commentCode) throws IOException {
+        writer.write("hasDislikedComment\n");
+        writer.write(postCode);
+        writer.newLine();
+        writer.write(commentCode);
+        writer.newLine();
+        writer.flush();
+
+        return reader.readLine().equals("disliked");
+    }
+
+    public boolean isOwnerComment(String commentCode) throws IOException {
+        writer.write("isOwnerComment\n");
+        writer.write(commentCode);
+        writer.newLine();
+        writer.flush();
+
+
+        return reader.readLine().equals("owner");
+    }
+
+
+
+
+    // likeComment
+    // unlikeCommemt
+    // hasLikedComment
+
+    // dislikeComment
+    // undislikeComment
+    // hasDislikedComment
+    
+
 
 }

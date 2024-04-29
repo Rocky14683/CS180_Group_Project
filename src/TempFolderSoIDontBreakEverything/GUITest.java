@@ -1,5 +1,3 @@
-package TempFolderSoIDontBreakEverything;
-
 import java.net.Socket;
 
 public class GUITest {

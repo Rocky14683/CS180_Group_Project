@@ -1,4 +1,3 @@
-package TempFolderSoIDontBreakEverything;
 // package DatabaseFolder;
 
 public class InvalidInputObject extends Exception {

@@ -1,4 +1,4 @@
-package TempFolderSoIDontBreakEverything;
+
 //package Network;
 
 // import DatabaseFolder.*;
@@ -6,7 +6,6 @@ package TempFolderSoIDontBreakEverything;
 
 import java.io.*;
 import java.net.*;
-import java.rmi.server.ServerRef;
 import java.util.*;
 
 /**
@@ -67,7 +66,7 @@ public class Server implements Runnable {
                 if (user == null) {
                     System.out.println("Waiting for cmd");
                     String cmd = reader.readLine();
-                    System.out.println(cmd);
+                    System.out.println("Command: " + cmd);
                     String username = reader.readLine(); //username
                     System.out.println(username);
                     String password = reader.readLine(); //password
@@ -78,67 +77,85 @@ public class Server implements Runnable {
                             System.out.println("login");
                             if (!dataWriter.logIn(username, password)) {
                                 System.out.println("Invalid");
-                                writer.println("Invalid username or password");
+                                writer.println("Invalid");
                                 writer.flush();
-                                return;
+                                break;
                             }
                             String userId = dataWriter.getUserID(username);
                             if (userId.equals("")) { //--------------------------------------------------------
                                 System.out.println("Failed to get userid");
-                                return;
+                                break;
                             }
 
                             user = dataWriter.redefineUser(userId);
                             if (user.getUserId().equals("")) { //--------------------------------------------------------
                                 System.out.println("Failed to redefine user");
-                                return;
+                                break;
                             }
                             System.out.println("valid");
                             writer.println("Login successful");
+                            writer.flush();
+
                             break;
                         }
                         case "register": {
-                            System.out.println("made it to register");
-                            user = new User(username, password);
-                            if (!dataWriter.createUser(user)) {
-                                System.out.println("Failed");
-                                writer.println("Invalid username or password");
+                            try {
+                                System.out.println("made it to register");
+                                user = new User(username, password);
+                                if (!dataWriter.createUser(user)) {
+                                    System.out.println("Failed");
+                                    writer.println("Invalid username or password");
+                                    writer.flush();
+                                    return;
+                                }
+                                System.out.println("Didn't fail");
+                                writer.println("Account created successfully");
                                 writer.flush();
-                                return;
+                                break;
+                            } catch (Exception e)
+                            {
+                                writer.write("Failed");
+                                writer.flush();
                             }
-                            System.out.println("Didn't fail");
-                            writer.println("Account created successfully");
                             break;
                         }
                         default: {
                             writer.println("Invalid command");
+                            writer.flush();
                             break;
                         }
+                    
                     }
                     writer.flush();
                 } else {
                     System.out.println("Waiting for cmd");
                     String cmd = reader.readLine();
-                    System.out.println(cmd);
+                    System.out.println("Command: " + cmd);
                     switch (cmd) {
                         // all command goes here
 
                         case "addFriend": {     //adds given username as friend to current logged in user
-                            String friendId = reader.readLine(); //userid of friend
-                            System.out.println("b4");
+                            try {
+                                String friendId = reader.readLine(); //userid of friend
+                                System.out.println("b4");
 
-                            User friend = dataWriter.redefineUser(friendId);
-                            if (friend.getUserId().equals("")) { //--------------------------------------------------------
-                                writer.println("User not found");
+                                User friend = dataWriter.redefineUser(friendId);
+                                if (friend.getUserId().equals("")) { //--------------------------------------------------------
+                                    writer.println("User not found");
+                                    writer.flush();
+                                    break;
+                                }
+                                System.out.println("after");
+                                dataWriter.addFriends(friend, user);
+                                System.out.println(friend.getUsername() + " added as a friend");
+                                writer.println(friend.getUsername() + " added as a friend");
                                 writer.flush();
-                                break;
-                            }
-                            System.out.println("after");
-                            dataWriter.addFriends(friend, user);
-                            System.out.println(friend.getUsername() + " added as a friend");
-                            writer.println(friend.getUsername() + " added as a friend");
-                            writer.flush();
                             continue;
+                            } catch (Exception e) {
+                                writer.println("Blocked");
+                                writer.flush();
+                            }
+                            break;
                         }
                         case "removeFriend": {
                             String friendId = reader.readLine(); //userid of friend
@@ -226,7 +243,10 @@ public class Server implements Runnable {
                                 }
                             }
                             System.out.println("Sending info to client");
-                            returnString = returnString.substring(0, returnString.length() - 2);
+                            
+                            if (returnString.length() > 0) {
+                                returnString = returnString.substring(0, returnString.length() - 2);
+                            }
                             writer.println(returnString);
 
                             writer.println("Success");
@@ -281,7 +301,8 @@ public class Server implements Runnable {
                                 returnString += post.getOwner().getUsername() + ";";
                                 returnString += post.getText() + ";";
                                 returnString += post.getLikes() + ";";
-                                returnString += post.getDislikes() + ";;";
+                                returnString += post.getDislikes() + ";";
+                                returnString += post.getPostCode() + ";;";
                             }
                             if (returnString.length() > 2) {
                                 returnString = returnString.substring(0, returnString.length() - 2);
@@ -293,16 +314,22 @@ public class Server implements Runnable {
                         }
 
                         case "getComments": {
+                            System.out.println("getComments");
                             String postcode = reader.readLine();
+                            System.out.println("getComments");
                             Post post = dataWriter.redefinePost(postcode);
+                            System.out.println("getComments");
                             ArrayList<String> commentIds = dataWriter.getComments(post);
+                            System.out.println("getComments");
                             String returnString = "";
                             for (String s : commentIds) {
+                                
                                 Comment comment = dataWriter.redefineComment(post, s);
                                 returnString += comment.getOwner().getUsername() + ";";
                                 returnString += comment.getText() + ";";
                                 returnString += comment.getLikes() + ";";
-                                returnString += comment.getDislikes() + ";;";
+                                returnString += comment.getDislikes() + ";";
+                                returnString += comment.getCode() + ";;";
                             }
 
                              if (returnString.length() > 2) {
@@ -323,6 +350,283 @@ public class Server implements Runnable {
                             break;
                         }
 
+                        case "likePost": {
+                            String postCode = reader.readLine();
+                            Post post = dataWriter.redefinePost(postCode);
+                            if (dataWriter.likePost(post, user)) {
+                                writer.println("done");
+                                System.out.println("Post Succesfully liked");
+                            } else {
+                                writer.println("-");
+                                System.out.println("Liking post failed");
+                            }
+                            
+                            writer.flush();
+                            break;
+                        }
+
+                        case "unlikePost": {
+                            String postCode = reader.readLine();
+                            Post post = dataWriter.redefinePost(postCode);
+                            dataWriter.unlikePost(post, user);
+                            writer.println("done");
+                            writer.flush();
+                            break;
+                        }
+
+                        case "dislikePost": {
+                            String postCode = reader.readLine();
+                            Post post = dataWriter.redefinePost(postCode);
+                            dataWriter.dislikePost(post, user);
+                            writer.println("done");
+                            writer.flush();
+                            break;
+                        }
+
+                        case "undislikePost": {
+                            String postCode = reader.readLine();
+                            Post post = dataWriter.redefinePost(postCode);
+                            dataWriter.undislikePost(post, user);
+                            writer.println("done");
+                            writer.flush();
+                            break;
+                        }
+
+                        case "hasLiked": {
+                            String postcode = reader.readLine();
+                            if (dataWriter.hasLiked(dataWriter.redefinePost(postcode), user)) {
+                                writer.println("liked");
+                            } else {
+                                writer.println("noLiked");
+                            }
+                            writer.flush();
+
+                            break;
+                        }
+
+                        case "hasDisliked": {
+                            String postcode = reader.readLine();
+                            if (dataWriter.hasDisliked(dataWriter.redefinePost(postcode), user)) {
+                                writer.println("disliked");
+                            } else {
+                                writer.println("noDisliked");
+                            }
+                            writer.flush();
+
+                            break;
+                        }
+
+                        case "isOwnerPost" : {
+                            String postCode = reader.readLine();
+
+                            boolean owner = dataWriter.redefinePost(postCode).getOwner().equals(user);
+
+                            if (owner) {
+                                writer.println("owner");
+                            } else {
+                                writer.println("notOwner");
+                            }
+
+                            writer.flush();
+                            break;
+                        }
+
+                        case "isHidden": {
+                            String postCode = reader.readLine();
+                            
+                            Post post = dataWriter.redefinePost(postCode);
+
+                            boolean hidden = dataWriter.isHidden(post, user);
+                            System.out.println(hidden);
+
+                            if (hidden) {
+                                writer.println("hidden");
+                            } else {
+                                writer.println("no");
+                            }    
+                            writer.flush();
+
+                            break;
+                        }
+
+                        case "deletePost": {
+                            String postCode = reader.readLine();
+
+                            Post post = dataWriter.redefinePost(postCode);
+
+                            dataWriter.deletePost(post, user);
+
+                            writer.println("done");
+                            writer.flush();
+                            break;
+                        }
+
+                        case "deleteComment": {
+                            String commentCode = reader.readLine();
+
+                            Comment comment = dataWriter.redefineComment(null, commentCode);
+
+                            dataWriter.deleteComment(comment, user);
+
+                            writer.println("done");
+                            writer.flush();
+                            break;
+                        }
+
+                        case "hidePost": {
+                            String postCode = reader.readLine();
+
+                            Post post = dataWriter.redefinePost(postCode);
+
+                            dataWriter.hidePost(post, user);
+
+                            writer.println("done");
+                            writer.flush();
+                            break;
+                        }
+
+                        case "getInfo": {
+                            writer.println(user.getUsername());
+                            writer.println(user.getUserId());
+                            writer.println(user.getFriends().size());
+                            writer.println(user.getProfile().getBio());
+
+                        }
+
+                        case "makeComment": {
+                            String postCode = reader.readLine();
+                            String text = reader.readLine();
+
+                            Post post = dataWriter.redefinePost(postCode);
+                            System.out.println(post);
+                            Comment comment = new Comment(post, text, user);
+                            dataWriter.makeComment(post, comment);
+
+                            writer.println("done");
+                            writer.flush();
+
+                            break;
+                        }
+
+                            // is Hidden
+                            // Delete post
+                            // Delete comment
+                            // Hide post
+                            // Update user
+                            // GetInfo 
+
+
+                            case "likeComment": {
+                                String postCode = reader.readLine();
+                                String commentCode = reader.readLine();
+                                Post post = dataWriter.redefinePost(postCode);
+                                Comment comment = dataWriter.redefineComment(post, commentCode);
+
+                                if (dataWriter.likeComment(comment, user)) {
+                                    writer.println("done");
+                                    System.out.println("Comment Succesfully liked");
+                                } else {
+                                    writer.println("-");
+                                    System.out.println("Liking comment failed");
+                                }
+                                
+                                writer.flush();
+                                break;
+                            }
+    
+                            case "unlikeComment": {
+                                String postCode = reader.readLine();
+                                String commentCode = reader.readLine();
+                                Post post = dataWriter.redefinePost(postCode);
+                                Comment comment = dataWriter.redefineComment(post, commentCode);
+
+                                if (dataWriter.unlikeComment(comment, user)) {
+                                    writer.println("done");
+                                    System.out.println("Comment Succesfully unliked");
+                                } else {
+                                    writer.println("-");
+                                    System.out.println("Unliking comment failed");
+                                }
+                                
+                                writer.flush();
+                                break;
+                            }
+
+                            case "dislikeComment": {
+                                String postCode = reader.readLine();
+                                String commentCode = reader.readLine();
+                                Post post = dataWriter.redefinePost(postCode);
+                                Comment comment = dataWriter.redefineComment(post, commentCode);
+
+                                if (dataWriter.dislikeComment(comment, user)) {
+                                    writer.println("done");
+                                    System.out.println("Comment Succesfully disliked");
+                                } else {
+                                    writer.println("-");
+                                    System.out.println("disliking comment failed");
+                                }
+                                
+                                writer.flush();
+                                break;
+                            }
+
+                            case "undislikeComment": {
+                                String postCode = reader.readLine();
+                                String commentCode = reader.readLine();
+                                Post post = dataWriter.redefinePost(postCode);
+                                Comment comment = dataWriter.redefineComment(post, commentCode);
+
+                                if (dataWriter.undislikeComment(comment, user)) {
+                                    writer.println("done");
+                                    System.out.println("Comment Succesfully liked");
+                                } else {
+                                    writer.println("-");
+                                    System.out.println("Liking comment failed");
+                                }
+                                
+                                writer.flush();
+                                break;
+                            }
+
+                            case "hasLikedComment": {
+                                String postCode = reader.readLine();
+                                String commentCode = reader.readLine();
+                                Post post = dataWriter.redefinePost(postCode);
+                                Comment comment = dataWriter.redefineComment(post, commentCode);
+
+                                if (dataWriter.hasLikedComment(comment, user)) {
+                                    writer.println("liked");
+                                } else {
+                                    writer.println("no");
+                                }
+
+                                writer.flush();
+
+                                break;
+                            }
+
+                            case "hasDislikedComment": {
+                                String postCode = reader.readLine();
+                                String commentCode = reader.readLine();
+                                Post post = dataWriter.redefinePost(postCode);
+                                Comment comment = dataWriter.redefineComment(post, commentCode);
+
+                                if (dataWriter.hasDislikedComment(comment, user)) {
+                                    writer.println("disliked");
+                                } else {
+                                    writer.println("no");
+                                }
+
+                                writer.flush();
+
+                                break;
+
+                            }
+
+                            case "isOwnerComment": {
+
+                            }
+
                         case "exit": {
                             socket.close();
                             break;
@@ -334,8 +638,7 @@ public class Server implements Runnable {
                         }
                     }
                 }
-            } catch (AlreadyThereException | ExistingUsernameException | InvalidOperationException |
-                     BlockedException | DoesNotExistException | ImNotSureWhyException e) {
+            } catch (AlreadyThereException | DoesNotExistException | ImNotSureWhyException e) {
                 e.printStackTrace();
                 writer.println(e.getMessage());
             } catch (Exception e) {

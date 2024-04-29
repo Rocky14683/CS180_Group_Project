@@ -1,14 +1,12 @@
-package TempFolderSoIDontBreakEverything;
-
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
-import java.net.*;
+
 import java.util.*;
 
 public class GUI implements Runnable {
-
 
     private JFrame frame = new JFrame("Main Feed");
     private Container content = frame.getContentPane();
@@ -45,14 +43,18 @@ public class GUI implements Runnable {
     private JButton[] dislikePost;
     private JButton[] undislikePost;
 
-    private JButton[] likeComment;
-    private JButton[] unlikeComment;
+    private JButton[][] likeComment;
+    private JButton[][] unlikeComment;
 
-    private JButton[] dislikeComment;
-    private JButton[] undislikeComment;
+    private JButton[][] dislikeComment;
+    private JButton[][] undislikeComment;
 
     private JTextField[] comment;
     private JButton[] addComment;
+    //private ActionListener[][] commentListeners;
+
+    private JButton[] hidePost;
+    private JButton[] deletePost;
 
     private JTextField addPost;
 
@@ -61,8 +63,6 @@ public class GUI implements Runnable {
     private JPanel bottomMenu;
 
     private GridBagConstraints gbc = new GridBagConstraints();
-
-    private JPanel variablePanel = new JPanel();
 
     public static void main(String[] args) {
         client = new ClientThatIUnderstand();
@@ -116,20 +116,79 @@ public class GUI implements Runnable {
 
             if (e.getSource().equals(login)) {
                 if (client.login(username.getText(), password.getText())) {
+                    
+                //     try {
+                //         ArrayList<String[]> posts = client.getPosts();
+                //         ArrayList<Integer> indexToRemove = new ArrayList<>();
+                //         for (int i = 0; i < posts.size(); i++) {
+                //             String id = client.getId(posts.get(i)[0]);
+                //             if (client.isBlocked(id)) {
+                //                 indexToRemove.add(i);
+                //             }
+                //         }
+    
+                //         int offset = 0;
+                //         for (Integer i : indexToRemove) {
+                //             int index = i - offset;
+                //             posts.remove(index);
+                //             offset++;
+                //         }
+    
+                //         content.removeAll();
+                //         content.add(gui.feed(likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost, bottomMenu, content));
+                //         content.add(bottomMenu, BorderLayout.SOUTH);
+                //         content.revalidate();
+                //         content.repaint();
+                        
+                //     } catch (IOException e1) {
+                //         e1.printStackTrace();
+                //     }
+
                     content.removeAll();
                     content.add(bottomMenu, BorderLayout.SOUTH);
                     content.revalidate();
                     content.repaint();
+    
                 }
+
             }
 
             if (e.getSource().equals(register)) {
                 if (client.register(username.getText(), password.getText())) {
+                //     try {
+                //         ArrayList<String[]> posts = client.getPosts();
+                //         ArrayList<Integer> indexToRemove = new ArrayList<>();
+                //         for (int i = 0; i < posts.size(); i++) {
+                //             String id = client.getId(posts.get(i)[0]);
+                //             if (client.isBlocked(id)) {
+                //                 indexToRemove.add(i);
+                //             }
+                //         }
+    
+                //         int offset = 0;
+                //         for (Integer i : indexToRemove) {
+                //             int index = i - offset;
+                //             posts.remove(index);
+                //             offset++;
+                //         }
+    
+                //         content.removeAll();
+                //         content.add(gui.feed(likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost, bottomMenu, content));
+                //         content.add(bottomMenu, BorderLayout.SOUTH);
+                //         content.revalidate();
+                //         content.repaint();
+                        
+                //     } catch (IOException e1) {
+                //         e1.printStackTrace();
+                //     }
+
                     content.removeAll();
                     content.add(bottomMenu, BorderLayout.SOUTH);
                     content.revalidate();
                     content.repaint();
+    
                 }
+
             }
 
             if (e.getActionCommand().contains("Add")) {
@@ -259,7 +318,7 @@ public class GUI implements Runnable {
                     }
 
                     content.removeAll();
-                    content.add(gui.feed(likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost));
+                    content.add(gui.feed(deletePost, hidePost, likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost, bottomMenu, content, likeComment, unlikeComment, dislikeComment, undislikeComment));
                     content.add(bottomMenu, BorderLayout.SOUTH);
                     content.revalidate();
                     content.repaint();
@@ -279,7 +338,7 @@ public class GUI implements Runnable {
                     ArrayList<String[]> posts = client.getPosts();
 
                     content.removeAll();
-                    content.add(gui.feed(likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost));
+                    content.add(gui.feed(deletePost, hidePost, likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost, bottomMenu, content, likeComment, unlikeComment, dislikeComment, undislikeComment));
                     content.add(bottomMenu, BorderLayout.SOUTH);
                     content.revalidate();
                     content.repaint();
@@ -308,7 +367,7 @@ public class GUI implements Runnable {
                     }
 
                     content.removeAll();
-                    content.add(gui.feed(likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost));
+                    content.add(gui.feed(deletePost, hidePost, likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost, bottomMenu, content, likeComment, unlikeComment, dislikeComment, undislikeComment));
                     content.add(bottomMenu, BorderLayout.SOUTH);
                     content.revalidate();
                     content.repaint();
@@ -317,8 +376,13 @@ public class GUI implements Runnable {
                     e1.printStackTrace();
                 }
             }
+
+
         };
     };
+
+    ActionListener[] likebuttons = new ActionListener[20];
+    ActionListener[][] commentListeners = new ActionListener[20][20];
 
     public void run() {
 
@@ -354,6 +418,16 @@ public class GUI implements Runnable {
             unblockUser[i].addActionListener(actionListener);
         }
 
+        hidePost = new JButton[20];
+        for (int i = 0; i < 20; i++) {
+            hidePost[i] = new JButton("Hide");
+        }
+
+        deletePost = new JButton[20];
+        for (int i = 0; i < 20; i++) {
+            deletePost[i] = new JButton("Delete");
+        }
+
         likePost = new JButton[20];
         for (int i = 0; i < 20; i++) {
             likePost[i] = new JButton("Like");
@@ -375,36 +449,67 @@ public class GUI implements Runnable {
         }
 
         
-        likeComment = new JButton[20];
+        likeComment = new JButton[20][20];
         for (int i = 0; i < 20; i++) {
-            likeComment[i] = new JButton("like");
+            for (int j = 0; j < 20; j++) {
+                likeComment[i][j] = new JButton("Like");
+            }
         }
 
-        unlikeComment = new JButton[20];
+        unlikeComment = new JButton[20][20];
         for (int i = 0; i < 20; i++) {
-            unlikeComment[i] = new JButton("Unlike");
+            for (int j = 0; j < 20; j++) {
+                unlikeComment[i][j] = new JButton("Unlike");
+            }
         }
 
-        dislikeComment = new JButton[20];
+        dislikeComment = new JButton[20][20];
         for (int i = 0; i < 20; i++) {
-            dislikeComment[i] = new JButton("Dislike");
+            for (int j = 0; j < 20; j++) {
+                dislikeComment[i][j] = new JButton("Dislike");
+            }
         }
 
-        undislikeComment = new JButton[20];
+        undislikeComment = new JButton[20][20];
         for (int i = 0; i < 20; i++) {
-            undislikeComment[i] = new JButton("Undislike");
+            for (int j = 0; j < 20; j++) {
+                undislikeComment[i][j] = new JButton("Undislike");
+            }
         }
 
 
         comment = new JTextField[20];
         for (int i = 0; i < 20; i++) {
-            comment[i] = new JTextField();
+            comment[i] = new JTextField("Thoughts?");
         }
 
         addComment = new JButton[20];
         for (int i = 0; i < 20; i++) {
-            addComment[i] = new JButton();
+            addComment[i] = new JButton("Post Comment");
         }
+
+        for (int i = 0; i < 20; i++) {
+            likebuttons[i] = new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    
+                }
+            };
+        }
+
+        
+        for (int i = 0; i < 20; i++) {
+            for (int j = 0; j < 20; j++) {
+                commentListeners[i][j] = new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        
+                    }
+                };
+            }
+        }
+
+        
 
         addPost = new JTextField();
 
@@ -476,14 +581,182 @@ public class GUI implements Runnable {
     }
 
 
-    public JPanel feed(JButton[] likePost, JButton[] unlikePost, JButton[] dislikePost, JButton[] undislikePost, JTextField[] comment, JButton[] addComment, ArrayList<String[]> posts, JTextField addPost, JButton makePost) {
+    public JPanel feed(JButton[] deletePost, JButton[] hidePost, JButton[] likePost, JButton[] unlikePost, 
+        JButton[] dislikePost, JButton[] undislikePost, JTextField[] comment, JButton[] addComment, 
+        ArrayList<String[]> posts, JTextField addPost, JButton makePost, JPanel bottomMenu, 
+        Container localContent, JButton[][] likeComment, JButton[][] unlikeComment, JButton[][] dislikeComment, JButton[][] undislikeComment) {
+
+
         JPanel returnPanel = new JPanel();
         JPanel[] postPanels = new JPanel[posts.size()];
         JPanel preScrollPanel = new JPanel();
         preScrollPanel.setLayout(new GridLayout());
 
+        try {
+            ArrayList<Integer> indexToRemove = new ArrayList<>();
+            for (int i = 0; i < posts.size(); i++) {
+                String id = posts.get(i)[4];
+                boolean hidden = client.isHidden(id);
+                System.out.println("Hidden?: " + hidden);
+                if (hidden) {
+                    indexToRemove.add(i);
+                }
+            }
+
+            int offset = 0;
+            for (Integer i : indexToRemove) {
+                int index = i - offset;
+                posts.remove(index);
+                offset++;
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         for (int i = 0; i < posts.size(); i++) {
+            
+            String postCode = posts.get(i)[4];
+            int thingToTrickMyComputer = i;
+            likebuttons[i] = new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    System.out.println("buttonPressed");
+                    if (e.getActionCommand().equals("Like")) {
+                        try {
+                            client.likePost(postCode);
+
+                            if (client.hasDisliked(postCode)) {
+                                client.undislikePost(postCode);
+                            }
+
+                            ArrayList<String[]> posts = client.getPosts();
+                            localContent.removeAll();
+                        
+                            localContent.add(gui.upddateFeed(deletePost, hidePost, likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost, bottomMenu, likeComment, unlikeComment, dislikeComment, undislikeComment));
+                            localContent.add(bottomMenu, BorderLayout.SOUTH);
+                            localContent.revalidate();
+                            localContent.repaint();
+
+
+                        } catch (IOException e1) {
+                            e1.printStackTrace();
+                        }
+                    }
+                    if (e.getActionCommand().equals("Unlike")) {
+                        try {
+                            client.unlikePost(postCode);
+
+                            ArrayList<String[]> posts = client.getPosts();
+
+                            localContent.removeAll();
+                            localContent.add(gui.upddateFeed(deletePost, hidePost, likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost, bottomMenu, likeComment, unlikeComment, dislikeComment, undislikeComment));
+                            localContent.add(bottomMenu, BorderLayout.SOUTH);
+                            localContent.revalidate();
+                            localContent.repaint();
+
+
+                        } catch (IOException e1) {
+                            e1.printStackTrace();
+                        }
+                    }
+
+                    if (e.getActionCommand().equals("Dislike")) {
+                        try {
+                            client.dislikePost(postCode);
+
+                            if (client.hasLiked(postCode)) {
+                                client.unlikePost(postCode);
+                            }
+
+                            ArrayList<String[]> posts = client.getPosts();
+
+                            localContent.removeAll();
+                            localContent.add(gui.upddateFeed(deletePost, hidePost, likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost, bottomMenu, likeComment, unlikeComment, dislikeComment, undislikeComment));
+                            localContent.add(bottomMenu, BorderLayout.SOUTH);
+                            localContent.revalidate();
+                            localContent.repaint();
+
+
+                        } catch (IOException e1) {
+                            e1.printStackTrace();
+                        }
+                    }
+
+                    if (e.getActionCommand().equals("Undislike")) {
+                        try {
+                            client.undislikePost(postCode);
+
+                            ArrayList<String[]> posts = client.getPosts();
+
+                            localContent.removeAll();
+                            localContent.add(gui.upddateFeed(deletePost, hidePost, likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost, bottomMenu, likeComment, unlikeComment, dislikeComment, undislikeComment));
+                            localContent.add(bottomMenu, BorderLayout.SOUTH);
+                            localContent.revalidate();
+                            localContent.repaint();
+
+
+                        } catch (IOException e1) {
+                            e1.printStackTrace();
+                        }
+                    }
+
+                    if (e.getActionCommand().equals("Delete")) {
+                        try {
+                            client.deletePost(postCode);
+
+                            ArrayList<String[]> posts = client.getPosts();
+
+                            localContent.removeAll();
+                            localContent.add(gui.upddateFeed(deletePost, hidePost, likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost, bottomMenu, likeComment, unlikeComment, dislikeComment, undislikeComment));
+                            localContent.add(bottomMenu, BorderLayout.SOUTH);
+                            localContent.revalidate();
+                            localContent.repaint();
+                        } catch (IOException e1) {
+
+                            e1.printStackTrace();
+                        }   
+                    }
+
+                    if (e.getActionCommand().equals("Hide")) {
+                        try {
+                            client.hidePost(postCode);
+
+                            ArrayList<String[]> posts = client.getPosts();
+
+                            localContent.removeAll();
+                            localContent.add(gui.upddateFeed(deletePost, hidePost, likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost, bottomMenu, likeComment, unlikeComment, dislikeComment, undislikeComment));
+                            localContent.add(bottomMenu, BorderLayout.SOUTH);
+                            localContent.revalidate();
+                            localContent.repaint();
+                        } catch (IOException e1) {
+
+                            e1.printStackTrace();
+                        }   
+                    }
+
+                    if (e.getActionCommand().equals("Post Comment")) {
+                        try {
+                            System.out.println("Trying to post it");
+                            client.makeComment(postCode, comment[thingToTrickMyComputer].getText());
+
+                            ArrayList<String[]> posts = client.getPosts();
+
+                            localContent.removeAll();
+                            localContent.add(gui.upddateFeed(deletePost, hidePost, likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost, bottomMenu, likeComment, unlikeComment, dislikeComment, undislikeComment));
+                            localContent.add(bottomMenu, BorderLayout.SOUTH);
+                            localContent.revalidate();
+                            localContent.repaint();
+                        } catch (IOException e1) {
+                            e1.printStackTrace();
+                        }
+                    }
+                }
+            };
+
+            System.out.println("Feed: " + postCode);
             postPanels[i] = new JPanel();
+            postPanels[i].setBackground(new Color(100 + 10 * i, 200 - 10 * i, 255 - 20 * i));
             postPanels[i].setLayout(new GridBagLayout());
             gbc = new GridBagConstraints();
             gbc.insets = new Insets(5, 5, 5, 5);
@@ -502,13 +775,213 @@ public class GUI implements Runnable {
             gbc.gridy = 2;
             postPanels[i].add(new JLabel(posts.get(i)[2]), gbc);
             gbc.gridx = 1;
-            postPanels[i].add(likePost[i], gbc);
+            likePost[i].addActionListener(likebuttons[i]);
+            unlikePost[i].addActionListener(likebuttons[i]);
+
+
+            try {
+                if (!client.hasLiked(postCode)) {
+                    
+                    postPanels[i].add(likePost[i], gbc);
+                } else {
+                    
+                    postPanels[i].add(unlikePost[i], gbc);
+                }
+            } catch (IOException e1) {
+
+                e1.printStackTrace();
+            }
+
             gbc.gridx = 2;
             postPanels[i].add(new JLabel(posts.get(i)[3]), gbc);
             gbc.gridx = 3;
-            postPanels[i].add(dislikePost[i], gbc);
 
-            postPanels[i].setPreferredSize(new Dimension(200, 100));
+            dislikePost[i].addActionListener(likebuttons[i]);
+            undislikePost[i].addActionListener(likebuttons[i]);
+            try {
+                if (!client.hasDisliked(postCode)) {
+                    postPanels[i].add(dislikePost[i], gbc);
+                } else {
+                    postPanels[i].add(undislikePost[i], gbc);
+                }
+
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+
+            gbc.gridx = 4;
+
+            hidePost[i].addActionListener(likebuttons[i]);
+            deletePost[i].addActionListener(likebuttons[i]);
+            try {
+                if (!client.isOwnerPost(postCode)) {
+                    postPanels[i].add(hidePost[i], gbc);
+                } else {
+                    postPanels[i].add(deletePost[i], gbc);
+                }
+
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+
+            gbc.gridy = 3;
+            gbc.gridx = 0;
+            gbc.gridwidth = 2;
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+
+
+            //----------------------------------------------------------------COMMENTS
+            postPanels[i].add(comment[i], gbc);
+            gbc.gridx = 3;
+            gbc.gridwidth = 1;
+            gbc.fill = GridBagConstraints.NONE;
+            addComment[i].addActionListener(likebuttons[i]);
+            postPanels[i].add(addComment[i], gbc);
+
+            gbc.gridy = 4;
+
+            
+            try {
+                ArrayList<String[]> comments = client.getComments(postCode);
+                System.out.println("Number of comments: " + comments.size());
+                GridBagConstraints gbc2 = new GridBagConstraints();
+                
+                for (int j = 0; j < comments.size(); j++) {
+
+                    if(comments.get(0)[0].equals("")) {
+                        System.out.println("Yay");
+                        continue;
+                    }
+
+                    String commentCode = comments.get(j)[4];
+                    commentListeners[i][j] = new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            
+                            if (e.getActionCommand().equals("Like")) {
+                                try {
+                                    System.out.println("Trying to like comment");
+                                    client.likeComment(postCode, commentCode);
+
+                                    if (client.hasDislikedComment(postCode, commentCode)) {
+                                        client.undislikeComment(postCode, commentCode);
+                                    }
+
+                                    ArrayList<String[]> posts = client.getPosts();
+
+                                    localContent.removeAll();
+                                    localContent.add(gui.upddateFeed(deletePost, hidePost, likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost, bottomMenu, likeComment, unlikeComment, dislikeComment, undislikeComment));
+                                    localContent.add(bottomMenu, BorderLayout.SOUTH);
+                                    localContent.revalidate();
+                                    localContent.repaint();
+
+                                } catch (IOException e1) {
+                                    e1.printStackTrace();
+                                }
+                            }
+
+                            if (e.getActionCommand().equals("Dislike")) {
+                                try {
+                                    client.dislikeComment(postCode, commentCode);
+
+                                    if (client.hasLikedComment(postCode, commentCode)) {
+                                        client.unlikeComment(postCode, commentCode);
+                                    }
+
+                                    ArrayList<String[]> posts = client.getPosts();
+
+                                    localContent.removeAll();
+                                    localContent.add(gui.upddateFeed(deletePost, hidePost, likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost, bottomMenu, likeComment, unlikeComment, dislikeComment, undislikeComment));
+                                    localContent.add(bottomMenu, BorderLayout.SOUTH);
+                                    localContent.revalidate();
+                                    localContent.repaint();
+
+                                } catch (IOException e1) {
+                                    e1.printStackTrace();
+                                }
+                            }
+
+                            if (e.getActionCommand().equals("Unlike")) {
+                                try {
+                                    client.unlikeComment(postCode, commentCode);
+
+                                    ArrayList<String[]> posts = client.getPosts();
+
+                                    localContent.removeAll();
+                                    localContent.add(gui.upddateFeed(deletePost, hidePost, likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost, bottomMenu, likeComment, unlikeComment, dislikeComment, undislikeComment));
+                                    localContent.add(bottomMenu, BorderLayout.SOUTH);
+                                    localContent.revalidate();
+                                    localContent.repaint();
+
+                                } catch (IOException e1) {
+                                    e1.printStackTrace();
+                                }
+                            }
+
+                            if (e.getActionCommand().equals("Undislike")) {
+                                try {
+                                    client.undislikeComment(postCode, commentCode);
+
+                                    ArrayList<String[]> posts = client.getPosts();
+
+                                    localContent.removeAll();
+                                    localContent.add(gui.upddateFeed(deletePost, hidePost, likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost, bottomMenu, likeComment, unlikeComment, dislikeComment, undislikeComment));
+                                    localContent.add(bottomMenu, BorderLayout.SOUTH);
+                                    localContent.revalidate();
+                                    localContent.repaint();
+
+                                } catch (IOException e1) {
+                                    e1.printStackTrace();
+                                }
+                            }
+                            
+                        }
+                    };
+
+
+                    JPanel commentPanel = new JPanel();
+                    commentPanel.setLayout(new GridBagLayout());
+                    
+
+                    likeComment[i][j].addActionListener(commentListeners[i][j]);
+                    dislikeComment[i][j].addActionListener(commentListeners[i][j]);
+                    
+                    unlikeComment[i][j].addActionListener(commentListeners[i][j]);
+                    undislikeComment[i][j].addActionListener(commentListeners[i][j]);
+
+                    gbc2.gridx = 0;
+                    gbc2.gridy = 0 + 2 * j;
+                    commentPanel.add(new JLabel(comments.get(j)[0] + ":    "), gbc2);
+                    gbc2.gridx = 1;
+                    commentPanel.add(new JLabel(comments.get(j)[1]), gbc2);
+                    gbc2.gridx = 0;
+                    gbc2.gridy = 1 + j * 2;
+                    commentPanel.add(new JLabel(comments.get(j)[2]), gbc2);
+                    gbc2.gridx = 1; 
+                    if (!client.hasLikedComment(postCode, commentCode)) {
+                        commentPanel.add(likeComment[i][j], gbc2);
+                    } else {
+                        commentPanel.add(unlikeComment[i][j], gbc2);
+                    }
+                    gbc2.gridx = 2;
+                    commentPanel.add(new JLabel(comments.get(j)[3]), gbc2);
+                    gbc2.gridx = 3; 
+                    if (!client.hasDislikedComment(postCode, commentCode)) {
+                        commentPanel.add(dislikeComment[i][j], gbc2);
+                    } else {
+                        commentPanel.add(undislikeComment[i][j], gbc2);
+                    }
+
+                    gbc.gridy = 4 + j; 
+                    postPanels[i].add(commentPanel, gbc);
+                }
+                System.out.println(comments.size());
+                postPanels[i].setPreferredSize(new Dimension(200, 50 + 70 * comments.size()));
+                System.out.println("Perfer size: " + postPanels[i].getPreferredSize());
+
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
 
             preScrollPanel.add(postPanels[i]);
         }
@@ -522,6 +995,194 @@ public class GUI implements Runnable {
         returnPanel.setLayout(new BorderLayout());
         JScrollPane scrollPane = new JScrollPane(preScrollPanel);
         newPostPanel.setPreferredSize(new Dimension(100000, 100));
+        returnPanel.add(newPostPanel, BorderLayout.NORTH);
+        returnPanel.add(scrollPane);
+
+        return returnPanel;
+    }
+
+    public JPanel upddateFeed(JButton[] deletePost, JButton[] hidePost, JButton[] likePost, JButton[] unlikePost, 
+    JButton[] dislikePost, JButton[] undislikePost, JTextField[] comment, JButton[] addComment, 
+    ArrayList<String[]> posts, JTextField addPost, JButton makePost, JPanel bottomMenu, 
+    JButton[][] likeComment, JButton[][] unlikeComment, JButton[][] dislikeComment, JButton[][] undislikeComment) {
+        JPanel returnPanel = new JPanel();
+        JPanel[] postPanels = new JPanel[posts.size()];
+        JPanel preScrollPanel = new JPanel();
+        preScrollPanel.setLayout(new GridLayout());
+
+        try {
+            ArrayList<Integer> indexToRemove = new ArrayList<>();
+            for (int i = 0; i < posts.size(); i++) {
+                String id = posts.get(i)[4];
+                if (client.isHidden(id)) {
+                    indexToRemove.add(i);
+                }
+            }
+
+            int offset = 0;
+            for (Integer i : indexToRemove) {
+                int index = i - offset;
+                posts.remove(index);
+                offset++;
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        for (int i = 0; i < posts.size(); i++) {
+
+            String postCode = posts.get(i)[4];
+
+            System.out.println("Feed: " + postCode);
+            postPanels[i] = new JPanel();
+            postPanels[i].setLayout(new GridBagLayout());
+            gbc = new GridBagConstraints();
+            gbc.insets = new Insets(5, 5, 5, 5);
+
+
+
+            gbc.gridx = 0;
+            gbc.gridy = -1;
+            gbc.gridwidth = 4;
+            postPanels[i].setBackground(new Color(100 + 5 * i, 200 - 10 * i, 255 - 10 * i));
+            postPanels[i].add(new JSeparator(), gbc);
+
+            gbc.gridy = 0;
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+        
+            postPanels[i].add(new JLabel(posts.get(i)[0]), gbc);
+
+            gbc.gridy = 1;
+            postPanels[i].add(new JLabel(posts.get(i)[1]), gbc);
+
+            gbc.gridwidth = 1;
+            gbc.fill = GridBagConstraints.NONE;
+            gbc.gridy = 2;
+            postPanels[i].add(new JLabel(posts.get(i)[2]), gbc);
+            gbc.gridx = 1;
+
+            try {
+                if (!client.hasLiked(postCode)) {
+                    postPanels[i].add(likePost[i], gbc);
+                } else {
+                    postPanels[i].add(unlikePost[i], gbc);
+                }
+            } catch (IOException e1) {
+
+                e1.printStackTrace();
+            }
+
+            gbc.gridx = 2;
+            postPanels[i].add(new JLabel(posts.get(i)[3]), gbc);
+            gbc.gridx = 3;
+            try {
+                if (!client.hasDisliked(postCode)) {
+                    postPanels[i].add(dislikePost[i], gbc);
+                } else {
+                    postPanels[i].add(undislikePost[i], gbc);
+                }
+
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+
+            gbc.gridx = 4;
+
+            try {
+                if (!client.isOwnerPost(postCode)) {
+                    postPanels[i].add(hidePost[i], gbc);
+                } else {
+                    postPanels[i].add(deletePost[i], gbc);
+                }
+
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+
+            
+
+            
+            gbc.gridy = 3;
+            gbc.gridx = 0;
+            gbc.gridwidth = 2;
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+
+
+            //----------------------------------------------------------------COMMENTS
+            postPanels[i].add(comment[i], gbc);
+            gbc.gridx = 3;
+            gbc.gridwidth = 1;
+            gbc.fill = GridBagConstraints.NONE;
+            postPanels[i].add(addComment[i], gbc);
+
+            gbc.gridy = 4;
+
+            try {
+                ArrayList<String[]> comments = client.getComments(postCode);
+                System.out.println("Number of comments: " + comments.size());
+                GridBagConstraints gbc2 = new GridBagConstraints();
+
+                if(comments.get(0)[0].equals("")) {
+                    System.out.println("Yay");
+                    continue;
+                }
+                
+                for (int j = 0; j < comments.size(); j++) {
+                    JPanel commentPanel = new JPanel();
+                    commentPanel.setLayout(new GridBagLayout());
+                    String commentCode = comments.get(j)[4];
+                    
+                    gbc2.gridx = 0;
+                    gbc2.gridy = 0 + 2 * j;
+                    commentPanel.add(new JLabel(comments.get(j)[0] + ":    "), gbc2);
+                    gbc2.gridx = 1;
+                    commentPanel.add(new JLabel(comments.get(j)[1]), gbc2);
+                    gbc2.gridx = 0;
+                    gbc2.gridy = 1 + j * 2;
+                    commentPanel.add(new JLabel(comments.get(j)[2]), gbc2);
+                    gbc2.gridx = 1; 
+
+                    if (!client.hasLikedComment(postCode, commentCode)) {
+                        commentPanel.add(likeComment[i][j], gbc2);
+                    } else {
+                        commentPanel.add(unlikeComment[i][j], gbc2);
+                    }
+                    gbc2.gridx = 2;
+                    commentPanel.add(new JLabel(comments.get(j)[3]), gbc2);
+                    gbc2.gridx = 3; 
+                    if (!client.hasDislikedComment(postCode, commentCode)) {
+                        commentPanel.add(dislikeComment[i][j], gbc2);
+                    } else {
+                        commentPanel.add(undislikeComment[i][j], gbc2);
+                    }
+                    
+
+                    gbc.gridy = 4 + j; 
+                    postPanels[i].add(commentPanel, gbc);
+                }
+                System.out.println(comments.size());
+                postPanels[i].setPreferredSize(new Dimension(200, 50 + 70 * comments.size()));
+                System.out.println("Perfer size: " + postPanels[i].getPreferredSize());
+
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            
+
+            preScrollPanel.add(postPanels[i]);
+        }
+        preScrollPanel.setLayout(new GridLayout(0, 1));
+
+        JPanel newPostPanel = new JPanel();
+        newPostPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        newPostPanel.setLayout(new BorderLayout());
+        newPostPanel.add(new JLabel("Make new Post: "), BorderLayout.BEFORE_FIRST_LINE);
+        newPostPanel.add(addPost);
+        newPostPanel.add(makePost, BorderLayout.SOUTH);
+        returnPanel.setLayout(new BorderLayout());
+        JScrollPane scrollPane = new JScrollPane(preScrollPanel);
+        //newPostPanel.setPreferredSize(new Dimension(300, 100));
         returnPanel.add(newPostPanel, BorderLayout.NORTH);
         returnPanel.add(scrollPane);
 
@@ -564,7 +1225,7 @@ public class GUI implements Runnable {
     public JPanel searchUsers(JButton searchButton, JTextField userSearch) {
         JPanel searchPanel = new JPanel();
         searchPanel.setLayout(new BorderLayout());
-
+        
         JPanel topPanel = new JPanel();
         topPanel.setBackground(new Color(100, 100, 100));
 
@@ -591,7 +1252,7 @@ public class GUI implements Runnable {
     public JPanel searchUsersWithResults(JButton searchButton, JTextField userSearch, ArrayList<String[]> searchResults, JButton[] addFriend, JButton[] removeFriend, JButton[] blockUser, JButton[] unblockUser) {
         JPanel searchPanel = new JPanel();
         searchPanel.setLayout(new BorderLayout());
-
+        userSearch.setText("Enter username");
         JPanel topPanel = new JPanel();
         topPanel.setBackground(new Color(100, 100, 100));
 
@@ -650,27 +1311,35 @@ public class GUI implements Runnable {
         JPanel loginPanel = new JPanel();
 
         loginPanel.setLayout(new GridBagLayout());
+        loginPanel.setBackground(new Color(200, 170, 100));
         gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
+        
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 2;
+
         gbc.fill = GridBagConstraints.HORIZONTAL;
+        JLabel title = new JLabel("Login or Register");
+        title.setFont(new Font("Arial", 1, 30));
+        loginPanel.add(title);
+        gbc.gridy = 2;
         loginPanel.add(username, gbc);
 
         gbc.gridx = 0;
-        gbc.gridy = 1;
+        gbc.gridy = 3;
         loginPanel.add(password, gbc);
 
-
+        gbc.anchor = GridBagConstraints.CENTER;
         gbc.gridx = 0;
-        gbc.gridy = 2;
+        gbc.gridy = 4;
+
         gbc.gridwidth = 1;
-        gbc.fill = GridBagConstraints.NONE;
+        gbc.insets = new Insets(5, 30, 5, 30);
         loginPanel.add(login, gbc);
 
         gbc.gridx = 1;
-        gbc.gridy = 2;
+        gbc.gridy = 4;
         loginPanel.add(register, gbc);
 
         return loginPanel;

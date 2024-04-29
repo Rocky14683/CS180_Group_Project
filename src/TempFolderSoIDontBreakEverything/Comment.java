@@ -1,5 +1,3 @@
-package TempFolderSoIDontBreakEverything;
-
 // package DatabaseFolder;
 import java.util.ArrayList;
 import java.io.*;

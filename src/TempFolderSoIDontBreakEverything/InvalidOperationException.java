@@ -1,4 +1,3 @@
-package TempFolderSoIDontBreakEverything;
 // package DatabaseFolder;
 
 public class InvalidOperationException extends Exception{

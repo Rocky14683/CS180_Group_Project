@@ -1,4 +1,3 @@
-package TempFolderSoIDontBreakEverything;
 // package DatabaseFolder;
 
 //Exception to throw if anything breaks in an unexpected way, Prevents the program from crashing

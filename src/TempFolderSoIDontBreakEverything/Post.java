@@ -1,5 +1,3 @@
-package TempFolderSoIDontBreakEverything;
-
 // package DatabaseFolder;
 
 // import UserFolder.*;
@@ -41,7 +39,7 @@ public class Post {
 
     }
 
-    public Post(User owner, String text, ArrayList<User> likes, ArrayList<User> dislikes, ArrayList<User> hidden, ArrayList<Comment> comments) {
+    public Post(User owner, String text, ArrayList<User> likes, ArrayList<User> dislikes, ArrayList<User> hidden, ArrayList<Comment> comments, String code) {
         this.owner = owner;
         this.text = text;
         this.likes = likes.size();
@@ -50,6 +48,8 @@ public class Post {
         this.dislikesUsers = dislikes;
         this.hiddenFrom = hidden;
         this.comments = comments;
+        this.postCode = code;
+        this.postPath = new File("Posts/" + postCode);
     }
 
     public Post() {

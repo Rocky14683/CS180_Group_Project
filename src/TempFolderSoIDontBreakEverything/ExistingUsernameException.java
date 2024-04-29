@@ -1,5 +1,3 @@
-package TempFolderSoIDontBreakEverything;
-
 // package DatabaseFolder;
 
 public class ExistingUsernameException extends Exception{

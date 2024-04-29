@@ -1,5 +1,3 @@
-package TempFolderSoIDontBreakEverything;
-
 // package DatabaseFolder;
 // import UserFolder.User;
 
