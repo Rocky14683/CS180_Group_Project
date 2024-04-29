@@ -2,7 +2,9 @@
 
 
 ## Compiling and Running the Project
-In the initial phase of this project, most classes are accompanied by their own test cases, ensuring the functionality and reliability of individual components. This helps in the early detection of issues and ensures a solid foundation for future development phases. 
+To run and compile the social media platform project, you begin by compiling the Server.java and GUI.java files, using a Java compiler such as javac. Start the application by running Server.java to initiate the server that manages data and client requests. Then, launch GUI.java to open the graphical user interface, which is the primary way users interact with the application. If it's the first run and no user accounts exist, the GUI prompts you to register by entering a desired username and password; otherwise, you can log in with existing credentials. Once logged in, the main feed appears with options to create posts, and interact with them through likes, dislikes, hiding, or deleting. Users can also comment on posts with similar interaction options. Additional features include a search page for finding and managing user connections, and a profile edit page where you can update your username and password. This setup ensures a seamless flow from server activation to user interaction through the GUI.
+
+
 
 
 ## Submission
