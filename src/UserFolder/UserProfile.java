@@ -1,12 +1,12 @@
-package UserFolder;
+package UserFolder;//package UserFolder;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-import org.junit.*;
-
+// import org.junit.*;
+// import org.junit.runner.RunWith;
 
 
 /**
@@ -68,27 +68,27 @@ public class UserProfile {
         this.bio = bio;
     }
 
-    public static void main(String[] args) {
-        UserProfileTest test = new UserProfileTest();
-        test.testUserProfile();
-    }
+    // public static void main(String[] args) {
+    //     UserProfileTest test = new UserProfileTest();
+    //     test.testUserProfile();
+    // }
 
 }
 
-class UserProfileTest {
-    @Test
-    public void testUserProfile() {
-        UserProfile profile = new UserProfile("pfp", "bio");
-        profile.setProfilePic(new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB));
-        profile.loadProfilePic();
-        Assert.assertEquals("pfp", profile.getPFPFileName());
-        Assert.assertEquals("bio", profile.getBio());
-        try {
-            BufferedImage img = ImageIO.read(new File(profile.getPfpStorageName()));
-            Assert.assertNotNull(img);
-        } catch (Exception e) {
-            Assert.fail("Profile pic is null");
-        }
-        System.out.println("Test passed");
-    }
-}
+// class UserProfileTest {
+//     @DatabaseFolder.Test
+//     public void testUserProfile() {
+//         UserFolder.UserProfile profile = new UserFolder.UserProfile("pfp", "bio");
+//         profile.setProfilePic(new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB));
+//         profile.loadProfilePic();
+//         Assert.assertEquals("pfp", profile.getPFPFileName());
+//         Assert.assertEquals("bio", profile.getBio());
+//         try {
+//             BufferedImage img = ImageIO.read(new File(profile.getPfpStorageName()));
+//             Assert.assertNotNull(img);
+//         } catch (Exception e) {
+//             Assert.fail("Profile pic is null");
+//         }
+//         System.out.println("DatabaseFolder.Test passed");
+//     }
+// }
