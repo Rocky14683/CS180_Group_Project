@@ -51,7 +51,7 @@ public class Client {
             System.out.println(isValid);
 
             if (!isValid) {
-                JOptionPane.showMessageDialog(null, "Username already exists", "Error", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Username does not exists", "Error", JOptionPane.WARNING_MESSAGE);
             }
             return isValid;
 
@@ -64,9 +64,14 @@ public class Client {
 
     public boolean register(String newUsername, String newPassword) {
         try {
-            writer.write("register" + "\n");
-            writer.write(newUsername + "\n");
-            writer.write(newPassword + "\n");
+            writer.write("register");
+            writer.newLine();
+            writer.write(newUsername);
+            writer.newLine();
+            writer.flush();
+            writer.write(newPassword);
+            writer.newLine();
+            writer.flush();
             writer.flush();
 
             String result = reader.readLine();
