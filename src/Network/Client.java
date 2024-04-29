@@ -1,6 +1,5 @@
 package Network;
 
-import Network.Server;
 import UI.GUI;
 
 import java.io.*;
