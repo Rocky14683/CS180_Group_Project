@@ -133,3 +133,11 @@ and other necessary user interactions such as adding and removing friends or blo
 interface ensures that any class implementing it will provide a consistent set of functionalities for user operations,
 crucial for maintaining a solid and predictable framework for handling user data across different parts of the
 application, especially when interacting with the DatabaseFolder.DataWriter for data persistence.
+
+## How to Run
+Run Server.java then GUI.java and the GUI should open up. Since there are no users created when you first run it 
+type in your desired username and password and hit register. If there is a user created type in the username and password
+for that user and press login. Once logged in you will see the main feed, the option to make a post is at the top. 
+When a post is made, you can like, dislike, hide or delete it. You can make comments and like dislike or delete comments.
+The search page lets you search for users and add or block them. The friends page is a feed for only friends. THe profile
+edit page lets you edit your username and password
