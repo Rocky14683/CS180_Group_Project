@@ -1,17 +1,22 @@
-package UserFolder;
+package UserFolder;// package UserFolder;
 
-import DatabaseFolder.AlreadyThereException;
-import DatabaseFolder.BlockedException;
+// import Exceptions.AlreadyThereException;
+// import Exceptions.BlockedException;
+// import DatabaseFolder.DatabaseFolder.DataWriter;
+// import Exceptions.DoesNotExistException;
+// import Exceptions.ImNotSureWhyException;
+// import Exceptions.InvalidOperationException;
+
+// import org.junit.Assert;
+// import org.junit.DatabaseFolder.Test;
+
 import DatabaseFolder.DataWriter;
-import DatabaseFolder.DoesNotExistException;
-import DatabaseFolder.ImNotSureWhyException;
-import DatabaseFolder.InvalidOperationException;
-
-//import org.junit.Assert;
-import org.junit.Test;
+import Exceptions.*;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+
+// import DatabaseFolder.DatabaseFolder.DataWriter;
 
 
 public class User {
@@ -24,10 +29,10 @@ public class User {
 
     private UserProfile profile = new UserProfile();
 
-    public static void main(String[] args) {
-        TestUser test = new TestUser();
-        test.test();
-    }
+    // public static void main(String[] args) {
+    //     TestUser test = new TestUser();
+    //     test.test();
+    // }
 
     public void setPassword(String password) {
         this.password = password;
@@ -171,15 +176,5 @@ public class User {
             e.printStackTrace();
             return false;
         }
-    }
-
-
-}
-
-
-class TestUser {
-    @Test
-    public void test() {
-
     }
 }

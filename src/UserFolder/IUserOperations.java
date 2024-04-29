@@ -1,13 +1,13 @@
-package UserFolder;
+package UserFolder;// package UserFolder;
 
 import DatabaseFolder.DataWriter;
 
 import java.util.ArrayList;
 
 /**
- * UserFolder.IUserOperations
+ * UserFolder.UserFolder.IUserOperations
  * <p>
- * Interface for the User class
+ * Interface for the UserFolder.User class
  *
  * @author Lucas Abreu, L12
  * @version 4/1/24
