@@ -1588,9 +1588,7 @@ public class DataWriter {
 //StaticMethods----------------------------------------------------------------------------------------------
 
     public static int getNumUsers() {
-        synchronized (gatekeeper) {
-            return numUsers; // Do I need to synchronize to just return value?
-        }
+        return (new File("UserDirectories/")).list().length;
     }
 
 }
