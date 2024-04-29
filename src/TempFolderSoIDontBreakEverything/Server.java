@@ -462,9 +462,10 @@ public class Server implements Runnable {
                         }
 
                         case "deleteComment": {
+                            String postCode = reader.readLine();
                             String commentCode = reader.readLine();
-
-                            Comment comment = dataWriter.redefineComment(null, commentCode);
+                            Post post = dataWriter.redefinePost(postCode);
+                            Comment comment = dataWriter.redefineComment(post, commentCode);
 
                             dataWriter.deleteComment(comment, user);
 
@@ -624,7 +625,21 @@ public class Server implements Runnable {
                             }
 
                             case "isOwnerComment": {
+                                String postCode = reader.readLine();
+                                String commentCode = reader.readLine();
 
+                                Post post = dataWriter.redefinePost(postCode);
+                                Comment comment = dataWriter.redefineComment(post, commentCode);
+
+                                if (comment.getOwner().equals(user)) {
+                                    writer.println("owner");
+                                } else {
+                                    writer.println("not");
+                                }
+
+                                writer.flush();
+                                
+                                break;
                             }
 
                         case "exit": {

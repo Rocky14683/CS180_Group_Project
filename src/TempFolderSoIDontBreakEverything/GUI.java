@@ -8,7 +8,7 @@ import java.util.*;
 
 public class GUI implements Runnable {
 
-    private JFrame frame = new JFrame("Main Feed");
+    private JFrame frame = new JFrame("iMedia");
     private Container content = frame.getContentPane();
 
     private static ClientThatIUnderstand client;
@@ -48,6 +48,8 @@ public class GUI implements Runnable {
 
     private JButton[][] dislikeComment;
     private JButton[][] undislikeComment;
+
+    private JButton[][] deleteComment;
 
     private JTextField[] comment;
     private JButton[] addComment;
@@ -117,37 +119,34 @@ public class GUI implements Runnable {
             if (e.getSource().equals(login)) {
                 if (client.login(username.getText(), password.getText())) {
                     
-                //     try {
-                //         ArrayList<String[]> posts = client.getPosts();
-                //         ArrayList<Integer> indexToRemove = new ArrayList<>();
-                //         for (int i = 0; i < posts.size(); i++) {
-                //             String id = client.getId(posts.get(i)[0]);
-                //             if (client.isBlocked(id)) {
-                //                 indexToRemove.add(i);
-                //             }
-                //         }
+                    try {
+                        ArrayList<String[]> posts = client.getPosts();
+                        ArrayList<Integer> indexToRemove = new ArrayList<>();
+                        for (int i = 0; i < posts.size(); i++) {
+                            String id = client.getId(posts.get(i)[0]);
+                            if (client.isBlocked(id)) {
+                                indexToRemove.add(i);
+                            }
+                        }
     
-                //         int offset = 0;
-                //         for (Integer i : indexToRemove) {
-                //             int index = i - offset;
-                //             posts.remove(index);
-                //             offset++;
-                //         }
+                        int offset = 0;
+                        for (Integer i : indexToRemove) {
+                            int index = i - offset;
+                            posts.remove(index);
+                            offset++;
+                        }
     
-                //         content.removeAll();
-                //         content.add(gui.feed(likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost, bottomMenu, content));
-                //         content.add(bottomMenu, BorderLayout.SOUTH);
-                //         content.revalidate();
-                //         content.repaint();
+                        content.removeAll();
+                        content.add(gui.feed(deletePost, hidePost, likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost, bottomMenu, content, likeComment, unlikeComment, dislikeComment, undislikeComment, deleteComment));
+                        content.add(bottomMenu, BorderLayout.SOUTH);
+                        content.revalidate();
+                        content.repaint();
                         
-                //     } catch (IOException e1) {
-                //         e1.printStackTrace();
-                //     }
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
 
-                    content.removeAll();
-                    content.add(bottomMenu, BorderLayout.SOUTH);
-                    content.revalidate();
-                    content.repaint();
+
     
                 }
 
@@ -155,37 +154,33 @@ public class GUI implements Runnable {
 
             if (e.getSource().equals(register)) {
                 if (client.register(username.getText(), password.getText())) {
-                //     try {
-                //         ArrayList<String[]> posts = client.getPosts();
-                //         ArrayList<Integer> indexToRemove = new ArrayList<>();
-                //         for (int i = 0; i < posts.size(); i++) {
-                //             String id = client.getId(posts.get(i)[0]);
-                //             if (client.isBlocked(id)) {
-                //                 indexToRemove.add(i);
-                //             }
-                //         }
+                    try {
+                        ArrayList<String[]> posts = client.getPosts();
+                        ArrayList<Integer> indexToRemove = new ArrayList<>();
+                        for (int i = 0; i < posts.size(); i++) {
+                            String id = client.getId(posts.get(i)[0]);
+                            if (client.isBlocked(id)) {
+                                indexToRemove.add(i);
+                            }
+                        }
     
-                //         int offset = 0;
-                //         for (Integer i : indexToRemove) {
-                //             int index = i - offset;
-                //             posts.remove(index);
-                //             offset++;
-                //         }
+                        int offset = 0;
+                        for (Integer i : indexToRemove) {
+                            int index = i - offset;
+                            posts.remove(index);
+                            offset++;
+                        }
     
-                //         content.removeAll();
-                //         content.add(gui.feed(likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost, bottomMenu, content));
-                //         content.add(bottomMenu, BorderLayout.SOUTH);
-                //         content.revalidate();
-                //         content.repaint();
+                        content.removeAll();
+                        content.add(gui.feed(deletePost, hidePost, likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost, bottomMenu, content, likeComment, unlikeComment, dislikeComment, undislikeComment, deleteComment));
+                        content.add(bottomMenu, BorderLayout.SOUTH);
+                        content.revalidate();
+                        content.repaint();
                         
-                //     } catch (IOException e1) {
-                //         e1.printStackTrace();
-                //     }
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
 
-                    content.removeAll();
-                    content.add(bottomMenu, BorderLayout.SOUTH);
-                    content.revalidate();
-                    content.repaint();
     
                 }
 
@@ -318,7 +313,7 @@ public class GUI implements Runnable {
                     }
 
                     content.removeAll();
-                    content.add(gui.feed(deletePost, hidePost, likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost, bottomMenu, content, likeComment, unlikeComment, dislikeComment, undislikeComment));
+                    content.add(gui.feed(deletePost, hidePost, likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost, bottomMenu, content, likeComment, unlikeComment, dislikeComment, undislikeComment, deleteComment));
                     content.add(bottomMenu, BorderLayout.SOUTH);
                     content.revalidate();
                     content.repaint();
@@ -338,7 +333,7 @@ public class GUI implements Runnable {
                     ArrayList<String[]> posts = client.getPosts();
 
                     content.removeAll();
-                    content.add(gui.feed(deletePost, hidePost, likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost, bottomMenu, content, likeComment, unlikeComment, dislikeComment, undislikeComment));
+                    content.add(gui.feed(deletePost, hidePost, likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost, bottomMenu, content, likeComment, unlikeComment, dislikeComment, undislikeComment, deleteComment));
                     content.add(bottomMenu, BorderLayout.SOUTH);
                     content.revalidate();
                     content.repaint();
@@ -367,7 +362,7 @@ public class GUI implements Runnable {
                     }
 
                     content.removeAll();
-                    content.add(gui.feed(deletePost, hidePost, likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost, bottomMenu, content, likeComment, unlikeComment, dislikeComment, undislikeComment));
+                    content.add(gui.feed(deletePost, hidePost, likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost, bottomMenu, content, likeComment, unlikeComment, dislikeComment, undislikeComment,deleteComment));
                     content.add(bottomMenu, BorderLayout.SOUTH);
                     content.revalidate();
                     content.repaint();
@@ -474,6 +469,13 @@ public class GUI implements Runnable {
         for (int i = 0; i < 20; i++) {
             for (int j = 0; j < 20; j++) {
                 undislikeComment[i][j] = new JButton("Undislike");
+            }
+        }
+
+        deleteComment = new JButton[20][20];
+        for (int i = 0; i < 20; i++) {
+            for (int j = 0; j < 20; j++) {
+                deleteComment[i][j] = new JButton("Delete");
             }
         }
 
@@ -584,13 +586,14 @@ public class GUI implements Runnable {
     public JPanel feed(JButton[] deletePost, JButton[] hidePost, JButton[] likePost, JButton[] unlikePost, 
         JButton[] dislikePost, JButton[] undislikePost, JTextField[] comment, JButton[] addComment, 
         ArrayList<String[]> posts, JTextField addPost, JButton makePost, JPanel bottomMenu, 
-        Container localContent, JButton[][] likeComment, JButton[][] unlikeComment, JButton[][] dislikeComment, JButton[][] undislikeComment) {
+        Container localContent, JButton[][] likeComment, JButton[][] unlikeComment, JButton[][] dislikeComment, JButton[][] undislikeComment, JButton[][] deleteComment) {
 
 
         JPanel returnPanel = new JPanel();
         JPanel[] postPanels = new JPanel[posts.size()];
         JPanel preScrollPanel = new JPanel();
         preScrollPanel.setLayout(new GridLayout());
+        Random rand = new Random();
 
         try {
             ArrayList<Integer> indexToRemove = new ArrayList<>();
@@ -633,7 +636,7 @@ public class GUI implements Runnable {
                             ArrayList<String[]> posts = client.getPosts();
                             localContent.removeAll();
                         
-                            localContent.add(gui.upddateFeed(deletePost, hidePost, likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost, bottomMenu, likeComment, unlikeComment, dislikeComment, undislikeComment));
+                            localContent.add(gui.upddateFeed(deletePost, hidePost, likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost, bottomMenu, likeComment, unlikeComment, dislikeComment, undislikeComment, deleteComment));
                             localContent.add(bottomMenu, BorderLayout.SOUTH);
                             localContent.revalidate();
                             localContent.repaint();
@@ -650,7 +653,7 @@ public class GUI implements Runnable {
                             ArrayList<String[]> posts = client.getPosts();
 
                             localContent.removeAll();
-                            localContent.add(gui.upddateFeed(deletePost, hidePost, likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost, bottomMenu, likeComment, unlikeComment, dislikeComment, undislikeComment));
+                            localContent.add(gui.upddateFeed(deletePost, hidePost, likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost, bottomMenu, likeComment, unlikeComment, dislikeComment, undislikeComment, deleteComment));
                             localContent.add(bottomMenu, BorderLayout.SOUTH);
                             localContent.revalidate();
                             localContent.repaint();
@@ -672,7 +675,7 @@ public class GUI implements Runnable {
                             ArrayList<String[]> posts = client.getPosts();
 
                             localContent.removeAll();
-                            localContent.add(gui.upddateFeed(deletePost, hidePost, likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost, bottomMenu, likeComment, unlikeComment, dislikeComment, undislikeComment));
+                            localContent.add(gui.upddateFeed(deletePost, hidePost, likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost, bottomMenu, likeComment, unlikeComment, dislikeComment, undislikeComment, deleteComment));
                             localContent.add(bottomMenu, BorderLayout.SOUTH);
                             localContent.revalidate();
                             localContent.repaint();
@@ -690,7 +693,7 @@ public class GUI implements Runnable {
                             ArrayList<String[]> posts = client.getPosts();
 
                             localContent.removeAll();
-                            localContent.add(gui.upddateFeed(deletePost, hidePost, likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost, bottomMenu, likeComment, unlikeComment, dislikeComment, undislikeComment));
+                            localContent.add(gui.upddateFeed(deletePost, hidePost, likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost, bottomMenu, likeComment, unlikeComment, dislikeComment, undislikeComment, deleteComment));
                             localContent.add(bottomMenu, BorderLayout.SOUTH);
                             localContent.revalidate();
                             localContent.repaint();
@@ -708,7 +711,7 @@ public class GUI implements Runnable {
                             ArrayList<String[]> posts = client.getPosts();
 
                             localContent.removeAll();
-                            localContent.add(gui.upddateFeed(deletePost, hidePost, likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost, bottomMenu, likeComment, unlikeComment, dislikeComment, undislikeComment));
+                            localContent.add(gui.upddateFeed(deletePost, hidePost, likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost, bottomMenu, likeComment, unlikeComment, dislikeComment, undislikeComment, deleteComment));
                             localContent.add(bottomMenu, BorderLayout.SOUTH);
                             localContent.revalidate();
                             localContent.repaint();
@@ -725,7 +728,7 @@ public class GUI implements Runnable {
                             ArrayList<String[]> posts = client.getPosts();
 
                             localContent.removeAll();
-                            localContent.add(gui.upddateFeed(deletePost, hidePost, likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost, bottomMenu, likeComment, unlikeComment, dislikeComment, undislikeComment));
+                            localContent.add(gui.upddateFeed(deletePost, hidePost, likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost, bottomMenu, likeComment, unlikeComment, dislikeComment, undislikeComment, deleteComment));
                             localContent.add(bottomMenu, BorderLayout.SOUTH);
                             localContent.revalidate();
                             localContent.repaint();
@@ -743,7 +746,7 @@ public class GUI implements Runnable {
                             ArrayList<String[]> posts = client.getPosts();
 
                             localContent.removeAll();
-                            localContent.add(gui.upddateFeed(deletePost, hidePost, likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost, bottomMenu, likeComment, unlikeComment, dislikeComment, undislikeComment));
+                            localContent.add(gui.upddateFeed(deletePost, hidePost, likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost, bottomMenu, likeComment, unlikeComment, dislikeComment, undislikeComment, deleteComment));
                             localContent.add(bottomMenu, BorderLayout.SOUTH);
                             localContent.revalidate();
                             localContent.repaint();
@@ -756,7 +759,7 @@ public class GUI implements Runnable {
 
             System.out.println("Feed: " + postCode);
             postPanels[i] = new JPanel();
-            postPanels[i].setBackground(new Color(100 + 10 * i, 200 - 10 * i, 255 - 20 * i));
+            postPanels[i].setBackground(new Color((255 - rand.nextInt(100)), (255 - rand.nextInt(100)), (255 - rand.nextInt(100))));
             postPanels[i].setLayout(new GridBagLayout());
             gbc = new GridBagConstraints();
             gbc.insets = new Insets(5, 5, 5, 5);
@@ -838,7 +841,6 @@ public class GUI implements Runnable {
             addComment[i].addActionListener(likebuttons[i]);
             postPanels[i].add(addComment[i], gbc);
 
-            gbc.gridy = 4;
 
             
             try {
@@ -857,7 +859,7 @@ public class GUI implements Runnable {
                     commentListeners[i][j] = new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            
+                            System.out.println("Button pressed");
                             if (e.getActionCommand().equals("Like")) {
                                 try {
                                     System.out.println("Trying to like comment");
@@ -870,7 +872,7 @@ public class GUI implements Runnable {
                                     ArrayList<String[]> posts = client.getPosts();
 
                                     localContent.removeAll();
-                                    localContent.add(gui.upddateFeed(deletePost, hidePost, likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost, bottomMenu, likeComment, unlikeComment, dislikeComment, undislikeComment));
+                                    localContent.add(gui.upddateFeed(deletePost, hidePost, likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost, bottomMenu, likeComment, unlikeComment, dislikeComment, undislikeComment, deleteComment));
                                     localContent.add(bottomMenu, BorderLayout.SOUTH);
                                     localContent.revalidate();
                                     localContent.repaint();
@@ -891,7 +893,7 @@ public class GUI implements Runnable {
                                     ArrayList<String[]> posts = client.getPosts();
 
                                     localContent.removeAll();
-                                    localContent.add(gui.upddateFeed(deletePost, hidePost, likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost, bottomMenu, likeComment, unlikeComment, dislikeComment, undislikeComment));
+                                    localContent.add(gui.upddateFeed(deletePost, hidePost, likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost, bottomMenu, likeComment, unlikeComment, dislikeComment, undislikeComment, deleteComment));
                                     localContent.add(bottomMenu, BorderLayout.SOUTH);
                                     localContent.revalidate();
                                     localContent.repaint();
@@ -908,7 +910,7 @@ public class GUI implements Runnable {
                                     ArrayList<String[]> posts = client.getPosts();
 
                                     localContent.removeAll();
-                                    localContent.add(gui.upddateFeed(deletePost, hidePost, likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost, bottomMenu, likeComment, unlikeComment, dislikeComment, undislikeComment));
+                                    localContent.add(gui.upddateFeed(deletePost, hidePost, likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost, bottomMenu, likeComment, unlikeComment, dislikeComment, undislikeComment, deleteComment));
                                     localContent.add(bottomMenu, BorderLayout.SOUTH);
                                     localContent.revalidate();
                                     localContent.repaint();
@@ -925,7 +927,7 @@ public class GUI implements Runnable {
                                     ArrayList<String[]> posts = client.getPosts();
 
                                     localContent.removeAll();
-                                    localContent.add(gui.upddateFeed(deletePost, hidePost, likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost, bottomMenu, likeComment, unlikeComment, dislikeComment, undislikeComment));
+                                    localContent.add(gui.upddateFeed(deletePost, hidePost, likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost, bottomMenu, likeComment, unlikeComment, dislikeComment, undislikeComment, deleteComment));
                                     localContent.add(bottomMenu, BorderLayout.SOUTH);
                                     localContent.revalidate();
                                     localContent.repaint();
@@ -933,7 +935,29 @@ public class GUI implements Runnable {
                                 } catch (IOException e1) {
                                     e1.printStackTrace();
                                 }
+                                
                             }
+
+                            System.out.println("," + e.getActionCommand() + ",");
+                                if (e.getActionCommand().equals("Delete")) {
+                                    System.out.println("Trying to delete comment");
+                                    try {
+                                        client.deleteComment(postCode, commentCode);
+
+                                        ArrayList<String[]> posts = client.getPosts();
+
+                                        localContent.removeAll();
+                                        localContent.add(gui.upddateFeed(deletePost, hidePost, likePost, unlikePost, dislikePost, undislikePost, comment, addComment, posts, addPost, makePost, bottomMenu, likeComment, unlikeComment, dislikeComment, undislikeComment, deleteComment));
+                                        localContent.add(bottomMenu, BorderLayout.SOUTH);
+                                        localContent.revalidate();
+                                        localContent.repaint();
+
+
+                                    } catch (IOException e1) {
+                                     
+                                        e1.printStackTrace();
+                                    }
+                                }
                             
                         }
                     };
@@ -949,11 +973,17 @@ public class GUI implements Runnable {
                     unlikeComment[i][j].addActionListener(commentListeners[i][j]);
                     undislikeComment[i][j].addActionListener(commentListeners[i][j]);
 
+                    deleteComment[i][j].addActionListener(commentListeners[i][j]);
+
                     gbc2.gridx = 0;
                     gbc2.gridy = 0 + 2 * j;
                     commentPanel.add(new JLabel(comments.get(j)[0] + ":    "), gbc2);
                     gbc2.gridx = 1;
                     commentPanel.add(new JLabel(comments.get(j)[1]), gbc2);
+                    gbc2.gridx = 3;
+                    if (client.isOwnerComment(postCode, commentCode) || client.isOwnerPost(postCode)) {
+                        commentPanel.add(deleteComment[i][j], gbc2);
+                    }
                     gbc2.gridx = 0;
                     gbc2.gridy = 1 + j * 2;
                     commentPanel.add(new JLabel(comments.get(j)[2]), gbc2);
@@ -976,7 +1006,7 @@ public class GUI implements Runnable {
                     postPanels[i].add(commentPanel, gbc);
                 }
                 System.out.println(comments.size());
-                postPanels[i].setPreferredSize(new Dimension(200, 50 + 70 * comments.size()));
+                //postPanels[i].setPreferredSize(new Dimension(200, 50 + 70 * comments.size()));
                 System.out.println("Perfer size: " + postPanels[i].getPreferredSize());
 
             } catch (IOException e1) {
@@ -1002,13 +1032,16 @@ public class GUI implements Runnable {
     }
 
     public JPanel upddateFeed(JButton[] deletePost, JButton[] hidePost, JButton[] likePost, JButton[] unlikePost, 
-    JButton[] dislikePost, JButton[] undislikePost, JTextField[] comment, JButton[] addComment, 
-    ArrayList<String[]> posts, JTextField addPost, JButton makePost, JPanel bottomMenu, 
-    JButton[][] likeComment, JButton[][] unlikeComment, JButton[][] dislikeComment, JButton[][] undislikeComment) {
+        JButton[] dislikePost, JButton[] undislikePost, JTextField[] comment, JButton[] addComment, 
+        ArrayList<String[]> posts, JTextField addPost, JButton makePost, JPanel bottomMenu, 
+        JButton[][] likeComment, JButton[][] unlikeComment, JButton[][] dislikeComment, JButton[][] undislikeComment, 
+        JButton[][] deleteCommentLocal) {
         JPanel returnPanel = new JPanel();
         JPanel[] postPanels = new JPanel[posts.size()];
         JPanel preScrollPanel = new JPanel();
         preScrollPanel.setLayout(new GridLayout());
+
+        Random rand = new Random();
 
         try {
             ArrayList<Integer> indexToRemove = new ArrayList<>();
@@ -1045,7 +1078,7 @@ public class GUI implements Runnable {
             gbc.gridx = 0;
             gbc.gridy = -1;
             gbc.gridwidth = 4;
-            postPanels[i].setBackground(new Color(100 + 5 * i, 200 - 10 * i, 255 - 10 * i));
+            postPanels[i].setBackground(new Color((255 - rand.nextInt(100)), (255 - rand.nextInt(100)), (255 - rand.nextInt(100))));
             postPanels[i].add(new JSeparator(), gbc);
 
             gbc.gridy = 0;
@@ -1138,6 +1171,11 @@ public class GUI implements Runnable {
                     commentPanel.add(new JLabel(comments.get(j)[0] + ":    "), gbc2);
                     gbc2.gridx = 1;
                     commentPanel.add(new JLabel(comments.get(j)[1]), gbc2);
+
+                    gbc2.gridx = 3;
+                    if (client.isOwnerComment(postCode, commentCode) || client.isOwnerPost(postCode)) {
+                        commentPanel.add(deleteCommentLocal[i][j], gbc2);
+                    }
                     gbc2.gridx = 0;
                     gbc2.gridy = 1 + j * 2;
                     commentPanel.add(new JLabel(comments.get(j)[2]), gbc2);
@@ -1159,10 +1197,14 @@ public class GUI implements Runnable {
                     
 
                     gbc.gridy = 4 + j; 
+                    gbc.gridx = 0;
+                    gbc.gridwidth = 5;
+                    gbc.fill = GridBagConstraints.HORIZONTAL;
                     postPanels[i].add(commentPanel, gbc);
+                    gbc.fill = GridBagConstraints.NONE;
                 }
                 System.out.println(comments.size());
-                postPanels[i].setPreferredSize(new Dimension(200, 50 + 70 * comments.size()));
+                //postPanels[i].setPreferredSize(new Dimension(200, 50 + 70 * comments.size()));
                 System.out.println("Perfer size: " + postPanels[i].getPreferredSize());
 
             } catch (IOException e1) {
@@ -1194,8 +1236,10 @@ public class GUI implements Runnable {
         // View blocks
         // Change username
         // Change Password
-        
+        Random rand = new Random();
+
         JPanel usernamePasswordPanel = new JPanel();
+        usernamePasswordPanel.setBackground(new Color((255 - rand.nextInt(100)), (255 - rand.nextInt(100)), (255 - rand.nextInt(100))));
 
         //Making username and pawword editing
         usernamePasswordPanel.setLayout(new GridBagLayout());
@@ -1225,9 +1269,10 @@ public class GUI implements Runnable {
     public JPanel searchUsers(JButton searchButton, JTextField userSearch) {
         JPanel searchPanel = new JPanel();
         searchPanel.setLayout(new BorderLayout());
+        Random rand = new Random();
         
         JPanel topPanel = new JPanel();
-        topPanel.setBackground(new Color(100, 100, 100));
+        topPanel.setBackground(new Color((255 - rand.nextInt(100)), (255 - rand.nextInt(100)), (255 - rand.nextInt(100))));;
 
         
         topPanel.add(userSearch);
@@ -1310,8 +1355,10 @@ public class GUI implements Runnable {
     public JPanel loginOrRegister(JButton login, JTextField username, JTextField password, JButton register) {
         JPanel loginPanel = new JPanel();
 
+        Random rand = new Random();
+
         loginPanel.setLayout(new GridBagLayout());
-        loginPanel.setBackground(new Color(200, 170, 100));
+        loginPanel.setBackground(new Color((255 - rand.nextInt(100)), (255 - rand.nextInt(100)), (255 - rand.nextInt(100))));
         gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         

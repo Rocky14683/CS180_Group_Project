@@ -306,8 +306,10 @@ public class ClientThatIUnderstand {
         reader.readLine();
     }
 
-    public void deleteComment(String commentCode) throws IOException {
+    public void deleteComment(String postCode, String commentCode) throws IOException {
         writer.write("deleteComment\n");
+        writer.write(postCode);
+        writer.newLine();
         writer.write(commentCode);
         writer.newLine();
         writer.flush();
@@ -425,8 +427,10 @@ public class ClientThatIUnderstand {
         return reader.readLine().equals("disliked");
     }
 
-    public boolean isOwnerComment(String commentCode) throws IOException {
+    public boolean isOwnerComment(String postCode, String commentCode) throws IOException {
         writer.write("isOwnerComment\n");
+        writer.write(postCode);
+        writer.newLine();
         writer.write(commentCode);
         writer.newLine();
         writer.flush();
