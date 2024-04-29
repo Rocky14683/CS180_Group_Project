@@ -1,12 +1,15 @@
-package DatabaseFolder;
+package Functional;
+// import UserFolder.*;
 
-import UserFolder.*;
+import DatabaseFolder.DataWriter;
+import UserFolder.User;
+
 import java.util.*;
 import java.io.*;
 
-public class Post implements PostInterface{
+public class Post {
 
-    private static int numPosts = 0;
+    private static int numPosts = -1;
     private String text;
     private String image;
     private String postCode;
@@ -21,6 +24,10 @@ public class Post implements PostInterface{
 
 
     public Post(String text, String image, User owner) {
+        if (numPosts == -1) {
+            DataWriter dw = new DataWriter();
+            numPosts = dw.getNumPosts();
+        }
         this.text = text;
         this.image = image;
         this.owner = owner;
@@ -35,7 +42,7 @@ public class Post implements PostInterface{
 
     }
 
-    public Post(User owner, String text, ArrayList<User> likes, ArrayList<User> dislikes, ArrayList<User> hidden, ArrayList<Comment> comments) {
+    public Post(User owner, String text, ArrayList<User> likes, ArrayList<User> dislikes, ArrayList<User> hidden, ArrayList<Comment> comments, String code) {
         this.owner = owner;
         this.text = text;
         this.likes = likes.size();
@@ -44,6 +51,8 @@ public class Post implements PostInterface{
         this.dislikesUsers = dislikes;
         this.hiddenFrom = hidden;
         this.comments = comments;
+        this.postCode = code;
+        this.postPath = new File("Posts/" + postCode);
     }
 
     public Post() {
@@ -84,10 +93,6 @@ public class Post implements PostInterface{
         dislikes += 1;
         dislikesUsers.add(user);
         return true;
-    }
-
-    public ArrayList<Comment> getComments() {
-        return this.comments;
     }
 
     public boolean addComment(User user, Comment comment) {

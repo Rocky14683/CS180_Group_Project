@@ -1,4 +1,4 @@
-package DatabaseFolder;
+package Exceptions;
 
 public class ExistingUsernameException extends Exception{
 

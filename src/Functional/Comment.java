@@ -1,11 +1,11 @@
-package DatabaseFolder;
+package Functional;
 import java.util.ArrayList;
 import java.io.*;
 
 import UserFolder.*;
 
 
-public class Comment implements CommentInterface {
+public class Comment {
     private int likes;
     private ArrayList<User> likeUsers;
     private int dislikes;
